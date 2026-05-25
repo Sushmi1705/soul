@@ -23,8 +23,12 @@ const Footer = () => {
     >
       <div className="max-w-7xl mx-auto px-6 lg:px-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-20 relative z-10">
         <div className="space-y-6">
-          <div className="font-serif text-4xl tracking-[-0.05em] text-[#3C2A21]">
-            ZODI<span className="text-[#B38B36]">AC</span>
+          <div className="flex items-start h-32 mb-2 -mt-8 -ml-8 lg:-ml-12">
+            <img 
+              src="/astropower-logo.png" 
+              alt="AstroPower 24" 
+              className="h-full w-auto object-contain object-left-top origin-top-left transform scale-[1.3]" 
+            />
           </div>
           <p className="text-stone-500 text-sm leading-relaxed max-w-xs font-light">
             Your trusted source for professional astrological services and individual reports. 

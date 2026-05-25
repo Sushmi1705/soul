@@ -4,23 +4,24 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { CartProvider } from "@/context/CartContext";
 import { Toaster } from "@/components/ui/sonner";
 import Header from "@/components/Header";
-import Hero from "@/components/Hero";
 import HeroAstrology from "@/components/HeroAstrology";
 import NebulaBackground from "@/components/NebulaBackground";
 import About from "@/components/About";
-import StatsBar from "@/components/StatsBar";
-import ZodiacSigns from "@/components/ZodiacSigns";
 import Services from "@/components/Services";
-import Calculators from "@/components/Calculators";
 import Courses from "@/components/Courses";
 import Testimonials from "@/components/Testimonials";
 import Journal from "@/components/Journal";
-import Panchang from "@/components/Panchang";
 import Footer from "@/components/Footer";
 import CartDrawer from "@/components/CartDrawer";
 import MobileBottomNav from "@/components/MobileBottomNav";
+import AboutUs from "@/pages/AboutUs";
+import AstroSolutionPage from "@/pages/AstroSolutionPage";
+import ServicePage from "@/pages/ServicePage";
+import CoursePage from "@/pages/CoursePage";
+import BlogPage from "@/pages/BlogPage";
+import ContactPage from "@/pages/ContactPage";
 
-const Home = () => {
+const Layout = ({ children }) => {
   useEffect(() => {
     const removeBadge = () => {
       document.querySelectorAll("#emergent-badge").forEach((el) => el.remove());
@@ -39,17 +40,7 @@ const Home = () => {
     <div className="bg-[#FDFBF7] text-[#3C2A21] min-h-screen font-[Outfit,sans-serif] antialiased pb-24 lg:pb-0">
       <Header />
       <main>
-        <NebulaBackground />
-        <HeroAstrology />
-        <About />
-        <Panchang />
-        <StatsBar />
-        <ZodiacSigns />
-        <Services />
-        <Calculators />
-        <Courses />
-        <Testimonials />
-        <Journal />
+        {children}
       </main>
       <Footer />
       <CartDrawer />
@@ -58,13 +49,36 @@ const Home = () => {
   );
 };
 
+const Home = () => {
+  return (
+    <>
+      <NebulaBackground />
+      <HeroAstrology />
+      <About />
+      <Services />
+      <Courses />
+      <Testimonials />
+      <Journal />
+    </>
+  );
+};
+
 function App() {
   return (
     <CartProvider>
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Home />} />
-        </Routes>
+        <Layout>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/about-us" element={<AboutUs />} />
+            <Route path="/about" element={<AboutUs />} />
+            <Route path="/astro-solutions/:slug" element={<AstroSolutionPage />} />
+            <Route path="/services/:slug" element={<ServicePage />} />
+            <Route path="/courses/:slug" element={<CoursePage />} />
+            <Route path="/blog" element={<BlogPage />} />
+            <Route path="/contact" element={<ContactPage />} />
+          </Routes>
+        </Layout>
       </BrowserRouter>
       <Toaster
         position="bottom-right"
