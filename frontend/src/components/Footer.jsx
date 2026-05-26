@@ -38,6 +38,14 @@ const Footer = () => {
             <p className="text-[11px] tracking-[0.2em] text-stone-500">8901 Marmora Road, Glasgow, D04 89GR.</p>
             <p className="text-[11px] tracking-[0.2em] text-[#B38B36] font-bold">+1 800 123 1234</p>
             <p className="text-[11px] tracking-[0.2em] text-stone-500 underline italic">mail@demosite.com</p>
+            <div className="flex items-center gap-4 pt-4">
+              <a href="https://www.instagram.com/soulkarmabygitikasharma?igsh=amRibjNrMWU2ZWlq" target="_blank" rel="noopener noreferrer" className="text-[#B38B36] hover:text-[#3C2A21] transition-colors">
+                <Instagram className="w-5 h-5" />
+              </a>
+              <a href="https://youtube.com/@soulkarmabygitikasharma?si=C64wWc7B6Imj0Ql-" target="_blank" rel="noopener noreferrer" className="text-[#B38B36] hover:text-[#3C2A21] transition-colors">
+                <Youtube className="w-5 h-5" />
+              </a>
+            </div>
           </div>
         </div>
 

@@ -88,32 +88,59 @@ const CoursePage = () => {
             {...fadeRight}
             className="relative"
           >
+             {/* Slowly rotating celestial background rings */}
+             <motion.div 
+               animate={{ rotate: 360 }}
+               transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
+               className="absolute -top-12 -right-12 w-64 h-64 rounded-full border border-[#D4AF37]/40 border-dashed z-0"
+             />
+             <motion.div 
+               animate={{ rotate: -360 }}
+               transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
+               className="absolute -bottom-10 -left-10 w-48 h-48 rounded-full border border-[#D4AF37]/30 border-dotted z-0"
+             />
+
+             {/* Main Tarot-style Image Card */}
              <motion.div
-               animate={{ y: [0, -10, 0] }}
-               transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
-               className="relative rounded-2xl overflow-hidden shadow-[0_20px_50px_rgba(60,42,33,0.15)] group"
+               animate={{ y: [0, -15, 0] }}
+               transition={{ repeat: Infinity, duration: 6, ease: "easeInOut" }}
+               className="relative z-10 p-3 bg-white/60 backdrop-blur-xl rounded-t-[12rem] rounded-b-3xl shadow-[0_30px_60px_rgba(74,14,27,0.15)] border border-white/80"
              >
-                <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-md p-3 rounded-full shadow-lg z-10 cursor-pointer text-gray-600 hover:text-[#e63946] hover:scale-110 transition-all duration-300">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-                  </svg>
+                <div className="overflow-hidden rounded-t-[12rem] rounded-b-2xl relative bg-[#F9F7F2]">
+                  <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-md p-3 rounded-full shadow-lg z-20 cursor-pointer text-[#3C2A21] hover:text-[#D4AF37] hover:scale-110 transition-all duration-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                    </svg>
+                  </div>
+                  <img
+                    src={data.mainImage}
+                    alt={data.title}
+                    className="w-full h-[350px] md:h-[480px] object-cover transform scale-[1.25] group-hover:scale-[1.35] transition-transform duration-1000"
+                    onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&q=80" }}
+                  />
+                  
+                  {/* Subtle inner gold rim */}
+                  <div className="absolute inset-0 border border-[#D4AF37]/40 rounded-t-[12rem] rounded-b-2xl pointer-events-none mix-blend-overlay" />
+                  
+                  {/* Mystical overlay glow on hover */}
+                  <div className="absolute inset-0 bg-gradient-to-tr from-[#D4AF37]/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
                 </div>
-                <img 
-                  src={data.mainImage} 
-                  alt={data.title} 
-                  className="w-full h-[350px] md:h-[400px] object-cover transform group-hover:scale-105 transition-transform duration-700 bg-gray-100" 
-                  onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&q=80" }}
-                />
              </motion.div>
           </motion.div>
 
           {/* Right: Details */}
           <motion.div {...fadeLeft}>
             <h1 className="text-3xl md:text-4xl text-[#3C2A21] font-semibold mb-2">{data.title}</h1>
-            <p className="text-2xl font-bold text-[#e63946] mb-6">{formatINR(data.price)}</p>
+            <p className="text-2xl font-bold text-[#e63946] mb-4">{formatINR(data.price)}</p>
             
-            <div className="text-gray-600 text-sm leading-relaxed mb-8">
-              <p>{data.paragraphs[0]}</p>
+            {data.subtitle && (
+              <p className="text-[#D4AF37] italic font-medium mb-6">{data.subtitle}</p>
+            )}
+            
+            <div className="text-gray-600 text-sm leading-relaxed mb-8 space-y-4">
+              {data.paragraphs.map((p, i) => (
+                <p key={i}>{p}</p>
+              ))}
             </div>
 
             <div className="flex items-center gap-4 mb-8">

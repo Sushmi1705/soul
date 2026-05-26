@@ -46,8 +46,8 @@ export const NAV_LINKS = [
       { label: "Akashic Records", href: "/courses/akashic-records" },
       { label: "Lal Kitab Astrology", href: "/courses/lal-kitab-astrology" },
       { label: "Bhrigu Nandi Nadi", href: "/courses/bhrigu-nandi-nadi" },
-      { label: "Vastu Consultation", href: "/courses/vastu-consultation" },
-      { label: "Numerology Analysis", href: "/courses/numerology-analysis" }
+      { label: "Vastu Consultation", href: "/courses/vastu-shastra-course" },
+      { label: "Numerology Analysis", href: "/courses/numerology-course" }
     ]
   },
   { label: "Blog", href: "/blog" },
@@ -59,7 +59,7 @@ export const SERVICES = [
     id: "kundali-analysis",
     title: "Kundali Analysis",
     desc: "We combine time-honored techniques with contemporary insights to provide you with personalized interpretations and actionable guidance.",
-    image: "https://gitikasharma.in/wp-content/uploads/2024/02/Kundali-analysis-1.png",
+    image: "https://gitikasharma.in/wp-content/uploads/2024/03/1-3.png",
     duration: "60 min",
     price: 2499,
   },
@@ -67,7 +67,7 @@ export const SERVICES = [
     id: "kundali-making",
     title: "Kundali Making",
     desc: "We meticulously craft your personalized birth chart, offering profound insights into the unique cosmic influences shaping your journey.",
-    image: "https://gitikasharma.in/wp-content/uploads/2024/02/Kundali-Making.png",
+    image: "https://gitikasharma.in/wp-content/uploads/2024/03/2-3.png",
     duration: "45 min",
     price: 1999,
   },
@@ -75,7 +75,7 @@ export const SERVICES = [
     id: "match-making",
     title: "Match Making",
     desc: "Discover the magic of cosmic connection, embark on a journey of discovery, and let the stars align your path to enduring love.",
-    image: "https://gitikasharma.in/wp-content/uploads/2024/02/Match-Making.png",
+    image: "https://gitikasharma.in/wp-content/uploads/2024/03/3-2.png",
     duration: "75 min",
     price: 3499,
   },
@@ -83,7 +83,7 @@ export const SERVICES = [
     id: "numerology-analysis",
     title: "Numerology Analysis",
     desc: "Unveil the mysteries of your destiny and embark on a transformative journey of self-discovery through the wisdom of numbers.",
-    image: "https://gitikasharma.in/wp-content/uploads/2024/02/Numerology.png",
+    image: "https://gitikasharma.in/wp-content/uploads/2024/03/4-2.png",
     duration: "60 min",
     price: 2199,
   },
@@ -91,7 +91,7 @@ export const SERVICES = [
     id: "vastu-consultation",
     title: "Vastu Consultation",
     desc: "Create a balanced environment for your home or workspace with insightful recommendations tailored to your specific needs.",
-    image: "/vastu_compass.png",
+    image: "https://gitikasharma.in/wp-content/uploads/2024/03/5-2.png",
     duration: "90 min",
     price: 4999,
   },
@@ -99,7 +99,7 @@ export const SERVICES = [
     id: "soul-purpose",
     title: "Soul Purpose",
     desc: "Honor the whispers of your soul and embark on a quest to live a life of purpose, passion, and authenticity.",
-    image: "https://gitikasharma.in/wp-content/uploads/2024/02/Soul-Purpose.png",
+    image: "https://gitikasharma.in/wp-content/uploads/2024/03/6-4.png",
     duration: "60 min",
     price: 2999,
   },
@@ -111,43 +111,50 @@ export const COURSES = [
     title: "Akashic Records",
     category: "Certification Course",
     price: 15999,
-    image: "https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&q=80",
+    image: "https://gitikasharma.in/wp-content/uploads/2024/03/7-5.png",
   },
   {
     id: "bhrigu-nandi-nadi",
     title: "Bhrigu Nandi Nadi",
     category: "Advanced Course",
     price: 27999,
-    image: "https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&q=80",
+    image: "https://gitikasharma.in/wp-content/uploads/2024/03/2-7.png",
   },
   {
     id: "lal-kitab-astrology",
     title: "Lal Kitab Astrology",
     category: "Master Program",
     price: 27999,
-    image: "https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&q=80",
+    image: "https://gitikasharma.in/wp-content/uploads/2024/03/5-5.png",
   },
   {
     id: "numerology-course",
     title: "Numerology",
     category: "Foundation Course",
     price: 9240,
-    image: "https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&q=80",
+    image: "https://gitikasharma.in/wp-content/uploads/2024/03/3-5.png",
   },
   {
     id: "palmistry",
     title: "Palmistry",
     category: "Foundation Course",
     price: 9240,
-    image: "https://images.unsplash.com/photo-1596401057633-54a8fe8ef647?auto=format&fit=crop&q=80",
+    image: "https://gitikasharma.in/wp-content/uploads/2024/03/4-5.png",
   },
   {
     id: "vastu-shastra-course",
     title: "Vastu Shastra Course",
     category: "Master Program",
     price: 27999,
-    image: "/vastu_compass.png",
+    image: "https://gitikasharma.in/wp-content/uploads/2024/03/6-7.png",
   },
+  {
+    id: "vedic-astrology",
+    title: "Vedic Astrology",
+    category: "Services",
+    price: 27999,
+    image: "https://gitikasharma.in/wp-content/uploads/2024/02/1-2.png",
+  }
 ];
 
 export const TIME_SLOTS = [
@@ -360,66 +367,62 @@ export const SERVICES_PAGE_DATA = {
   "soul-purpose": {
     title: "Soul Purpose",
     subtitle: "Soul Purpose",
-    bannerImage: "https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&q=80",
-    mainImage: "https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&q=80", // Zodiac circle/meditation
+    bannerImage: "https://gitikasharma.in/wp-content/uploads/2024/03/14.png",
+    mainImage: "https://gitikasharma.in/wp-content/uploads/2024/03/6-4.png",
     paragraphs: [
-      "Welcome to our Soul Purpose services, where the essence of self-discovery unfolds and the true purpose of your soul is revealed. Your soul's purpose is the guiding light that illuminates your path, infuses your decisions, and empowers you to live a life of meaning and fulfillment.",
-      "At Soul Karma, we offer a transformative journey of exploration, introspection, and alignment with your deepest aspirations and desires. Through personalized guidance, intuitive insights, and spiritual practices, we delve into the depths of your inner wisdom, helping you uncover the unique gifts, talents, and contributions that lie within.",
-      "Our experienced practitioners and coaches provide gentle guidance, profound insights, and unconditional support as you embark on your path of self-discovery and soul awakening."
+      "Welcome to our Soul Purpose services, where the journey of self-discovery unfolds and the true essence of your being is revealed. Your soul's purpose is the guiding light that illuminates your path, ignites your passions, and empowers you to live a life of meaning and fulfillment. At our Soul Purpose services, we offer a transformative journey of exploration, introspection, and alignment with your deepest aspirations and desires. Through personalized sessions, workshops, and guided practices, we delve into the depths of your inner wisdom, helping you uncover the unique gifts, talents, and potentialities that lie within. Our experienced facilitators and coaches provide gentle guidance, profound insights, and practical tools to support you on your path of self-discovery and self-realization. Whether you're seeking clarity on your life's purpose, yearning for deeper connections with yourself and others, or striving to live authentically in alignment with your true essence, our Soul Purpose services offer a sacred space for growth, healing, and transformation. Embrace the journey of self-discovery, honor the whispers of your soul, and embark on a quest to live a life of purpose, passion, and authenticity with our Soul Purpose services."
     ]
   },
   "match-making": {
     title: "Match Making",
     subtitle: "Match Making",
-    bannerImage: "https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&q=80",
-    mainImage: "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&q=80", // Kundali/Wedding
+    bannerImage: "https://gitikasharma.in/wp-content/uploads/2024/03/11.png",
+    mainImage: "https://gitikasharma.in/wp-content/uploads/2024/03/3-2.png",
     paragraphs: [
-      "Welcome to our Match Making services. It is very important in Hindu culture that your Kundali matches with the one you are about to marry. Kundali matching, also known as Guna Milan, is an ancient practice that helps assess compatibility between prospective partners.",
-      "Our astrologers analyze the fundamental elements of each individual's Kundali, illuminating compatibility factors, shared goals, and potential challenges. We believe that understanding these dynamics is essential for fostering harmony and long-term commitment.",
-      "Whether you're seeking a life partner or exploring a new relationship, our matchmaking service offers personalized insights and guidance to help you navigate the journey of love with confidence and clarity. Discover the magic of cosmic connection, embark on a journey of discovery, and let the stars align your path to enduring love."
+      "\"Marriages are made in Heaven\". It is very important to make sure that your kundali matches with the one you are about to marry. Kundali Matching age-old tradition in India and it is something that must not be over looked. Gitika Sharma, meticulously examine the fundamental elements of each individual's Kundali, illuminating compatibility markers, shared goals, and potential challenges. We believe that understanding the cosmic resonance between two individuals is key to fostering lasting love and companionship.",
+      "Whether you're seeking a life partner, a soulmate, or a kindred spirit, our Match Making service offers personalized insights and guidance to help you navigate the journey of love with confidence and clarity.",
+      "Discover the magic of cosmic connection, embark on a journey of discovery, and let the stars align your path to enduring love and fulfillment."
     ]
   },
   "kundali-making": {
     title: "Kundali Making",
     subtitle: "Kundali Making",
-    bannerImage: "https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&q=80",
-    mainImage: "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?auto=format&fit=crop&q=80", // Chart/Abstract
+    bannerImage: "https://gitikasharma.in/wp-content/uploads/2024/03/10.png",
+    mainImage: "https://gitikasharma.in/wp-content/uploads/2024/03/2-3.png",
     paragraphs: [
-      "Welcome to our Kundali Making services, where the cosmic map of your life unfolds and the mysteries of your destiny are revealed. Your Kundali, also known as a Birth Chart, is a personalized cosmic blueprint that captures the celestial configurations at the exact moment of your birth.",
-      "At Soul Karma, we meticulously craft your personalized birth chart, offering profound insights into the unique cosmic influences shaping your journey. Through deep astrological analysis of planetary placements, houses, and constellations, your Kundali serves as a guiding light.",
-      "It helps illuminate your true essence, potential challenges, and overarching life purpose. Discover the intricate patterns and rhythms embedded within your Kundali, whether you seek clarity on your strengths and weaknesses, guidance on career choices, or insights into your relationships."
+      "Welcome to our Kundali Making services, where the cosmic map of your life unfolds and the mysteries of your destiny are revealed. Your Kundali, also known as a birth chart, is a sacred blueprint that captures the celestial configurations at the moment of your birth. At our Kundali Making services, we meticulously craft your personalized birth chart, offering profound insights into the unique cosmic influences shaping your journey through life. Through the precise positioning of planets, houses, and celestial bodies, your Kundali serves as a roadmap, guiding you through the diverse landscapes of your existence. We employ time-honored techniques and ancient wisdom to interpret the intricate patterns and symbols embedded within your Kundali. Whether you seek clarity on your strengths and weaknesses, guidance on relationships, career, health, or spirituality, our Kundali Making services provide invaluable insights and perspectives to illuminate your path. Embrace the wisdom of the stars, honor the legacy of ancient knowledge, and embark on a journey of self-discovery and empowerment with our Kundali Making services."
     ]
   },
   "kundali-analysis": {
     title: "Kundali Analysis",
     subtitle: "Kundali Analysis",
-    bannerImage: "https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&q=80",
-    mainImage: "https://images.unsplash.com/photo-1601058268499-e52658b8ebf8?auto=format&fit=crop&q=80", // Chart/Abstract
+    bannerImage: "https://gitikasharma.in/wp-content/uploads/2024/03/9-1.png",
+    mainImage: "https://gitikasharma.in/wp-content/uploads/2024/03/1-3.png",
     paragraphs: [
-      "At Soul Karma, we delve deep into the layers of your Kundali to unravel the mysteries of your personality, relationships, career, health, and more. Through meticulous examination of planetary placements, cosmic configurations, yogas, and doshas, we unveil the cosmic influences shaping your destiny.",
-      "We combine time-honored techniques with contemporary insights to provide you with personalized interpretations and actionable guidance. Whether you seek clarity on life's challenges, opportunities for growth, or a deeper understanding of your true self, our Kundali analysis offers profound insights and invaluable perspectives.",
+      "At our platform, we delve deep into the layers of your Kundali to unravel the mysteries of your personality, relationships, career, health, and more. Through meticulous examination of planetary placements, house configurations, yogas, and doshas, we unveil the cosmic influences shaping your destiny.",
+      "We combine time-honored techniques with contemporary insights to provide you with personalized interpretations and actionable guidance. Whether you seek clarity on life's challenges, opportunities for growth, or a deeper understanding of your path, our Kundali analysis offers profound insights and invaluable perspectives.",
       "Unlock the secrets of your destiny, illuminate the pathways to fulfillment, and embark on a journey of self-discovery with our comprehensive Kundali analysis services."
     ]
   },
   "vastu-consultation": {
     title: "Vastu Consultation",
     subtitle: "Vastu Consultation",
-    bannerImage: "https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&q=80",
-    mainImage: "/vastu_compass.png", // Borderless Compass
+    bannerImage: "https://gitikasharma.in/wp-content/uploads/2024/03/13.png",
+    mainImage: "https://gitikasharma.in/wp-content/uploads/2024/03/5-2.png",
     paragraphs: [
-      "Welcome to our Vastu Consultation services, where the ancient principles of harmonious living meet modern lifestyles. Vastu Shastra is the traditional Indian science of architecture and design, rooted in the belief that the spatial arrangement of our surroundings profoundly influences our well-being and prosperity.",
-      "At Soul Karma, we offer personalized guidance and practical solutions to harmonize the energy flow in your living spaces, workplaces, factories, and commercial venues. Drawing upon the timeless wisdom of Vastu Shastra, Gitika Sharma analyzes the energy flow, orientation, and structural dynamics of your premises.",
-      "Whether you're building a new home, remodeling an existing space, or seeking to enhance the harmony of your environment, we provide insightful recommendations tailored to your specific needs and goals."
+      "Welcome to our Vastu Consultation services, where ancient principles of harmonious living meet modern lifestyles. Vastu Shastra is the ancient Indian science of architecture and design, rooted in the belief that the spatial arrangement of our surroundings profoundly influences our well-being and prosperity.",
+      "At our Vastu Consultation service, we offer personalized guidance and practical solutions to harmonize your living spaces, workplaces, factories and environments. Drawing upon the timeless wisdom of Vastu Shastra, Gitika Sharma analyze the energy flow, orientation, and layout of your space to optimize positive vibrations and enhance overall harmony.",
+      "Whether you're designing a new home, renovating an existing space, or seeking to create a more balanced environment, we provide insightful recommendations tailored to your specific needs and goals.",
+      "From simple adjustments to comprehensive redesigns, our goal is to help you create spaces that support your health, happiness, and success. Explore the transformative power of Vastu, and unlock the full potential of your living and working environments with our Vastu Consultation services."
     ]
   },
   "numerology-analysis": {
     title: "Numerology Analysis",
     subtitle: "Numerology Analysis",
-    bannerImage: "https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&q=80",
-    mainImage: "https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&q=80", // Numbers/Abstract
+    bannerImage: "https://gitikasharma.in/wp-content/uploads/2024/03/12.png",
+    mainImage: "https://gitikasharma.in/wp-content/uploads/2024/03/4-2.png",
     paragraphs: [
-      "Welcome to our Numerology Analysis services, where we decode the hidden meanings behind the numbers in your life. Numerology is the ancient study of numbers and their profound mystical significance in shaping our destiny.",
-      "Through a comprehensive analysis of your birth date and name, we uncover your Life Path number, Expression number, and Soul Urge number. These unique numerical vibrations provide deep insights into your personality traits, innate talents, and potential challenges.",
+      "Welcome to our Numerology Analysis services, where we decode the hidden meanings behind the numbers in your life. Numerology is the ancient study of numbers and their profound mystical significance in shaping our destiny. Through a comprehensive analysis of your birth date and name, we uncover your Life Path number, Expression number, and Soul Urge number. These unique numerical vibrations provide deep insights into your personality traits, innate talents, and potential challenges.",
       "Whether you are seeking clarity on your career path, relationship compatibility, or major life decisions, our numerology consultation offers practical guidance to help you align with your true purpose and maximize your potential."
     ]
   },
@@ -439,86 +442,86 @@ export const SERVICES_PAGE_DATA = {
 export const COURSES_PAGE_DATA = {
   "palmistry": {
     title: "Palmistry",
+    subtitle: "Discover the Secrets of Palmistry and Astrology Combined",
     category: "Foundation Course",
     price: 9240,
     bannerImage: "https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&q=80",
-    mainImage: "https://images.unsplash.com/photo-1596401057633-54a8fe8ef647?auto=format&fit=crop&q=80",
+    mainImage: "https://gitikasharma.in/wp-content/uploads/2024/03/4-5.png",
     paragraphs: [
-      "Discover the ancient art of Palmistry and unlock the secrets held within the lines of your hands. This foundational course is designed for beginners who wish to understand how the shape, lines, and mounts of the palm reveal character traits and life potential.",
-      "Throughout this comprehensive program, you will learn to read the major lines (Heart, Head, Life, and Fate) and interpret the significance of various markings and hand shapes. Practical exercises and real-life examples will help you build confidence in your readings.",
-      "By the end of this course, you will have the knowledge to perform basic palmistry readings for yourself and others, providing valuable insights into personality, career, and relationships."
+      "Embark on an illuminating journey into the ancient arts of palmistry and astrology with our comprehensive 15+ hours course on Palmistry Astrology. Explore the fascinating interplay between the lines and mounts of the palm and the cosmic influences of the stars and planets, and unlock the hidden insights of your destiny.",
+      "Enroll now and unlock the secrets of Palmistry Astrology. Gain profound insights into yourself and others, and empower yourself to navigate life's journey with clarity, confidence, and wisdom."
     ]
   },
   "vedic-astrology": {
     title: "Vedic Astrology",
-    category: "Foundation Course",
-    price: 15999, // Assuming a price since it wasn't in the COURSES array directly but the subnav
+    subtitle: "Unlock the Secrets of Vedic Astrology",
+    category: "Services",
+    price: 27999,
     bannerImage: "https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&q=80",
-    mainImage: "https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&q=80",
+    mainImage: "https://gitikasharma.in/wp-content/uploads/2024/02/1-2.png",
     paragraphs: [
-      "Step into the profound world of Vedic Astrology (Jyotish) and learn to decode the cosmic language of the stars. This course provides a deep dive into the fundamental principles of ancient Indian astrology.",
-      "You will study the significance of the 12 Zodiac signs, 9 planets (Navagrahas), and the 12 houses (Bhavas). We will cover how to cast and interpret a basic birth chart, understand planetary transits, and recognize karmic patterns.",
-      "Whether you are looking to embark on a professional career as an astrologer or simply seeking profound self-knowledge, this course offers the perfect foundation to guide you on your cosmic journey."
+      "Embark on a transformative journey into the ancient wisdom of Vedic Astrology with our comprehensive 45+ hours course. Dive deep into the mystical realms of the cosmos, explore the intricate interplay of planetary energies, and unlock the secrets of your destiny.",
+      "Enroll now and embark on a transformative journey into the fascinating world of Vedic Astrology. Uncover the mysteries of the cosmos, decode the secrets of your destiny, and empower yourself to navigate life's journey with wisdom and insight."
     ]
   },
   "akashic-records": {
     title: "Akashic Records",
+    subtitle: "Embark on a Journey into the Akashic Records",
     category: "Certification Course",
     price: 15999,
     bannerImage: "https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&q=80",
-    mainImage: "https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&q=80",
+    mainImage: "https://gitikasharma.in/wp-content/uploads/2024/03/7-5.png",
     paragraphs: [
-      "Access the universal library of your soul's history with our Akashic Records Certification Course. The Akashic Records are an energetic database containing every thought, emotion, and experience of every soul across time.",
-      "In this immersive training, you will learn spiritual protocols to safely access your own records and the records of others. We will focus on clearing karmic blocks, healing past-life traumas, and receiving direct guidance from your Masters, Teachers, and Loved Ones.",
-      "Upon completion, you will receive a certification empowering you to conduct professional Akashic Record readings and facilitate deep spiritual healing."
+      "Welcome to our transformative 10+ hours course on Akashic Records. Delve into the boundless wisdom and profound insights of the Akashic Records, and unlock the secrets of your soul's journey across lifetimes.",
+      "Enroll now and embark on a profound journey of self-discovery and spiritual awakening through the Akashic Records. Gain clarity, healing, and empowerment as you connect with the infinite wisdom and love of the universe."
     ]
   },
   "lal-kitab-astrology": {
     title: "Lal Kitab Astrology",
+    subtitle: "Unlock the Mysteries of Lal Kitab Astrology",
     category: "Master Program",
     price: 27999,
     bannerImage: "https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&q=80",
-    mainImage: "https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&q=80",
+    mainImage: "https://gitikasharma.in/wp-content/uploads/2024/03/5-5.png",
     paragraphs: [
-      "Master the unique and practical wisdom of Lal Kitab Astrology. Known for its distinct approach to planetary analysis and highly effective, accessible remedies (Upayas), Lal Kitab is a powerful astrological system.",
-      "This Master Program goes beyond basic chart reading, delving into the intricacies of Lal Kitab grammar, the concept of 'blind planets,' and the specific rules for planetary placements in different houses.",
-      "You will learn how to prescribe simple, inexpensive remedies to mitigate negative planetary influences and enhance positive ones, making this a highly sought-after skill in the field of astrology."
+      "Embark on an enlightening journey into the ancient wisdom of Lal Kitab Astrology with our comprehensive 45+ hours course. Explore the unique principles, remedies, and predictive techniques of Lal Kitab Astrology, and learn how to harness its transformative power to decipher the secrets of your destiny.",
+      "Enroll now and unlock the transformative power of Lal Kitab Astrology. Gain profound insights into your destiny, harness the energies of the cosmos, and empower yourself to create a life filled with abundance, prosperity, and fulfillment."
     ]
   },
   "bhrigu-nandi-nadi": {
     title: "Bhrigu Nandi Nadi",
+    subtitle: "Explore the Depths of Bhrigu Nandi Nadi Astrology",
     category: "Advanced Course",
     price: 27999,
     bannerImage: "https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&q=80",
-    mainImage: "https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&q=80",
+    mainImage: "https://gitikasharma.in/wp-content/uploads/2024/03/2-7.png",
     paragraphs: [
-      "Elevate your astrological expertise with the highly accurate predictive system of Bhrigu Nandi Nadi. This advanced course focuses on a specialized branch of Nadi astrology that relies on planetary combinations rather than traditional house lords.",
-      "You will learn the core principles of planetary friendships, enmities, and conjunctions. The course teaches you how to make precise predictions regarding career, marriage, and life events by simply analyzing the interplay of planets in the birth chart.",
-      "Designed for intermediate to advanced students, this program will dramatically improve the speed and accuracy of your astrological predictions."
+      "Embark on an enlightening journey into the ancient wisdom of Bhrigu Nandi Nadi astrology with our comprehensive 45+ hours course. Dive deep into the sacred texts and teachings of this profound astrological tradition, unraveling the mysteries of karma, destiny, and spiritual evolution.",
+      "Enroll now and unlock the profound wisdom of Bhrigu Nandi Nadi astrology. Transform your understanding of karma, destiny, and spiritual evolution, and empower yourself to navigate life's journey with clarity, insight, and purpose."
     ]
   },
   "vastu-shastra-course": {
-    title: "Vastu Shastra",
+    title: "Vastu Shastra Course",
+    subtitle: "Master the Art of Vastu Shastra",
     category: "Master Program",
     price: 27999,
     bannerImage: "https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&q=80",
-    mainImage: "/vastu_compass.png",
+    mainImage: "https://gitikasharma.in/wp-content/uploads/2024/03/6-7.png",
     paragraphs: [
-      "Become a master of space and energy with our Vastu Shastra Master Program. This comprehensive course covers the ancient Indian science of architecture, teaching you how to harmonize living and working spaces with natural forces.",
-      "We will explore the five elements (Panchamahabhutas), the 16 Vastu zones, and the significance of directions. You will learn practical techniques to identify Vastu defects (Doshas) and implement remedies without structural demolition.",
-      "This certification will equip you to offer professional Vastu consultations, helping clients attract health, wealth, and prosperity into their environments."
+      "Embark on an immersive journey into the ancient science of Vastu Shastra with our comprehensive 45+ hours course on Vastu Consultant. Dive deep into the principles, techniques, and practical applications of Vastu Shastra, and become a certified Vastu Consultant capable of transforming spaces and enhancing the lives of others.",
+      "Enroll now and embark on a transformative journey into the ancient science of Vastu Shastra. Become a certified Vastu Consultant and empower yourself to create harmonious and auspicious living and working environments that promote health, happiness, and prosperity."
     ]
   },
-  "numerology-analysis": {
+  "numerology-course": {
     title: "Numerology",
+    subtitle: "Unlock the Secrets of Numerology",
     category: "Foundation Course",
     price: 9240,
     bannerImage: "https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&q=80",
-    mainImage: "https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&q=80",
+    mainImage: "https://gitikasharma.in/wp-content/uploads/2024/03/3-5.png",
     paragraphs: [
-      "Unlock the hidden power of numbers with our Numerology Foundation Course. Numbers are the universal language, and this course will teach you how to decode their mystical significance in your life.",
-      "You will learn how to calculate and interpret the Life Path, Destiny, and Soul Urge numbers from a birth date and name. We will delve into the energetic vibrations of numbers 1 through 9, as well as Master Numbers.",
-      "By the end of the course, you will be able to provide insightful numerology profiles, helping yourself and others make informed decisions about career, relationships, and personal growth."
+      "Embark on a transformative journey into the mystical realm of numbers with our comprehensive 20+ hours course on Numerology Analysis. Discover the profound insights and practical tools of numerology, and learn how to decode the hidden meanings behind numbers to enhance your life and empower others.",
+      "Enroll now and embark on a transformative journey into the world of numerology. Unlock the secrets of numbers, gain profound insights into yourself and others, and empower yourself to create a life filled with purpose, abundance, and fulfillment."
     ]
   }
 };

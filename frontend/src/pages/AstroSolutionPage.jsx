@@ -75,25 +75,39 @@ const AstroSolutionPage = () => {
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="relative group max-w-sm mx-auto lg:ml-0"
           >
-            {/* Elegant offset gold frame */}
-            <div className="absolute -top-4 -right-4 bottom-8 left-8 border border-[#B38B36]/30 group-hover:border-[#B38B36]/60 transition-colors duration-500 z-0" />
-            
-            {/* Main Image Container */}
-            <div className="relative z-10 bg-white p-2 shadow-[0_20px_50px_rgba(60,42,33,0.1)]">
-              <div className="overflow-hidden relative">
-                <div className="absolute inset-0 border border-white/20 z-10" />
-                <img
-                  src={data.mainImage}
-                  alt={data.title}
-                  className="w-full h-[350px] md:h-[400px] object-cover group-hover:scale-105 transition-transform duration-700 bg-[#F4F1EA]"
-                  onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&q=80" }}
-                />
-              </div>
-            </div>
-            
-            {/* Decorative corners */}
-            <div className="absolute top-[-4px] left-[-4px] w-6 h-6 border-t border-l border-[#B38B36] z-20 opacity-0 group-hover:opacity-100 transition-all duration-500" />
-            <div className="absolute bottom-[32px] right-[-4px] w-6 h-6 border-b border-r border-[#B38B36] z-20 opacity-0 group-hover:opacity-100 transition-all duration-500" />
+             {/* Slowly rotating celestial background rings */}
+             <motion.div 
+               animate={{ rotate: 360 }}
+               transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
+               className="absolute -top-12 -right-12 w-64 h-64 rounded-full border border-[#D4AF37]/40 border-dashed z-0"
+             />
+             <motion.div 
+               animate={{ rotate: -360 }}
+               transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
+               className="absolute -bottom-10 -left-10 w-48 h-48 rounded-full border border-[#D4AF37]/30 border-dotted z-0"
+             />
+
+             {/* Main Tarot-style Image Card */}
+             <motion.div
+               animate={{ y: [0, -15, 0] }}
+               transition={{ repeat: Infinity, duration: 6, ease: "easeInOut" }}
+               className="relative z-10 p-3 bg-white/60 backdrop-blur-xl rounded-t-[12rem] rounded-b-3xl shadow-[0_30px_60px_rgba(74,14,27,0.15)] border border-white/80"
+             >
+                <div className="overflow-hidden rounded-t-[12rem] rounded-b-2xl relative bg-[#F9F7F2]">
+                  <img
+                    src={data.mainImage}
+                    alt={data.title}
+                    className="w-full h-[400px] md:h-[480px] object-cover transform scale-[1.25] group-hover:scale-[1.35] transition-transform duration-1000"
+                    onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&q=80" }}
+                  />
+                  
+                  {/* Subtle inner gold rim */}
+                  <div className="absolute inset-0 border border-[#D4AF37]/40 rounded-t-[12rem] rounded-b-2xl pointer-events-none mix-blend-overlay" />
+                  
+                  {/* Mystical overlay glow on hover */}
+                  <div className="absolute inset-0 bg-gradient-to-tr from-[#D4AF37]/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+                </div>
+             </motion.div>
           </motion.div>
           <motion.div 
             {...fadeInUp}

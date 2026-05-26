@@ -1,54 +1,62 @@
-import { Moon, Hash, Heart, Sun, Star, Baby, Flame, Zap } from "lucide-react";
+import { Moon, Hash, Heart, Sun, Star, Baby, Flame, Zap, CircleDashed, Sparkles, Hexagon, Compass, Asterisk } from "lucide-react";
 import { Link } from "react-router-dom";
+
+const SigilIcon = ({ Outer, Inner, Accent }) => (
+  <div className="relative w-full h-full flex items-center justify-center">
+    <Outer className="w-full h-full absolute text-[#D4AF37] opacity-20" strokeWidth={0.5} />
+    {Accent && <Accent className="w-2/3 h-2/3 absolute text-[#D4AF37] opacity-40 animate-pulse" strokeWidth={1} />}
+    <Inner className="w-1/2 h-1/2 relative z-10 text-[#B38B36] group-hover:text-[#D4AF37] transition-colors" strokeWidth={1.5} />
+  </div>
+);
 
 const CALCULATORS = [
   {
     id: "moon-sign",
     title: "Moon Sign Calculator",
     desc: "Understand your emotional nature, instincts, and how you truly respond to life situations.",
-    icon: <Moon className="w-6 h-6 text-[#B38B36]" />,
+    icon: <SigilIcon Outer={CircleDashed} Inner={Moon} Accent={Sparkles} />,
   },
   {
     id: "numerology",
     title: "Numerology Calculator",
     desc: "Discover your core personality, identity, and the deeper forces that influence your everyday actions.",
-    icon: <Hash className="w-6 h-6 text-[#B38B36]" />,
+    icon: <SigilIcon Outer={Hexagon} Inner={Hash} Accent={Asterisk} />,
   },
   {
     id: "kundli-matching",
     title: "Kundli Matching",
     desc: "Decode your life path, destiny, and hidden patterns through the power of numbers.",
-    icon: <Heart className="w-6 h-6 text-[#B38B36]" />,
+    icon: <SigilIcon Outer={CircleDashed} Inner={Heart} Accent={Sparkles} />,
   },
   {
     id: "lagna",
     title: "Lagna Calculator",
     desc: "Check marriage compatibility with detailed Guna Milan and deeper relationship insights.",
-    icon: <Zap className="w-6 h-6 text-[#B38B36]" />,
+    icon: <SigilIcon Outer={Compass} Inner={Zap} Accent={Asterisk} />,
   },
   {
     id: "nakshatra",
     title: "Nakshatra Calculator",
     desc: "Find your rising sign and understand how you express yourself and appear to the world.",
-    icon: <Star className="w-6 h-6 text-[#B38B36]" />,
+    icon: <SigilIcon Outer={Hexagon} Inner={Star} Accent={Sparkles} />,
   },
   {
     id: "baby-name",
     title: "Baby Name Calculator",
     desc: "Know your current Mahadasha and how planetary periods are shaping your life and decisions.",
-    icon: <Baby className="w-6 h-6 text-[#B38B36]" />,
+    icon: <SigilIcon Outer={CircleDashed} Inner={Baby} Accent={Asterisk} />,
   },
   {
     id: "flames",
     title: "Flames Calculator",
     desc: "Explore your Chinese zodiac sign, personality traits, and the elements that influence your nature.",
-    icon: <Flame className="w-6 h-6 text-[#B38B36]" />,
+    icon: <SigilIcon Outer={Hexagon} Inner={Flame} Accent={Sparkles} />,
   },
   {
     id: "rahu-ketu",
     title: "Rahu Ketu Calculator",
     desc: "Reveal your personal lucky numbers to make better choices and attract positive opportunities.",
-    icon: <Sun className="w-6 h-6 text-[#B38B36]" />,
+    icon: <SigilIcon Outer={Compass} Inner={Sun} Accent={Moon} />,
   },
 ];
 
@@ -72,8 +80,15 @@ const Calculators = () => {
               key={calc.id}
               className="group bg-[#FBF6EC] border border-[#E5E1D8] p-6 rounded-xl flex items-start gap-6 hover:border-[#B38B36]/40 hover:shadow-xl hover:shadow-[#B38B36]/5 transition-all duration-300"
             >
-              <div className="flex-shrink-0 w-12 h-12 rounded-full bg-white flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform duration-300">
-                {calc.icon}
+              <div className="relative flex-shrink-0 w-14 h-14 flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
+                {/* Diamond Background */}
+                <div className="absolute inset-0 bg-gradient-to-br from-[#D4AF37] to-[#B38B36] transform rotate-45 rounded-[4px] opacity-10 group-hover:opacity-20 transition-opacity duration-500"></div>
+                {/* Diamond Border */}
+                <div className="absolute inset-1 border border-[#D4AF37]/50 transform rotate-45 rounded-[2px] group-hover:border-[#D4AF37] transition-colors duration-500"></div>
+                {/* Icon */}
+                <div className="relative z-10 w-10 h-10 text-[#B38B36] group-hover:text-[#D4AF37] transition-colors drop-shadow-md">
+                  {calc.icon}
+                </div>
               </div>
               <div className="flex-grow">
                 <h3 className="font-serif text-xl text-[#3C2A21] mb-2">{calc.title}</h3>
