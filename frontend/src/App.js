@@ -6,6 +6,10 @@ import { Toaster } from "@/components/ui/sonner";
 import Header from "@/components/Header";
 import HeroAstrology from "@/components/HeroAstrology";
 import NebulaBackground from "@/components/NebulaBackground";
+import Panchang from "@/components/Panchang";
+import StatsBar from "@/components/StatsBar";
+import ZodiacSigns from "@/components/ZodiacSigns";
+import Calculators from "@/components/Calculators";
 import About from "@/components/About";
 import Services from "@/components/Services";
 import Courses from "@/components/Courses";
@@ -20,6 +24,7 @@ import ServicePage from "@/pages/ServicePage";
 import CoursePage from "@/pages/CoursePage";
 import BlogPage from "@/pages/BlogPage";
 import ContactPage from "@/pages/ContactPage";
+import CalculatorPage from "@/pages/CalculatorPage";
 
 const Layout = ({ children }) => {
   useEffect(() => {
@@ -54,6 +59,10 @@ const Home = () => {
     <>
       <NebulaBackground />
       <HeroAstrology />
+      <Panchang />
+      <StatsBar />
+      <ZodiacSigns />
+      <Calculators />
       <About />
       <Services />
       <Courses />
@@ -77,6 +86,7 @@ function App() {
             <Route path="/courses/:slug" element={<CoursePage />} />
             <Route path="/blog" element={<BlogPage />} />
             <Route path="/contact" element={<ContactPage />} />
+            <Route path="/calculator/:id" element={<CalculatorPage />} />
           </Routes>
         </Layout>
       </BrowserRouter>

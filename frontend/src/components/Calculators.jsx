@@ -1,4 +1,5 @@
 import { Moon, Hash, Heart, Sun, Star, Baby, Flame, Zap } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const CALCULATORS = [
   {
@@ -66,7 +67,8 @@ const Calculators = () => {
 
         <div className="grid md:grid-cols-2 gap-6">
           {CALCULATORS.map((calc) => (
-            <div
+            <Link
+              to={`/calculator/${calc.id}`}
               key={calc.id}
               className="group bg-[#FBF6EC] border border-[#E5E1D8] p-6 rounded-xl flex items-start gap-6 hover:border-[#B38B36]/40 hover:shadow-xl hover:shadow-[#B38B36]/5 transition-all duration-300"
             >
@@ -82,7 +84,7 @@ const Calculators = () => {
               <button className="flex-shrink-0 text-[10px] tracking-[0.1em] uppercase font-bold text-[#3C2A21] border border-[#3C2A21]/10 px-4 py-2 rounded group-hover:bg-[#B38B36] group-hover:text-white group-hover:border-[#B38B36] transition-all duration-300 whitespace-nowrap">
                 Calculate for Free →
               </button>
-            </div>
+            </Link>
           ))}
         </div>
       </div>
