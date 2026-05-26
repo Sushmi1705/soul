@@ -91,7 +91,7 @@ export const SERVICES = [
     id: "vastu-consultation",
     title: "Vastu Consultation",
     desc: "Create a balanced environment for your home or workspace with insightful recommendations tailored to your specific needs.",
-    image: "https://gitikasharma.in/wp-content/uploads/2024/02/Vastu-Consultation.png",
+    image: "/vastu_compass.png",
     duration: "90 min",
     price: 4999,
   },
@@ -146,7 +146,7 @@ export const COURSES = [
     title: "Vastu Shastra Course",
     category: "Master Program",
     price: 27999,
-    image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80",
+    image: "/vastu_compass.png",
   },
 ];
 
@@ -405,7 +405,7 @@ export const SERVICES_PAGE_DATA = {
     title: "Vastu Consultation",
     subtitle: "Vastu Consultation",
     bannerImage: "https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&q=80",
-    mainImage: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80", // House/Interior
+    mainImage: "/vastu_compass.png", // Borderless Compass
     paragraphs: [
       "Welcome to our Vastu Consultation services, where the ancient principles of harmonious living meet modern lifestyles. Vastu Shastra is the traditional Indian science of architecture and design, rooted in the belief that the spatial arrangement of our surroundings profoundly influences our well-being and prosperity.",
       "At Soul Karma, we offer personalized guidance and practical solutions to harmonize the energy flow in your living spaces, workplaces, factories, and commercial venues. Drawing upon the timeless wisdom of Vastu Shastra, Gitika Sharma analyzes the energy flow, orientation, and structural dynamics of your premises.",
@@ -497,12 +497,12 @@ export const COURSES_PAGE_DATA = {
       "Designed for intermediate to advanced students, this program will dramatically improve the speed and accuracy of your astrological predictions."
     ]
   },
-  "vastu-consultation": {
+  "vastu-shastra-course": {
     title: "Vastu Shastra",
     category: "Master Program",
     price: 27999,
     bannerImage: "https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&q=80",
-    mainImage: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80",
+    mainImage: "/vastu_compass.png",
     paragraphs: [
       "Become a master of space and energy with our Vastu Shastra Master Program. This comprehensive course covers the ancient Indian science of architecture, teaching you how to harmonize living and working spaces with natural forces.",
       "We will explore the five elements (Panchamahabhutas), the 16 Vastu zones, and the significance of directions. You will learn practical techniques to identify Vastu defects (Doshas) and implement remedies without structural demolition.",
