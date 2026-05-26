@@ -102,9 +102,18 @@ const ServicePage = () => {
             <h2 className="font-serif text-2xl md:text-3xl text-[#3C2A21] leading-tight font-bold">
               {data.subtitle}
             </h2>
-            <div className="space-y-4 text-[#725D46] font-light leading-relaxed text-sm">
+            <div className="space-y-6 text-[#725D46] font-light leading-relaxed text-sm">
               {data.paragraphs.map((p, i) => (
-                <p key={i}>{p}</p>
+                <div key={i} className="space-y-2">
+                  {typeof p === 'string' ? (
+                    <p>{p}</p>
+                  ) : (
+                    <>
+                      {p.heading && <h3 className="font-serif font-bold text-lg text-[#3C2A21]">{p.heading}</h3>}
+                      <p>{p.text}</p>
+                    </>
+                  )}
+                </div>
               ))}
             </div>
             <Link to="/contact" className="inline-flex items-center gap-3 bg-[#e63946] text-white px-6 py-3 text-xs tracking-widest uppercase font-bold hover:bg-[#d62828] transition-all mt-4">

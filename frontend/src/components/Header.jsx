@@ -21,7 +21,7 @@ const Header = () => {
               <img 
                 src="/astropower-logo.png" 
                 alt="AstroPower 24" 
-                className="h-full w-auto object-contain transition-transform duration-500 origin-left transform scale-[1.3] md:scale-[1.5] group-hover:scale-[1.35] md:group-hover:scale-[1.55]" 
+                className="h-full w-auto object-contain transition-transform duration-500 origin-left transform scale-[1.5] md:scale-[1.8] group-hover:scale-[1.55] md:group-hover:scale-[1.85]" 
               />
           </Link>
         </div>
