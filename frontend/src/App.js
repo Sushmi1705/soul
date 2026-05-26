@@ -1,6 +1,6 @@
 import "@/App.css";
 import { useEffect } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { CartProvider } from "@/context/CartContext";
 import { Toaster } from "@/components/ui/sonner";
 import Header from "@/components/Header";
@@ -27,6 +27,12 @@ import ContactPage from "@/pages/ContactPage";
 import CalculatorPage from "@/pages/CalculatorPage";
 
 const Layout = ({ children }) => {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
   useEffect(() => {
     const removeBadge = () => {
       document.querySelectorAll("#emergent-badge").forEach((el) => el.remove());
