@@ -65,11 +65,11 @@ const Home = () => {
     <>
       <NebulaBackground />
       <HeroAstrology />
+      <Calculators />
+      <About />
       <Panchang />
       <StatsBar />
       <ZodiacSigns />
-      <Calculators />
-      <About />
       <Services />
       <Courses />
       <Testimonials />
