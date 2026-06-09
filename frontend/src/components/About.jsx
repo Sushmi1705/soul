@@ -39,13 +39,13 @@ const About = () => {
               <img 
                 src="https://gitikasharma.in/wp-content/uploads/2024/02/about-img-1.png" 
                 alt="Oracle" 
-                className="w-full h-full object-cover grayscale brightness-110" 
+                className="w-full h-full object-cover" 
               />
               <div className="absolute inset-0 bg-[#B38B36]/10 mix-blend-overlay" />
             </div>
             {/* Overlapping Floating Card */}
             <div className="absolute -bottom-10 -right-10 w-64 p-10 bg-white shadow-[20px_20px_60px_rgba(60,42,33,0.05)] border border-brand-dark/[0.02] animate-float">
-               <div className="font-serif text-6xl text-[#B38B36] mb-4">15+</div>
+               <div className="font-serif text-6xl text-[#B38B36] mb-4">24+</div>
                <div className="text-[9px] tracking-[0.4em] uppercase font-black text-[#3C2A21]">Years of Cosmic Mastery</div>
             </div>
           </div>
@@ -64,7 +64,7 @@ const About = () => {
             <div className="grid md:grid-cols-2 gap-12 text-left">
               <div className="space-y-8">
                 <p className="text-stone-500 leading-relaxed font-light first-letter:text-5xl first-letter:font-serif first-letter:text-[#B38B36] first-letter:mr-3 first-letter:float-left">
-                  Gitika Sharma is a seasoned astrologer and IT professional with 15 years of experience 
+                  Gitika Sharma is a seasoned astrologer and IT professional with 24 years of experience 
                   dedicated to unraveling the intricate threads of pending karma woven within the fabric of existence. 
                   Our reports are individualized and meticulously researched to provide profound insights.
                 </p>

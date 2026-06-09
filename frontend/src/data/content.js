@@ -218,41 +218,7 @@ export const TESTIMONIALS = [
   },
 ];
 
-export const JOURNAL = [
-  {
-    id: "vedic-wisdom",
-    category: "Vastu Consultation",
-    date: "March 7, 2024",
-    title:
-      "Unlocking Cosmic Wisdom: Exploring Vedic Astrology with Soul Karma",
-    excerpt:
-      "In a world filled with uncertainty and rapid change, the ancient wisdom of Vedic astrology offers a guiding light to those seeking clarity and meaning.",
-    image:
-      "https://gitikasharma.in/wp-content/uploads/2024/03/3-8.png",
-  },
-  {
-    id: "nurturing-love",
-    category: "Palmistry",
-    date: "March 7, 2024",
-    title:
-      "Nurturing Love: Healing Marriages & Relationships through Astrology Therapy",
-    excerpt:
-      "In the intricate dance of love and relationships, challenges are inevitable. Yet within the depths of the stars lies a compass for the heart.",
-    image:
-      "https://gitikasharma.in/wp-content/uploads/2024/03/2-10.png",
-  },
-  {
-    id: "power-of-numbers",
-    category: "Vedic Astrology",
-    date: "March 7, 2024",
-    title:
-      "Harnessing the Power of Numbers: Exploring Numerology with Soul Karma",
-    excerpt:
-      "In the intricate tapestry of the universe, numbers hold a profound significance — the silent language of creation speaking to those who listen.",
-    image:
-      "https://gitikasharma.in/wp-content/uploads/2024/02/1-3.png",
-  },
-];
+export const JOURNAL = [];
 
 export const formatINR = (n) =>
   new Intl.NumberFormat("en-IN", {

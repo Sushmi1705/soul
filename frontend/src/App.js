@@ -25,6 +25,8 @@ import CoursePage from "@/pages/CoursePage";
 import BlogPage from "@/pages/BlogPage";
 import ContactPage from "@/pages/ContactPage";
 import CalculatorPage from "@/pages/CalculatorPage";
+import AdminLogin from "@/pages/AdminLogin";
+import AdminDashboard from "@/pages/AdminDashboard";
 
 const Layout = ({ children }) => {
   const { pathname } = useLocation();
@@ -46,6 +48,16 @@ const Layout = ({ children }) => {
       observer.disconnect();
     };
   }, []);
+
+  const isAdminRoute = pathname.startsWith("/admin");
+
+  if (isAdminRoute) {
+    return (
+      <div className="bg-[#0d0905] min-h-screen font-[Outfit,sans-serif] antialiased">
+        {children}
+      </div>
+    );
+  }
 
   return (
     <div className="bg-[#FDFBF7] text-[#3C2A21] min-h-screen font-[Outfit,sans-serif] antialiased pb-24 lg:pb-0">
@@ -93,6 +105,8 @@ function App() {
             <Route path="/blog" element={<BlogPage />} />
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/calculator/:id" element={<CalculatorPage />} />
+            <Route path="/admin/login" element={<AdminLogin />} />
+            <Route path="/admin" element={<AdminDashboard />} />
           </Routes>
         </Layout>
       </BrowserRouter>

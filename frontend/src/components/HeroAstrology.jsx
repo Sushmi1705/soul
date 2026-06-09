@@ -90,9 +90,9 @@ const HeroAstrology = () => {
                <div className="absolute inset-0 flex items-center justify-center">
                   <div className="w-64 h-64 rounded-full bg-white shadow-[-20px_20px_60px_rgba(60,42,33,0.05)] border border-brand-dark/[0.02] flex items-center justify-center p-12">
                      <img 
-                      src="https://images.unsplash.com/photo-1518133835878-5a93cc3f89e5?auto=format&fit=crop&q=80&w=400" 
+                      src="https://images.unsplash.com/photo-1607746882042-944635dfe10e?auto=format&fit=crop&q=80&w=400" 
                       alt="Oracle" 
-                      className="w-full h-full object-cover rounded-full grayscale opacity-80"
+                      className="w-full h-full object-cover rounded-full"
                      />
                   </div>
                </div>
