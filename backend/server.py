@@ -187,14 +187,27 @@ async def get_status_checks():
 
 # Blog Endpoints
 @api_router.get("/blogs", response_model=List[Blog])
-async def get_blogs():
+async def get_blogs(request: Request):
     global use_local_db
+    base_url = str(request.base_url).rstrip("/")
+    
+    def adjust_image_url(image_path: str):
+        if not image_path:
+            return image_path
+        for local_prefix in ("http://localhost:8005", "http://127.0.0.1:8005"):
+            if image_path.startswith(local_prefix):
+                return image_path.replace(local_prefix, base_url)
+        if image_path.startswith("/uploads/"):
+            return f"{base_url}{image_path}"
+        return image_path
+
     if not use_local_db:
         try:
             blogs = await db.blogs.find({}, {"_id": 0}).to_list(1000)
             for blog in blogs:
                 if isinstance(blog['timestamp'], str):
                     blog['timestamp'] = datetime.fromisoformat(blog['timestamp'])
+                blog['image'] = adjust_image_url(blog.get('image'))
             return blogs
         except Exception as e:
             logger.warning(f"Failed to retrieve blogs from MongoDB: {e}. Falling back to local DB.")
@@ -207,6 +220,7 @@ async def get_blogs():
         blog_copy = dict(blog)
         if isinstance(blog_copy['timestamp'], str):
             blog_copy['timestamp'] = datetime.fromisoformat(blog_copy['timestamp'])
+        blog_copy['image'] = adjust_image_url(blog_copy.get('image'))
         blogs.append(blog_copy)
     return blogs
 
