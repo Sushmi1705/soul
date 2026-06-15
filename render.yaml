@@ -13,6 +13,7 @@ services:
   - type: web
     name: soul-backend
     env: python
+    plan: free
     rootDir: backend
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn server:app --host 0.0.0.0 --port $PORT
