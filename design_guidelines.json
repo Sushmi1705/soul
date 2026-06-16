@@ -1,5 +1,5 @@
 {
-  "project_name": "Soul Karma by Gitika Sharma - Modern Redesign",
+  "project_name": "Astro Power 24 by Gitika Sharma - Modern Redesign",
   "theme": "light",
   "archetype": "Archetype 1 (Organic & Earthy) with Luxury Accents",
   "design_philosophy": "Elegant, mystical, and grounded. The aesthetic blends cosmic/astrology themes with modern luxury wellness. Uses bento grids for structured content, generous negative space, and organic textures.",
@@ -83,7 +83,7 @@
     {
       "name": "Footer",
       "type": "layout",
-      "details": "Dark background (surface_dark), gold text accents. Large 'Soul Karma' brand text. Newsletter input."
+      "details": "Dark background (surface_dark), gold text accents. Large 'Astro Power 24' brand text. Newsletter input."
     }
   ],
   "testing": {

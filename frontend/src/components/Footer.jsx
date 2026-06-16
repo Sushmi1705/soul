@@ -11,7 +11,7 @@ const Footer = () => {
       toast.error("Please enter a valid email.");
       return;
     }
-    toast.success("Welcome to the Soul Karma journal ✦");
+    toast.success("Welcome to the Astro Power 24 journal ✦");
     setEmail("");
   };
 

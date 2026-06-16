@@ -136,7 +136,7 @@ const Hero = () => {
           </h1>
 
           <p className="text-[#3A2F22] text-lg max-w-2xl leading-relaxed mb-12 font-light">
-            Soul Karma blends ancient Vedic wisdom with modern intuition —
+            Astro Power 24 blends ancient Vedic wisdom with modern intuition —
             guiding you home to yourself through chart readings, vastu harmony,
             and soul-purpose sessions curated by Gitika Sharma.
           </p>

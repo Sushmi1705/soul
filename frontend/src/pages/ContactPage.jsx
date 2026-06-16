@@ -65,7 +65,7 @@ const ContactPage = () => {
           className="relative z-20 max-w-7xl mx-auto px-6 lg:px-12 w-full text-center md:text-left md:w-1/2"
         >
           <h1 className="font-serif text-4xl md:text-5xl text-white font-bold tracking-wide mb-4">Contact Us</h1>
-          <p className="text-[#B38B36] text-sm font-bold uppercase tracking-[0.4em] mb-2">Soul Karma by Gitika Sharma</p>
+          <p className="text-[#B38B36] text-sm font-bold uppercase tracking-[0.4em] mb-2">Astro Power 24 by Gitika Sharma</p>
           <p className="text-white/80 text-base font-light italic leading-relaxed">Look to the moon and stars to find the answers that lie within you.</p>
         </motion.div>
       </motion.div>

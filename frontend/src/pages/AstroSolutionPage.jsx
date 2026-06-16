@@ -165,7 +165,7 @@ const AstroSolutionPage = () => {
             className="space-y-6"
           >
             <h2 className="font-serif text-3xl text-[#3C2A21] font-bold">
-              Why Choose Soul Karma By Gitika Sharma?
+              Why Choose Astro Power 24 By Gitika Sharma?
             </h2>
             <motion.ul 
               variants={staggerContainer}

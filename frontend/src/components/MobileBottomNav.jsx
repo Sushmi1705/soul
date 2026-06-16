@@ -145,7 +145,7 @@ const MobileBottomNav = () => {
               </div>
               <div className="flex items-center gap-3">
                 <Mail className="w-4 h-4 text-[#B38B36]" />
-                hello@soulkarma.in
+                hello@astropower24.in
               </div>
               <div className="flex items-center gap-3">
                 <Clock className="w-4 h-4 text-[#B38B36]" />

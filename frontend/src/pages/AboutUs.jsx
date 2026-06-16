@@ -45,7 +45,7 @@ const AboutUs = () => {
               </h3>
               <div className="w-16 h-px bg-[#B38B36] mx-auto" />
               <p className="text-[#F3F1EC]/60 text-xs tracking-[0.3em] uppercase font-light">
-                Soul Karma ✦ Vedic Vastu
+                Astro Power 24 ✦ Vedic Vastu
               </p>
             </div>
             
@@ -60,10 +60,10 @@ const AboutUs = () => {
               <span className="h-px w-12 bg-[#B38B36]" />
             </div>
             <h2 className="font-serif text-4xl md:text-5xl text-[#3C2A21] leading-tight">
-              Welcome To <span className="text-[#B38B36] italic font-light">Soul Karma</span>
+              Welcome To <span className="text-[#B38B36] italic font-light">Astro Power 24</span>
             </h2>
             <div className="space-y-4 text-[#725D46] font-light leading-relaxed text-sm">
-              <p>Welcome to Soul Karma, your trusted source for Vedic Astrology and Vastu solutions. We blend ancient cosmic wisdom with modern life circumstances to provide comprehensive guidance and remedies for a harmonious, aligned, and prosperous life.</p>
+              <p>Welcome to Astro Power 24, your trusted source for Vedic Astrology and Vastu solutions. We blend ancient cosmic wisdom with modern life circumstances to provide comprehensive guidance and remedies for a harmonious, aligned, and prosperous life.</p>
               <p>With a deep-seated understanding of Vedic principles and years of experience, our team of expert astrologers and Vastu consultants is dedicated to assisting you on your journey towards self-discovery, personal growth, and holistic well-being.</p>
               <p>Our approach is rooted in authenticity, integrity, and compassion. We believe that every individual has a unique cosmic blueprint, and through the precise analysis of planetary positions and energy flows, we offer insightful interpretations and practical remedies tailored to your specific needs.</p>
             </div>

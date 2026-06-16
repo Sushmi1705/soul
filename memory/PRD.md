@@ -1,4 +1,4 @@
-# Soul Karma — Modern Redesign (Frontend Design Demo)
+# Astro Power 24 — Modern Redesign (Frontend Design Demo)
 
 ## Original Problem Statement
 > "create a design only now use this given url old wesbite we going to modern take the image url use in our demo and content alos take with there excommerce product and services and book appointments for there services like calender like option https://gitikasharma.in/"

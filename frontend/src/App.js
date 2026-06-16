@@ -19,6 +19,8 @@ import Footer from "@/components/Footer";
 import CartDrawer from "@/components/CartDrawer";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import AboutUs from "@/pages/AboutUs";
+import { DesignProvider } from "@/context/DesignContext";
+import DesignSwitcher from "@/components/DesignSwitcher";
 import AstroSolutionPage from "@/pages/AstroSolutionPage";
 import ServicePage from "@/pages/ServicePage";
 import CoursePage from "@/pages/CoursePage";
@@ -61,6 +63,7 @@ const Layout = ({ children }) => {
 
   return (
     <div className="bg-[#FDFBF7] text-[#3C2A21] min-h-screen font-[Outfit,sans-serif] antialiased pb-24 lg:pb-0">
+      <DesignSwitcher />
       <Header />
       <main>
         {children}
@@ -92,36 +95,38 @@ const Home = () => {
 
 function App() {
   return (
-    <CartProvider>
-      <BrowserRouter>
-        <Layout>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/about-us" element={<AboutUs />} />
-            <Route path="/about" element={<AboutUs />} />
-            <Route path="/astro-solutions/:slug" element={<AstroSolutionPage />} />
-            <Route path="/services/:slug" element={<ServicePage />} />
-            <Route path="/courses/:slug" element={<CoursePage />} />
-            <Route path="/blog" element={<BlogPage />} />
-            <Route path="/contact" element={<ContactPage />} />
-            <Route path="/calculator/:id" element={<CalculatorPage />} />
-            <Route path="/admin/login" element={<AdminLogin />} />
-            <Route path="/admin" element={<AdminDashboard />} />
-          </Routes>
-        </Layout>
-      </BrowserRouter>
-      <Toaster
-        position="bottom-right"
-        toastOptions={{
-          style: {
-            background: "#FDFBF7",
-            color: "#3C2A21",
-            border: "1px solid #B38B36",
-            fontFamily: "Outfit, sans-serif",
-          },
-        }}
-      />
-    </CartProvider>
+    <DesignProvider>
+      <CartProvider>
+        <BrowserRouter>
+          <Layout>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/about-us" element={<AboutUs />} />
+              <Route path="/about" element={<AboutUs />} />
+              <Route path="/astro-solutions/:slug" element={<AstroSolutionPage />} />
+              <Route path="/services/:slug" element={<ServicePage />} />
+              <Route path="/courses/:slug" element={<CoursePage />} />
+              <Route path="/blog" element={<BlogPage />} />
+              <Route path="/contact" element={<ContactPage />} />
+              <Route path="/calculator/:id" element={<CalculatorPage />} />
+              <Route path="/admin/login" element={<AdminLogin />} />
+              <Route path="/admin" element={<AdminDashboard />} />
+            </Routes>
+          </Layout>
+        </BrowserRouter>
+        <Toaster
+          position="bottom-right"
+          toastOptions={{
+            style: {
+              background: "#FDFBF7",
+              color: "#3C2A21",
+              border: "1px solid #B38B36",
+              fontFamily: "Outfit, sans-serif",
+            },
+          }}
+        />
+      </CartProvider>
+    </DesignProvider>
   );
 }
 

@@ -1,14 +1,18 @@
-import React, { useEffect, useRef } from "react";
+import React from "react";
 import { ArrowRight, Sparkles, Moon, Star } from "lucide-react";
+import { useDesign } from "@/context/DesignContext";
 
 const HeroAstrology = () => {
-  const videoRef = useRef(null);
+  const { bgDesign } = useDesign();
 
-  useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.playbackRate = 0.7; // Slightly slower for a more mystical feel
-    }
-  }, []);
+  const videoIds = {
+    design1: "L4DNW-GrYjw",
+    design2: "93v-vPDtOt0",
+    design3: "8Ao55eltH0Y",
+    design4: "q-FPfggk8zk"
+  };
+
+  const currentVideoId = videoIds[bgDesign] || videoIds.design1;
 
   return (
     <>
@@ -22,11 +26,12 @@ const HeroAstrology = () => {
           <div className="absolute bottom-[-20%] left-[-10%] w-[50%] h-[100%] bg-gradient-to-tr from-[#B38B36]/5 to-transparent blur-[100px] rounded-full" />
         </div>
 
-        {/* Video Background (Subtle & Ethereal) */}
-        <div className="absolute inset-0 z-0 opacity-30">
+        {/* Video Background (Subtle & Ethereal Astrology Loop) */}
+        <div className="absolute inset-0 z-0 opacity-[0.25]">
           <iframe
-            className="absolute top-1/2 left-1/2 w-[110vw] h-[62vw] min-h-[110vh] min-w-[195vh] -translate-x-1/2 -translate-y-1/2 scale-110 grayscale brightness-150"
-            src="https://www.youtube.com/embed/ZXAoEal9pPQ?autoplay=1&mute=1&loop=1&playlist=ZXAoEal9pPQ&controls=0&showinfo=0&autohide=1&modestbranding=1&rel=0&hd=1"
+            key={currentVideoId}
+            className="absolute top-1/2 left-1/2 w-[110vw] h-[62vw] min-h-[110vh] min-w-[195vh] -translate-x-1/2 -translate-y-1/2 scale-110 grayscale contrast-[1.1] brightness-[1.0]"
+            src={`https://www.youtube.com/embed/${currentVideoId}?autoplay=1&mute=1&loop=1&playlist=${currentVideoId}&controls=0&showinfo=0&autohide=1&modestbranding=1&rel=0&hd=1`}
             frameBorder="0"
             allow="autoplay; encrypted-media"
           ></iframe>

@@ -266,7 +266,7 @@ const AdminDashboard = () => {
             </div>
             <div>
               <h1 className="text-xl font-serif font-bold text-white tracking-wide flex items-center">
-                Soul Admin Dashboard
+                Astro Power 24 Admin Dashboard
               </h1>
               <p className="text-xs text-[#A89E8D] tracking-wide flex items-center">
                 <User className="w-3 h-3 mr-1 text-[#B38B36]" /> Connected as <span className="text-white ml-1 font-semibold">{adminUser}</span>

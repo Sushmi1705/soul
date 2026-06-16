@@ -1,7 +1,7 @@
 // Mock content scraped/adapted from gitikasharma.in
 
 export const BRAND = {
-  name: "AstroPower 24",
+  name: "Astro Power 24",
   tagline: "Decoding Karma, Aligning Destiny",
   author: "Gitika Sharma",
 };
@@ -186,35 +186,35 @@ export const TESTIMONIALS = [
     name: "Ananya R.",
     image: "https://gitikasharma.in/wp-content/uploads/2024/03/3-6-150x150.png",
     quote:
-      "Soul Karma is a sanctuary for the soul. Gitika's teachings have helped me find clarity and purpose in my life journey.",
+      "Astro Power 24 is a sanctuary for the soul. Gitika's teachings have helped me find clarity and purpose in my life journey.",
   },
   {
     id: 2,
     name: "Rohan M.",
     image: "https://gitikasharma.in/wp-content/uploads/2024/03/4-8-150x150.png",
     quote:
-      "Grateful for the wisdom and warmth at Soul Karma. Gitika's gentle guidance has helped me navigate life's challenges with grace.",
+      "Grateful for the wisdom and warmth at Astro Power 24. Gitika's gentle guidance has helped me navigate life's challenges with grace.",
   },
   {
     id: 3,
     name: "Meera K.",
     image: "https://gitikasharma.in/wp-content/uploads/2024/03/5-6-150x150.png",
     quote:
-      "A true gem in the realm of spirituality. Soul Karma's teachings have empowered me to live authentically and embrace my true self.",
+      "A true gem in the realm of spirituality. Astro Power 24's teachings have empowered me to live authentically and embrace my true self.",
   },
   {
     id: 4,
     name: "Priya S.",
     image: "https://gitikasharma.in/wp-content/uploads/2024/03/1-8-150x150.png",
     quote:
-      "Soul Karma by Gitika Sharma offers a transformative experience. Highly recommend for anyone seeking spiritual growth and inner peace.",
+      "Astro Power 24 by Gitika Sharma offers a transformative experience. Highly recommend for anyone seeking spiritual growth and inner peace.",
   },
   {
     id: 5,
     name: "Ishaan D.",
     image: "https://gitikasharma.in/wp-content/uploads/2024/03/2-9-150x150.png",
     quote:
-      "An oasis of calm and wisdom! Gitika's insights and guidance have been life-changing. Thank you, Soul Karma!",
+      "An oasis of calm and wisdom! Gitika's insights and guidance have been life-changing. Thank you, Astro Power 24!",
   },
 ];
 
@@ -234,7 +234,7 @@ export const ASTRO_SOLUTIONS_DATA = {
     bannerImage: "https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&q=80",
     mainImage: "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&q=80", // Yoga/Health
     paragraphs: [
-      "Welcome to Soul Karma By Gitika Sharma Health Solution Service, where we integrate the ancient wisdom of astrology with modern health solutions to support your journey towards vibrant health and well-being.",
+      "Welcome to Astro Power 24 By Gitika Sharma Health Solution Service, where we integrate the ancient wisdom of astrology with modern health solutions to support your journey towards vibrant health and well-being.",
       { heading: "Astrological Health Analysis", text: "Astrology offers profound insights into your physical constitution, susceptibility to health issues, and potential remedies for maintaining optimal health. Our astrologers conduct detailed health analyses, examining the planetary influences in your birth chart to identify potential health risks and vulnerabilities. With this knowledge, you can take proactive measures to safeguard your health and enhance your well-being." },
       { heading: "Planetary Remedies for Healing", text: "In addition to providing insights into your health profile, we offer planetary remedies to promote healing and restore balance to your mind, body, and spirit. From specific rituals and mantras to gemstone recommendations and dietary adjustments, our remedies are tailored to address your unique health concerns and support your holistic wellness journey." },
       { heading: "Astro-Yoga and Holistic Healing Practices", text: "Combining the principles of astrology with the ancient science of yoga and holistic healing, we offer personalized practices to promote physical, mental, and spiritual well-being. Our astro-yoga sessions incorporate yoga postures, breathing techniques, and meditation practices aligned with the planetary energies to enhance vitality, reduce stress, and promote overall wellness." }
@@ -246,7 +246,7 @@ export const ASTRO_SOLUTIONS_DATA = {
     bannerImage: "https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&q=80",
     mainImage: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80", // Real Estate
     paragraphs: [
-      "Welcome to Soul Karma By Gitika Sharma Property Problem Service, where we harness the wisdom of astrology to address property-related challenges and facilitate favorable outcomes for our clients.",
+      "Welcome to Astro Power 24 By Gitika Sharma Property Problem Service, where we harness the wisdom of astrology to address property-related challenges and facilitate favorable outcomes for our clients.",
       { heading: "Astrological Analysis for Property Matters", text: "Astrology offers profound insights into the cosmic energies influencing property transactions, disputes, and investments. Our astrologers conduct detailed analyses of your birth chart and the astrological charts associated with the property in question to identify potential obstacles, auspicious timings for transactions, and strategies for resolving property-related issues. By aligning your property dealings with the planetary influences, you can navigate complex legal and financial matters with clarity and confidence." },
       { heading: "Astrological Remedies for Property Success", text: "In addition to providing insights and guidance, we offer astrological remedies to mitigate obstacles and enhance the likelihood of a favorable outcome in property-related matters. From planetary rituals to gemstone recommendations and personalized affirmations, our remedies are tailored to address specific challenges and support your efforts towards resolving property disputes, acquiring properties, or selling real estate." }
     ]
@@ -257,7 +257,7 @@ export const ASTRO_SOLUTIONS_DATA = {
     bannerImage: "https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&q=80",
     mainImage: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80", // Business
     paragraphs: [
-      "Welcome to Soul Karma By Gitika Sharma Business Solutions, where we harness the power of astrology, vastu, numerology, and other cosmic sciences to propel your business towards unparalleled success.",
+      "Welcome to Astro Power 24 By Gitika Sharma Business Solutions, where we harness the power of astrology, vastu, numerology, and other cosmic sciences to propel your business towards unparalleled success.",
       { heading: "Astrology in Business", text: "Astrology provides valuable insights into the cosmic energies influencing your business ventures. Our astrological consultations help you understand auspicious timings for important decisions, identify potential challenges, and align your business strategies with the planetary alignments for optimal results." },
       { heading: "Vastu for Business Prosperity", text: "Vastu, the ancient science of architecture and spatial arrangement, plays a crucial role in ensuring harmony and prosperity in business environments. Our vastu consultations analyze the energy flow within your workspace, suggest remedial measures to enhance positivity and productivity, and optimize the layout for maximum success." },
       { heading: "Numerology for Business Growth", text: "Numerology unveils the hidden patterns and vibrations present in the numbers associated with your business. Through numerological analysis, we decode the significance of your business name, logo, and other numerical factors, guiding you towards making favorable choices that resonate with the cosmic energies and support your growth trajectory." }
@@ -269,7 +269,7 @@ export const ASTRO_SOLUTIONS_DATA = {
     bannerImage: "https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&q=80",
     mainImage: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80", // Career/Team
     paragraphs: [
-      "Welcome to Soul Karma By Gitika Sharma Professional Growth Service, where we combine the ancient wisdom of astrology with modern strategies to unlock your fullest potential and propel you towards professional success.",
+      "Welcome to Astro Power 24 By Gitika Sharma Professional Growth Service, where we combine the ancient wisdom of astrology with modern strategies to unlock your fullest potential and propel you towards professional success.",
       { heading: "Astrological Career Guidance", text: "Astrology offers profound insights into your unique strengths, talents, and career opportunities. Our astrological consultations delve deep into your birth chart to uncover your vocational path, optimal career timings, and potential challenges. With personalized guidance tailored to your astrological profile, you can make informed decisions and navigate your career journey with confidence." },
       { heading: "Career Planning with Cosmic Alignment", text: "Aligning your career goals with the cosmic energies can amplify your success and fulfillment. Our astrologers work closely with you to develop a strategic career plan that harmonizes with the planetary influences and cosmic rhythms. Whether you’re seeking career advancement, entrepreneurial pursuits, or a career change, our cosmic guidance empowers you to manifest your professional aspirations with ease." },
       { heading: "Astrological Remedies for Career Growth", text: "In addition to providing insights and guidance, we offer astrological remedies to mitigate obstacles and enhance your professional growth. From gemstone recommendations to planetary rituals and affirmations, our remedies are designed to align your energy with favorable cosmic forces, paving the way for greater career success and fulfillment." }
@@ -281,7 +281,7 @@ export const ASTRO_SOLUTIONS_DATA = {
     bannerImage: "https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&q=80",
     mainImage: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&q=80", // Education
     paragraphs: [
-      "Welcome to Soul Karma By Gitika Sharma Education and Career Service, where we harness the power of astrology to illuminate your path to academic success and career fulfillment.",
+      "Welcome to Astro Power 24 By Gitika Sharma Education and Career Service, where we harness the power of astrology to illuminate your path to academic success and career fulfillment.",
       { heading: "Astrological Career Guidance", text: "Astrology offers invaluable insights into your innate talents, potential career paths, and optimal timing for career decisions. Our astrologers specialize in career guidance, using your birth chart to identify career opportunities aligned with your unique strengths and aspirations. Whether you’re a student exploring educational options or a professional seeking career advancement, our astrological consultations provide clarity and direction to help you achieve your goals." },
       { heading: "Education Planning with Cosmic Alignment", text: "Aligning your educational pursuits with the cosmic energies can enhance your learning experience and academic achievements. Our astrologers analyze your birth chart to identify auspicious periods for studying, taking exams, and pursuing higher education. By harmonizing your educational journey with the planetary influences, you can maximize your learning potential and pave the way for academic success." }
     ]
@@ -292,7 +292,7 @@ export const ASTRO_SOLUTIONS_DATA = {
     bannerImage: "https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&q=80",
     mainImage: "https://images.unsplash.com/photo-1499209974431-9dddcece7f88?auto=format&fit=crop&q=80", // Peace
     paragraphs: [
-      "Welcome to Soul Karma By Gitika Sharma Stress and Depression Service, where we offer compassionate guidance and cosmic remedies to help you find inner peace, emotional balance, and resilience in the face of life’s challenges.",
+      "Welcome to Astro Power 24 By Gitika Sharma Stress and Depression Service, where we offer compassionate guidance and cosmic remedies to help you find inner peace, emotional balance, and resilience in the face of life’s challenges.",
       { heading: "Astrological Insights into Mental Health", text: "Astrology offers profound insights into the cosmic energies influencing our mental and emotional well-being. Our astrologers conduct detailed analyses of your birth chart to uncover potential astrological factors contributing to stress, anxiety, and depression. By understanding the planetary influences at play, we can provide targeted guidance and remedies to support your emotional healing and well-being." },
       { heading: "Astrological Remedies for Emotional Healing", text: "In addition to providing insights and guidance, we offer astrological remedies to alleviate stress and promote emotional healing. From planetary rituals to gemstone recommendations and personalized affirmations, our remedies are tailored to address specific imbalances and restore harmony to your mind, body, and spirit." },
       { heading: "Holistic Healing Practices", text: "Our stress and depression service includes a range of holistic healing practices designed to promote relaxation, inner peace, and emotional balance. From meditation and mindfulness techniques to energy healing modalities such as Reiki and sound therapy, we offer personalized sessions to help you release tension, reduce anxiety, and cultivate a sense of calm and tranquility in your life." },
@@ -305,7 +305,7 @@ export const ASTRO_SOLUTIONS_DATA = {
     bannerImage: "https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&q=80",
     mainImage: "https://images.unsplash.com/photo-1589829085413-56de8ae18c73?auto=format&fit=crop&q=80", // Law
     paragraphs: [
-      "Welcome to Soul Karma By Gitika Sharma Litigation Conciliation Service, where we combine the ancient wisdom of astrology with modern legal strategies to facilitate peaceful resolutions and favorable outcomes in legal disputes.",
+      "Welcome to Astro Power 24 By Gitika Sharma Litigation Conciliation Service, where we combine the ancient wisdom of astrology with modern legal strategies to facilitate peaceful resolutions and favorable outcomes in legal disputes.",
       { heading: "Astrological Analysis of Legal Matters", text: "Astrology offers unique insights into the cosmic energies influencing legal proceedings and outcomes. Our astrologers conduct detailed analyses of your birth chart and the astrological charts associated with legal matters to identify potential challenges, favorable timings for negotiations, and strategies for achieving a positive resolution. By aligning your legal strategy with the planetary influences, you can navigate legal disputes with confidence and clarity." },
       { heading: "Astrological Remedies for Legal Success", text: "In addition to providing insights and guidance, we offer astrological remedies to mitigate obstacles and enhance the likelihood of a favorable outcome in legal proceedings. From planetary rituals to gemstone recommendations and personalized affirmations, our remedies are tailored to address specific legal challenges and support your efforts towards resolution and conciliation." }
     ]
@@ -316,7 +316,7 @@ export const ASTRO_SOLUTIONS_DATA = {
     bannerImage: "https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&q=80",
     mainImage: "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&q=80", // Wedding
     paragraphs: [
-      "Welcome to Soul Karma By Gitika Sharma Marriage and Relationship Service, where we blend the timeless wisdom of astrology with modern insights to foster deeper connections, enhance compatibility, and cultivate lasting love.",
+      "Welcome to Astro Power 24 By Gitika Sharma Marriage and Relationship Service, where we blend the timeless wisdom of astrology with modern insights to foster deeper connections, enhance compatibility, and cultivate lasting love.",
       { heading: "Astrological Compatibility Analysis", text: "Astrology offers profound insights into the dynamics of your relationships, uncovering the unique compatibility between partners based on their astrological profiles. Our astrologers conduct in-depth compatibility analyses, examining the planetary placements and alignments to assess the strengths and challenges within your relationship. With this knowledge, you can nurture a harmonious and fulfilling partnership grounded in cosmic harmony." },
       { heading: "Pre-Marital Guidance and Counseling", text: "Embarking on the journey of marriage is a significant step in life, and astrology can offer valuable guidance to ensure a strong foundation for your union. Our pre-marital consultations provide insights into your astrological compatibility, communication styles, and shared goals as a couple. We offer practical advice and remedies to address potential areas of tension and foster a deeper understanding and connection between partners." },
       { heading: "Astrology Behind Marital Problems: Understanding the Planets", text: "Many marital problems can be attributed to specific combinations in the horoscope. The positions of certain planets often play a crucial role in causing marital disharmony. This post aims to shed light on how particular planetary configurations can be the primary factors contributing to issues within a marriage." }
@@ -328,7 +328,7 @@ export const ASTRO_SOLUTIONS_DATA = {
     bannerImage: "https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&q=80",
     mainImage: "https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&q=80", // Family
     paragraphs: [
-      "Welcome to Soul Karma By Gitika Sharma Parent-Child Relationship Service, where we harness the wisdom of astrology to nurture deeper connections and harmonious relationships between parents and children.",
+      "Welcome to Astro Power 24 By Gitika Sharma Parent-Child Relationship Service, where we harness the wisdom of astrology to nurture deeper connections and harmonious relationships between parents and children.",
       { heading: "Astrological Insights into Parent-Child Dynamics", text: "Astrology offers profound insights into the unique dynamics between parents and children, shedding light on their individual personalities, communication styles, and karmic bonds. Our astrologers conduct detailed analyses of the birth charts of parents and children to uncover potential areas of tension, opportunities for growth, and strategies for fostering understanding and harmony within the family unit." },
       { heading: "Parenting Guidance and Strategies", text: "Aligning your parenting approach with the cosmic energies can enhance communication, mutual respect, and emotional connection between parents and children. Our parenting guidance sessions integrate astrological insights with practical strategies for effective communication, discipline, and nurturing. By understanding the cosmic influences shaping your parent-child relationship, you can create a supportive and nurturing environment conducive to your child’s growth and development." }
     ]
