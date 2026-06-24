@@ -15,6 +15,56 @@ const LOADING_MESSAGES = [
   "Consulting the celestial blueprint..."
 ];
 
+const ZODIAC_SYMBOLS = ["♈", "♉", "♊", "♋", "♌", "♍", "♎", "♏", "♐", "♑", "♒", "♓"];
+
+const PLANET_GLYPHS = [
+  { symbol: "☉", angle: 0 },
+  { symbol: "☽", angle: 40 },
+  { symbol: "☿", angle: 80 },
+  { symbol: "♀", angle: 120 },
+  { symbol: "♂", angle: 160 },
+  { symbol: "♃", angle: 200 },
+  { symbol: "♄", angle: 240 },
+  { symbol: "☊", angle: 280 },
+  { symbol: "☋", angle: 320 }
+];
+
+const starNodes = [
+  { x: 42, y: 44, delay: 0.1 },
+  { x: 50, y: 38, delay: 0.3 },
+  { x: 58, y: 46, delay: 0.5 },
+  { x: 50, y: 50, delay: 0.7 },
+  { x: 40, y: 56, delay: 0.9 },
+  { x: 48, y: 62, delay: 1.1 },
+  { x: 60, y: 56, delay: 1.3 }
+];
+
+const starLines = [
+  { from: 0, to: 1, delay: 0.4 },
+  { from: 1, to: 2, delay: 0.6 },
+  { from: 2, to: 3, delay: 0.8 },
+  { from: 3, to: 4, delay: 1.0 },
+  { from: 4, to: 5, delay: 1.2 },
+  { from: 3, to: 6, delay: 1.4 }
+];
+
+const getCalculationLogs = (data) => {
+  const nameLabel = data.name ? data.name.toUpperCase() : "SEEKER";
+  const cityLabel = data.pob ? data.pob.split(",")[0].trim() : "COORDINATES";
+  
+  return [
+    `INIT: Aligning celestial chart for ${nameLabel}...`,
+    `GEOLOC: Resolving lat/long for ${cityLabel}...`,
+    `TIME: Syncing local birth time ${data.tob} (${data.dob})...`,
+    `EPHEMERIS: Loading high-precision JPL DE440 ephemeris...`,
+    `AYANAMSA: Applying Lahiri zodiac correction (-24.25°)...`,
+    `SUN: Computing longitude... Resolving degree aspects...`,
+    `MOON: Tracking Lunar Mansion (Nakshatra) positions...`,
+    `LAGNA: Calculating Ascendant for POB coordinates...`,
+    `SUCCESS: Celestial blueprint mapped. Preparing report...`
+  ];
+};
+
 const CelestialOracleHero = () => {
   const { bgDesign } = useDesign();
   const navigate = useNavigate();
@@ -29,6 +79,7 @@ const CelestialOracleHero = () => {
   
   const [submitting, setSubmitting] = useState(false);
   const [loadingMessageIndex, setLoadingMessageIndex] = useState(0);
+  const [visibleLogs, setVisibleLogs] = useState([]);
 
   const [countries, setCountries] = useState([]);
   const [states, setStates] = useState([]);
@@ -130,6 +181,29 @@ const CelestialOracleHero = () => {
     }
     return () => clearInterval(timer);
   }, [step]);
+
+  // Load calculations dynamic logs ticker
+  useEffect(() => {
+    if (step !== "loading") {
+      setVisibleLogs([]);
+      return;
+    }
+    
+    setVisibleLogs([]);
+    const logsList = getCalculationLogs(formData);
+    
+    const timers = [];
+    logsList.forEach((logText, idx) => {
+      const timer = setTimeout(() => {
+        setVisibleLogs((prev) => [...prev, logText].slice(-4));
+      }, idx * 320);
+      timers.push(timer);
+    });
+
+    return () => {
+      timers.forEach(clearTimeout);
+    };
+  }, [step, formData]);
 
   const handleFormChange = (e) => {
     setFormData({
@@ -440,53 +514,227 @@ const CelestialOracleHero = () => {
                         </form>
                       </motion.div>
                     ) : (
-                      /* STEP 2: COSMIC LOADING SCREEN */
                       <motion.div
                         key="loading-screen"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        className="py-12 flex flex-col items-center justify-center text-center space-y-8 min-h-[350px] z-10 relative"
+                        className="py-6 flex flex-col items-center justify-center text-center space-y-6 min-h-[350px] z-10 relative overflow-hidden"
                       >
-                        {/* Rotating Zodiac Wheel Animation */}
-                        <div className="relative w-36 h-36 animate-[spinSlow_25s_linear_infinite]">
-                          <div className="absolute inset-0 bg-[#E5C06A]/10 blur-2xl rounded-full animate-pulse" />
-                          <svg viewBox="0 0 100 100" className="w-full h-full text-[#E5C06A]/50 fill-none">
-                            <circle cx="50" cy="50" r="48" stroke="currentColor" strokeWidth="0.5" />
-                            <circle cx="50" cy="50" r="32" stroke="currentColor" strokeWidth="0.25" />
-                            {Array.from({ length: 12 }).map((_, i) => (
-                              <line
-                                key={i}
-                                x1="50" y1="50"
-                                x2={50 + Math.cos((i * Math.PI * 2) / 12) * 48}
-                                y2={50 + Math.sin((i * Math.PI * 2) / 12) * 48}
-                                stroke="currentColor" strokeWidth="0.25"
-                              />
-                            ))}
-                          </svg>
+                        {/* Twinkling loading background particles */}
+                        <div className="absolute inset-0 pointer-events-none select-none">
+                          <div className="absolute top-1/4 left-1/4 text-[#E5C06A] text-xs animate-[twinkle_2.5s_infinite_linear]">✦</div>
+                          <div className="absolute top-1/3 right-1/4 text-[#E5C06A] text-[10px] animate-[twinkle_3s_infinite_linear]" style={{ animationDelay: '0.5s' }}>✧</div>
+                          <div className="absolute bottom-1/4 left-1/3 text-[#E5C06A] text-[9px] animate-[twinkle_4s_infinite_linear]" style={{ animationDelay: '1.2s' }}>✦</div>
+                          <div className="absolute bottom-1/3 right-1/3 text-[#E5C06A] text-[11px] animate-[twinkle_3.5s_infinite_linear]" style={{ animationDelay: '0.8s' }}>✧</div>
+                        </div>
+
+                        {/* Title Header */}
+                        <div className="space-y-1 z-10 relative">
+                          <h4 className="font-serif text-[#E5C06A] text-sm tracking-[0.25em] uppercase font-bold shimmer-glitter-text">
+                            Celestial Alignment
+                          </h4>
+                          <p className="text-[8px] text-[#F4EBE1]/40 tracking-[0.3em] uppercase font-light">
+                            Synthesizing Vedic Birth Chart
+                          </p>
+                        </div>
+
+                        {/* Concentric Multilayered Celestial Orbits */}
+                        <div className="relative w-48 h-48 flex items-center justify-center my-1">
+                          {/* Inner glowing core aura */}
+                          <div className="absolute w-40 h-40 bg-[radial-gradient(circle,rgba(229,192,106,0.12)_0%,transparent_70%)] blur-md rounded-full animate-pulse" />
                           
-                          {/* Glowing central orb */}
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            <div className="w-6 h-6 rounded-full bg-[#E5C06A] shadow-[0_0_20px_rgba(229,192,106,0.6)] animate-ping" />
-                            <Moon className="w-3.5 h-3.5 text-white absolute z-10" />
+                          {/* Concentric SVG System */}
+                          <svg viewBox="0 0 100 100" className="w-full h-full text-[#E5C06A] fill-none overflow-visible">
+                            {/* 1. Outer Ring: Rotating Zodiac Track */}
+                            <g className="animate-[spin_40s_linear_infinite] origin-center">
+                              <circle cx="50" cy="50" r="48" stroke="rgba(229,192,106,0.15)" strokeWidth="0.4" />
+                              <circle cx="50" cy="50" r="45" stroke="rgba(229,192,106,0.18)" strokeWidth="0.2" strokeDasharray="1 3" />
+                              {Array.from({ length: 12 }).map((_, i) => {
+                                const angle = (i * 30 * Math.PI) / 180;
+                                return (
+                                  <line
+                                    key={i}
+                                    x1="50"
+                                    y1="50"
+                                    x2={50 + Math.cos(angle) * 48}
+                                    y2={50 + Math.sin(angle) * 48}
+                                    stroke="rgba(229,192,106,0.08)"
+                                    strokeWidth="0.15"
+                                    strokeDasharray="2 3"
+                                  />
+                                );
+                              })}
+                              {/* Zodiac Symbols */}
+                              {ZODIAC_SYMBOLS.map((symbol, i) => {
+                                const angle = (i * 30 * Math.PI) / 180;
+                                const x = 50 + Math.cos(angle) * 42;
+                                const y = 50 + Math.sin(angle) * 42;
+                                return (
+                                  <text
+                                    key={i}
+                                    x={x}
+                                    y={y}
+                                    fill="rgba(229,192,106,0.6)"
+                                    fontSize="3.2"
+                                    textAnchor="middle"
+                                    dominantBaseline="central"
+                                    className="select-none font-sans"
+                                    transform={`rotate(${i * 30 + 90}, ${x}, ${y})`}
+                                  >
+                                    {symbol}
+                                  </text>
+                                );
+                              })}
+                            </g>
+
+                            {/* 2. Middle Ring: Counter-rotating Planet Track */}
+                            <g className="animate-[spin_25s_linear_infinite_reverse] origin-center">
+                              <circle cx="50" cy="50" r="32" stroke="rgba(229,192,106,0.22)" strokeWidth="0.3" strokeDasharray="3 3" />
+                              {PLANET_GLYPHS.map((glyph, idx) => {
+                                const angleRad = (glyph.angle * Math.PI) / 180;
+                                const x = 50 + Math.cos(angleRad) * 32;
+                                const y = 50 + Math.sin(angleRad) * 32;
+                                return (
+                                  <g key={idx} transform={`rotate(${-glyph.angle}, ${x}, ${y})`}>
+                                    <circle cx={x} cy={y} r="2.2" fill="#1C120C" stroke="rgba(229,192,106,0.7)" strokeWidth="0.35" />
+                                    <text
+                                      x={x}
+                                      y={y}
+                                      fill="#E5C06A"
+                                      fontSize="3.5"
+                                      textAnchor="middle"
+                                      dominantBaseline="central"
+                                      className="select-none font-bold"
+                                    >
+                                      {glyph.symbol}
+                                    </text>
+                                  </g>
+                                );
+                              })}
+                            </g>
+
+                            {/* 3. Inner Ring: Rapid Dotted Track */}
+                            <g className="animate-[spin_12s_linear_infinite] origin-center">
+                              <circle cx="50" cy="50" r="23" stroke="rgba(229,192,106,0.25)" strokeWidth="0.4" strokeDasharray="1 2" />
+                            </g>
+
+                            {/* 4. Active Sweeping Progress Ring */}
+                            <motion.circle
+                              cx="50"
+                              cy="50"
+                              r="46"
+                              stroke="url(#goldGradient)"
+                              strokeWidth="1.2"
+                              strokeLinecap="round"
+                              fill="none"
+                              initial={{ pathLength: 0 }}
+                              animate={{ pathLength: 1 }}
+                              transition={{ duration: 3, ease: "easeInOut" }}
+                              style={{ transform: "rotate(-90deg)", transformOrigin: "50px 50px" }}
+                              className="drop-shadow-[0_0_3px_rgba(229,192,106,0.35)]"
+                            />
+
+                            {/* Constellation mapping in the center */}
+                            <g>
+                              {starLines.map((line, idx) => {
+                                const fromNode = starNodes[line.from];
+                                const toNode = starNodes[line.to];
+                                return (
+                                  <motion.line
+                                    key={idx}
+                                    x1={fromNode.x}
+                                    y1={fromNode.y}
+                                    x2={toNode.x}
+                                    y2={toNode.y}
+                                    stroke="rgba(229,192,106,0.45)"
+                                    strokeWidth="0.3"
+                                    initial={{ pathLength: 0 }}
+                                    animate={{ pathLength: 1 }}
+                                    transition={{ delay: line.delay, duration: 1 }}
+                                  />
+                                );
+                              })}
+                              {starNodes.map((node, idx) => (
+                                <g key={idx}>
+                                  <motion.circle
+                                    cx={node.x}
+                                    cy={node.y}
+                                    r="1.2"
+                                    fill="#E5C06A"
+                                    initial={{ scale: 0, opacity: 0 }}
+                                    animate={{ scale: [0, 1.2, 1], opacity: [0, 1, 0.8] }}
+                                    transition={{ delay: node.delay, duration: 0.6 }}
+                                  />
+                                  <motion.circle
+                                    cx={node.x}
+                                    cy={node.y}
+                                    r="2.5"
+                                    stroke="rgba(229,192,106,0.3)"
+                                    strokeWidth="0.15"
+                                    fill="none"
+                                    initial={{ scale: 0, opacity: 0 }}
+                                    animate={{ scale: [1, 2.5], opacity: [0.5, 0] }}
+                                    transition={{
+                                      delay: node.delay,
+                                      duration: 1.8,
+                                      repeat: Infinity,
+                                      repeatDelay: 0.5
+                                    }}
+                                  />
+                                </g>
+                              ))}
+                            </g>
+
+                            {/* Gradients definitions */}
+                            <defs>
+                              <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stopColor="#BF953F" />
+                                <stop offset="50%" stopColor="#FCF6BA" />
+                                <stop offset="100%" stopColor="#B38728" />
+                              </linearGradient>
+                            </defs>
+                          </svg>
+
+                          {/* Central Core Portal */}
+                          <div className="absolute w-12 h-12 rounded-full bg-gradient-to-b from-[#1C120C]/90 to-[#170E09]/90 border border-[#E5C06A]/25 flex items-center justify-center shadow-[0_0_15px_rgba(229,192,106,0.15)]">
+                            <Sparkles className="w-4 h-4 text-[#E5C06A] animate-pulse" />
                           </div>
                         </div>
 
-                        {/* Cycling Celestial Messages */}
-                        <div className="space-y-2">
-                          <AnimatePresence mode="wait">
-                            <motion.p
-                              key={loadingMessageIndex}
-                              initial={{ opacity: 0, y: 10 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              exit={{ opacity: 0, y: -10 }}
-                              transition={{ duration: 0.3 }}
-                              className="text-[#E5C06A] font-serif text-sm tracking-wide uppercase font-semibold h-5 shimmer-glitter-text"
-                            >
-                              {LOADING_MESSAGES[loadingMessageIndex]}
-                            </motion.p>
-                          </AnimatePresence>
-                          <p className="text-[8px] text-[#F4EBE1]/60 tracking-[0.3em] uppercase mt-2 font-light">Consulting planetary ephemeris</p>
+                        {/* Real-time Calculation Log Console Ticker */}
+                        <div className="w-full max-w-xs mx-auto bg-[#1C120C]/60 border border-[#E5C06A]/15 rounded-xl p-3 font-mono text-[9px] text-[#E5C06A]/80 text-left h-24 flex flex-col justify-end gap-1 shadow-inner relative overflow-hidden backdrop-blur-md">
+                          {/* Laser Scanning Overlay Line */}
+                          <div className="absolute inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#E5C06A]/30 to-transparent top-0 animate-[scan_2s_ease-in-out_infinite]" />
+                          
+                          <div className="flex flex-col gap-1 overflow-y-hidden">
+                            {visibleLogs.map((log, index) => (
+                              <div key={index} className="flex items-start gap-1.5 opacity-90 animate-[fadeIn_0.2s_ease-out]">
+                                <span className="text-[#B38B36] font-bold select-none">›</span>
+                                <span className="leading-tight break-all font-light">{log}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Cycling Ethereal Subtitle Messages */}
+                        <div className="space-y-1 relative z-10 w-full max-w-xs mx-auto pt-2">
+                          <div className="h-6 flex items-center justify-center">
+                            <AnimatePresence mode="wait">
+                              <motion.p
+                                key={loadingMessageIndex}
+                                initial={{ opacity: 0, y: 5 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -5 }}
+                                transition={{ duration: 0.25 }}
+                                className="text-[#E5C06A] font-serif text-xs tracking-wider uppercase font-semibold shimmer-glitter-text"
+                              >
+                                {LOADING_MESSAGES[loadingMessageIndex]}
+                              </motion.p>
+                            </AnimatePresence>
+                          </div>
+                          
+                          <p className="text-[7px] text-[#F4EBE1]/40 tracking-[0.3em] uppercase font-light">Consulting planetary ephemeris</p>
                         </div>
                       </motion.div>
                     )}
@@ -584,6 +832,14 @@ const CelestialOracleHero = () => {
             transform: scale(1.3) rotate(90deg);
             filter: drop-shadow(0 0 6px rgba(229, 192, 106, 0.7));
           }
+        }
+        @keyframes scan {
+          0% { left: -35%; }
+          100% { left: 110%; }
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(2px); }
+          to { opacity: 0.9; transform: translateY(0); }
         }
       `}</style>
     </>
