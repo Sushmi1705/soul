@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { 
   ArrowLeft, 
   Sparkles, 
@@ -9,13 +9,16 @@ import {
   MapPin, 
   User, 
   Heart, 
-  Flame, 
   Lock, 
-  AlertCircle, 
-  Compass, 
-  RefreshCw, 
-  Unlock,
-  CheckCircle2
+  Unlock, 
+  Flame, 
+  CheckCircle2, 
+  Activity,
+  Moon,
+  TrendingUp,
+  Star,
+  Loader2,
+  ChevronRight
 } from "lucide-react";
 import { Country, State, City } from "country-state-city";
 
@@ -30,334 +33,293 @@ const CALCULATOR_DETAILS = {
   "rahu-ketu": { title: "Rahu Ketu Calculator", desc: "Discover the placements of Rahu & Ketu (Lunar Nodes) in your chart and their karmic lessons." }
 };
 
-// Guna Milan Constants & Data Mappings
-const NAKSHATRAS_LIST = [
-  "Ashwini", "Bharani", "Krittika", "Rohini", "Mrigashira", "Ardra", 
-  "Punarvasu", "Pushya", "Ashlesha", "Magha", "Purva Phalguni", "Uttara Phalguni", 
-  "Hasta", "Chitra", "Swati", "Vishakha", "Anuradha", "Jyeshtha", 
-  "Moola", "Purva Ashadha", "Uttara Ashadha", "Shravana", "Dhanishta", 
-  "Shatabhisha", "Purva Bhadrapada", "Uttara Bhadrapada", "Revati"
-];
+// --- GUNA MILAN (COMPATIBILITY) DATA ENGINE ---
+const cleanName = (nak) => {
+  if (!nak) return "";
+  let clean = nak.split(" - ")[0].split(" ")[0].trim().toLowerCase();
+  if (clean === "aswini") return "ashwini";
+  if (clean === "krithika") return "krittika";
+  if (clean === "aslesha") return "ashlesha";
+  if (clean === "makha") return "magha";
+  if (clean === "purvaphalguni") return "purva_phalguni";
+  if (clean === "uttaraphalguni") return "uttara_phalguni";
+  if (clean === "chitta") return "chitra";
+  if (clean === "swathi") return "swati";
+  if (clean === "vishhaka") return "vishakha";
+  if (clean === "jyeshta") return "jyeshtha";
+  if (clean === "poorvashada") return "purva_ashadha";
+  if (clean === "uttarashada") return "uttara_ashadha";
+  if (clean === "sravana") return "shravana";
+  if (clean === "sathabhisha") return "shatabhisha";
+  if (clean === "purvabhadra") return "purva_bhadrapada";
+  if (clean === "uttarabhadra") return "uttara_bhadrapada";
+  if (clean === "revathi") return "revati";
+  return clean;
+};
 
-const RASIS_LIST = [
-  "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
-  "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"
-];
+const NAKSHATRA_GANAS = {
+  ashwini: "Deva", mrigashira: "Deva", punarvasu: "Deva", pushya: "Deva", hasta: "Deva", swati: "Deva", anuradha: "Deva", shravana: "Deva", revati: "Deva",
+  bharani: "Manushya", rohini: "Manushya", ardra: "Manushya", purva_phalguni: "Manushya", uttara_phalguni: "Manushya", chitra: "Manushya", purva_ashadha: "Manushya", uttara_ashadha: "Manushya", purva_bhadrapada: "Manushya",
+  krittika: "Rakshasa", ashlesha: "Rakshasa", magha: "Rakshasa", vishakha: "Rakshasa", jyeshtha: "Rakshasa", moola: "Rakshasa", dhanishta: "Rakshasa", shatabhisha: "Rakshasa", uttara_bhadrapada: "Rakshasa"
+};
+
+const NAKSHATRA_NADIS = {
+  ashwini: "Adi", ardra: "Adi", punarvasu: "Adi", uttara_phalguni: "Adi", hasta: "Adi", jyeshtha: "Adi", moola: "Adi", shatabhisha: "Adi", purva_bhadrapada: "Adi",
+  bharani: "Madhya", mrigashira: "Madhya", pushya: "Madhya", purva_phalguni: "Madhya", chitra: "Madhya", anuradha: "Madhya", purva_ashadha: "Madhya", dhanishta: "Madhya", uttara_bhadrapada: "Madhya",
+  krittika: "Antya", rohini: "Antya", ashlesha: "Antya", magha: "Antya", swati: "Antya", vishakha: "Antya", uttara_ashadha: "Antya", shravana: "Antya", revati: "Antya"
+};
+
+const NAKSHATRA_YONIS = {
+  ashwini: "Horse", shatabhisha: "Horse",
+  bharani: "Elephant", revati: "Elephant",
+  krittika: "Sheep", pushya: "Sheep",
+  rohini: "Serpent", mrigashira: "Serpent",
+  ardra: "Dog", moola: "Dog",
+  punarvasu: "Cat", ashlesha: "Cat",
+  magha: "Rat", purva_phalguni: "Rat",
+  uttara_phalguni: "Cow", uttara_bhadrapada: "Cow",
+  hasta: "Buffalo", swati: "Buffalo",
+  chitra: "Tiger", vishakha: "Tiger",
+  anuradha: "Deer", jyeshtha: "Deer",
+  purva_ashadha: "Monkey", shravana: "Monkey",
+  uttara_ashadha: "Mongoose",
+  dhanishta: "Lion", purva_bhadrapada: "Lion"
+};
+
+const NAKSHATRA_INDICES = {
+  ashwini: 1, bharani: 2, krittika: 3, rohini: 4, mrigashira: 5, ardra: 6, punarvasu: 7, pushya: 8, ashlesha: 9,
+  magha: 10, purva_phalguni: 11, uttara_phalguni: 12, hasta: 13, chitra: 14, swati: 15, vishakha: 16, anuradha: 17, jyeshtha: 18,
+  moola: 19, purva_ashadha: 20, uttara_ashadha: 21, shravana: 22, dhanishta: 23, shatabhisha: 24, purva_bhadrapada: 25, uttara_bhadrapada: 26, revati: 27
+};
 
 const getVarna = (rasi) => {
-  const r = rasi?.toLowerCase() || "";
-  if (r.includes("cancer") || r.includes("scorpio") || r.includes("pisces")) return { name: "Brahmin", points: 4 };
-  if (r.includes("aries") || r.includes("leo") || r.includes("sagittarius")) return { name: "Kshatriya", points: 3 };
-  if (r.includes("taurus") || r.includes("virgo") || r.includes("capricorn")) return { name: "Vaishya", points: 2 };
-  return { name: "Shudra", points: 1 }; 
+  if (!rasi) return 1;
+  const clean = rasi.split(" ")[0].trim().toLowerCase();
+  const VARNAS = {
+    cancer: 4, scorpio: 4, pisces: 4,
+    aries: 3, leo: 3, sagittarius: 3,
+    taurus: 2, virgo: 2, capricorn: 2,
+    gemini: 1, libra: 1, aquarius: 1
+  };
+  return VARNAS[clean] || 1;
 };
 
-const getVashyaGroup = (rasi) => {
-  const r = rasi?.toLowerCase() || "";
-  if (r.includes("aries") || r.includes("taurus") || r.includes("leo") || (r.includes("sagittarius") && !r.includes("1st")) || (r.includes("capricorn") && !r.includes("2nd"))) {
-    return "Chatushpada";
-  }
-  if (r.includes("gemini") || r.includes("virgo") || r.includes("libra") || (r.includes("sagittarius") && r.includes("1st")) || r.includes("aquarius")) {
-    return "Manav";
-  }
-  if (r.includes("cancer") || r.includes("pisces") || (r.includes("capricorn") && r.includes("2nd"))) {
-    return "Jalachar";
-  }
-  if (r.includes("scorpio")) {
-    return "Keeta";
-  }
-  return "Manav";
+const getRasiVashyaGroup = (rasi) => {
+  const r = rasi.split(" ")[0].trim().toLowerCase();
+  if (r === "aries" || r === "taurus" || r === "leo") return "quadruped";
+  if (r === "gemini" || r === "virgo" || r === "libra" || r === "aquarius" || r === "sagittarius") return "human";
+  if (r === "cancer" || r === "pisces" || r === "capricorn") return "water";
+  if (r === "scorpio") return "insect";
+  return "human";
 };
 
-const YONI_MAP = {
-  "Ashwini": "Horse", "Shatabhisha": "Horse",
-  "Bharani": "Elephant", "Revati": "Elephant",
-  "Krittika": "Sheep", "Pushya": "Sheep",
-  "Rohini": "Serpent", "Mrigashira": "Serpent",
-  "Ardra": "Dog", "Moola": "Dog",
-  "Punarvasu": "Cat", "Ashlesha": "Cat",
-  "Magha": "Rat", "Purva Phalguni": "Rat",
-  "Uttara Phalguni": "Cow", "Uttara Bhadrapada": "Cow",
-  "Hasta": "Buffalo", "Swati": "Buffalo",
-  "Chitra": "Tiger", "Vishakha": "Tiger",
-  "Anuradha": "Deer", "Jyeshtha": "Deer",
-  "Purva Ashadha": "Monkey", "Shravana": "Monkey",
-  "Uttara Ashadha": "Mongoose",
-  "Dhanishta": "Lion", "Purva Bhadrapada": "Lion"
+const calculateVashyaScore = (r1, r2) => {
+  const g1 = getRasiVashyaGroup(r1);
+  const g2 = getRasiVashyaGroup(r2);
+  if (g1 === g2) return 2;
+  if ((g1 === "human" && g2 === "water") || (g2 === "human" && g1 === "water")) return 1.5;
+  if ((g1 === "human" && g2 === "quadruped") || (g2 === "human" && g1 === "quadruped")) return 1;
+  return 0.5;
 };
 
-const getYoniScore = (y1, y2) => {
+const calculateTaraScore = (n1, n2) => {
+  const idx1 = NAKSHATRA_INDICES[cleanName(n1)] || 1;
+  const idx2 = NAKSHATRA_INDICES[cleanName(n2)] || 1;
+  const d1 = (idx2 - idx1 + 27) % 9;
+  const d2 = (idx1 - idx2 + 27) % 9;
+  const goodTaradhipati = [1, 2, 4, 6, 8, 0];
+  const isD1Good = goodTaradhipati.includes(d1);
+  const isD2Good = goodTaradhipati.includes(d2);
+  if (isD1Good && isD2Good) return 3;
+  if (isD1Good || isD2Good) return 1.5;
+  return 0;
+};
+
+const calculateYoniScore = (y1, y2) => {
   if (y1 === y2) return 4;
-  const hostility = {
-    "Horse": "Lion", "Elephant": "Lion", "Sheep": "Monkey", "Serpent": "Mongoose",
-    "Dog": "Cat", "Cat": "Rat", "Rat": "Cat", "Cow": "Tiger", "Buffalo": "Horse",
-    "Tiger": "Cow", "Deer": "Dog", "Monkey": "Sheep", "Mongoose": "Serpent", "Lion": "Elephant"
-  };
-  if (hostility[y1] === y2 || hostility[y2] === y1) return 0;
+  const enemies = [
+    ["Horse", "Lion"], ["Lion", "Horse"],
+    ["Elephant", "Lion"], ["Lion", "Elephant"],
+    ["Sheep", "Monkey"], ["Monkey", "Sheep"],
+    ["Serpent", "Mongoose"], ["Mongoose", "Serpent"],
+    ["Dog", "Deer"], ["Deer", "Dog"],
+    ["Cat", "Rat"], ["Rat", "Cat"],
+    ["Cow", "Tiger"], ["Tiger", "Cow"],
+    ["Buffalo", "Horse"], ["Horse", "Buffalo"]
+  ];
+  const isEnemy = enemies.some(([e1, e2]) => e1 === y1 && e2 === y2);
+  if (isEnemy) return 0;
   
-  const friendly = {
-    "Horse": ["Elephant", "Deer"], "Elephant": ["Horse", "Cow"],
-    "Sheep": ["Cow", "Buffalo"], "Serpent": ["Serpent"],
-    "Dog": ["Mongoose"], "Cat": ["Monkey"], "Rat": ["Mongoose"],
-    "Cow": ["Elephant", "Sheep"], "Buffalo": ["Sheep", "Cow"],
-    "Tiger": ["Lion"], "Deer": ["Horse"], "Monkey": ["Cat"],
-    "Mongoose": ["Rat", "Dog"], "Lion": ["Tiger"]
-  };
-  if (friendly[y1]?.includes(y2) || friendly[y2]?.includes(y1)) return 3;
-  return 2;
+  const friendly = [
+    ["Horse", "Deer"], ["Deer", "Horse"],
+    ["Elephant", "Sheep"], ["Sheep", "Elephant"],
+    ["Cow", "Buffalo"], ["Buffalo", "Cow"],
+    ["Cat", "Dog"], ["Dog", "Cat"]
+  ];
+  const isFriendly = friendly.some(([f1, f2]) => f1 === y1 && f2 === y2);
+  return isFriendly ? 3 : 2;
 };
 
-const LORD_MAP = {
-  "Aries": "Mars", "Scorpio": "Mars",
-  "Taurus": "Venus", "Libra": "Venus",
-  "Gemini": "Mercury", "Virgo": "Mercury",
-  "Cancer": "Moon",
-  "Leo": "Sun",
-  "Sagittarius": "Jupiter", "Pisces": "Jupiter",
-  "Capricorn": "Saturn", "Aquarius": "Saturn"
+const getRasiLord = (rasi) => {
+  if (!rasi) return "Mars";
+  const r = rasi.split(" ")[0].trim().toLowerCase();
+  if (r === "aries" || r === "scorpio") return "Mars";
+  if (r === "taurus" || r === "libra") return "Venus";
+  if (r === "gemini" || r === "virgo") return "Mercury";
+  if (r === "cancer") return "Moon";
+  if (r === "leo") return "Sun";
+  if (r === "sagittarius" || r === "pisces") return "Jupiter";
+  if (r === "capricorn" || r === "aquarius") return "Saturn";
+  return "Mars";
 };
 
-const getMaitriScore = (lord1, lord2) => {
-  if (lord1 === lord2) return 5;
-  const relationships = {
-    "Sun": { "Moon": "Friend", "Mars": "Friend", "Jupiter": "Friend", "Mercury": "Neutral", "Venus": "Enemy", "Saturn": "Enemy" },
-    "Moon": { "Sun": "Friend", "Mercury": "Friend", "Mars": "Neutral", "Jupiter": "Neutral", "Venus": "Neutral", "Saturn": "Neutral" },
-    "Mars": { "Sun": "Friend", "Moon": "Friend", "Jupiter": "Friend", "Saturn": "Neutral", "Venus": "Neutral", "Mercury": "Enemy" },
-    "Mercury": { "Sun": "Friend", "Venus": "Friend", "Mars": "Neutral", "Jupiter": "Neutral", "Saturn": "Neutral", "Moon": "Enemy" },
-    "Jupiter": { "Sun": "Friend", "Moon": "Friend", "Mars": "Friend", "Saturn": "Neutral", "Mercury": "Enemy", "Venus": "Enemy" },
-    "Venus": { "Mercury": "Friend", "Saturn": "Friend", "Mars": "Neutral", "Jupiter": "Neutral", "Sun": "Enemy", "Moon": "Enemy" },
-    "Saturn": { "Mercury": "Friend", "Venus": "Friend", "Jupiter": "Neutral", "Sun": "Enemy", "Moon": "Enemy", "Mars": "Enemy" }
-  };
-  const r1 = relationships[lord1]?.[lord2] || "Neutral";
-  const r2 = relationships[lord2]?.[lord1] || "Neutral";
+const calculateMaitriScore = (r1, r2) => {
+  const l1 = getRasiLord(r1);
+  const l2 = getRasiLord(r2);
+  if (l1 === l2) return 5;
   
-  if (r1 === "Friend" && r2 === "Friend") return 5;
-  if ((r1 === "Friend" && r2 === "Neutral") || (r1 === "Neutral" && r2 === "Friend")) return 4;
-  if (r1 === "Neutral" && r2 === "Neutral") return 3;
-  if ((r1 === "Enemy" && r2 === "Neutral") || (r1 === "Neutral" && r2 === "Enemy")) return 1;
+  const friendship = {
+    Sun: { Moon: "friend", Mars: "friend", Jupiter: "friend", Mercury: "neutral", Venus: "enemy", Saturn: "enemy" },
+    Moon: { Sun: "friend", Mercury: "friend", Mars: "neutral", Jupiter: "neutral", Venus: "neutral", Saturn: "neutral" },
+    Mars: { Sun: "friend", Moon: "friend", Jupiter: "friend", Mercury: "enemy", Venus: "neutral", Saturn: "neutral" },
+    Mercury: { Sun: "friend", Venus: "friend", Moon: "enemy", Mars: "neutral", Jupiter: "neutral", Saturn: "neutral" },
+    Jupiter: { Sun: "friend", Moon: "friend", Mars: "friend", Mercury: "enemy", Venus: "enemy", Saturn: "neutral" },
+    Venus: { Mercury: "friend", Saturn: "friend", Sun: "enemy", Moon: "enemy", Mars: "neutral", Jupiter: "neutral" },
+    Saturn: { Mercury: "friend", Venus: "friend", Sun: "enemy", Moon: "enemy", Mars: "enemy", Jupiter: "neutral" }
+  };
+
+  const f1 = friendship[l1]?.[l2] || "neutral";
+  const f2 = friendship[l2]?.[l1] || "neutral";
+
+  if (f1 === "friend" && f2 === "friend") return 5;
+  if ((f1 === "friend" && f2 === "neutral") || (f2 === "friend" && f1 === "neutral")) return 4.5;
+  if (f1 === "neutral" && f2 === "neutral") return 3;
+  if ((f1 === "enemy" && f2 === "neutral") || (f2 === "enemy" && f1 === "neutral")) return 1.5;
   return 0;
 };
 
-const GANA_MAP = {
-  "Ashwini": "Deva", "Mrigashira": "Deva", "Punarvasu": "Deva", "Pushya": "Deva", "Hasta": "Deva", "Swati": "Deva", "Anuradha": "Deva", "Shravana": "Deva", "Revati": "Deva",
-  "Bharani": "Manushya", "Rohini": "Manushya", "Ardra": "Manushya", "Purva Phalguni": "Manushya", "Uttara Phalguni": "Manushya", "Chitra": "Manushya", "Purva Ashadha": "Manushya", "Uttara Ashadha": "Manushya", "Purva Bhadrapada": "Manushya",
-  "Krittika": "Rakshasa", "Ashlesha": "Rakshasa", "Magha": "Rakshasa", "Vishakha": "Rakshasa", "Jyeshtha": "Rakshasa", "Moola": "Rakshasa", "Dhanishta": "Rakshasa", "Shatabhisha": "Rakshasa", "Uttara Bhadrapada": "Rakshasa"
-};
-
-const getGanaScore = (g1, g2) => {
-  if (g1 === g2) return 6;
-  if ((g1 === "Deva" && g2 === "Manushya") || (g1 === "Manushya" && g2 === "Deva")) return 5;
-  if ((g1 === "Deva" && g2 === "Rakshasa") || (g1 === "Rakshasa" && g2 === "Deva")) return 1;
-  return 0;
-};
-
-const getBhakootScore = (idx1, idx2) => {
-  const diff = Math.abs(idx1 - idx2);
-  const dist = diff > 6 ? 12 - diff : diff;
-  if (dist === 0 || dist === 2 || dist === 3 || dist === 4) return 7;
-  return 0; 
-};
-
-const NADI_MAP = {
-  "Ashwini": "Adi", "Ardra": "Adi", "Punarvasu": "Adi", "Uttara Phalguni": "Adi", "Hasta": "Adi", "Jyeshtha": "Adi", "Moola": "Adi", "Shatabhisha": "Adi", "Purva Bhadrapada": "Adi",
-  "Bharani": "Madhya", "Mrigashira": "Madhya", "Pushya": "Madhya", "Purva Phalguni": "Madhya", "Chitra": "Madhya", "Anuradha": "Madhya", "Purva Ashadha": "Madhya", "Dhanishta": "Madhya", "Uttara Bhadrapada": "Madhya",
-  "Krittika": "Antya", "Rohini": "Antya", "Ashlesha": "Antya", "Magha": "Antya", "Swati": "Antya", "Vishakha": "Antya", "Uttara Ashadha": "Antya", "Shravana": "Antya", "Revati": "Antya"
-};
-
-const getNadiScore = (n1, n2) => {
-  if (n1 === n2) return 0; 
-  return 8;
-};
-
-const normalizeNakshatraName = (name) => {
-  if (!name) return "";
-  const cleaned = name.split(" - ")[0].trim().toLowerCase();
+const calculateBhakootScore = (r1, r2) => {
+  const rasis = ["aries", "taurus", "gemini", "cancer", "leo", "virgo", "libra", "scorpio", "sagittarius", "capricorn", "aquarius", "pisces"];
+  const clean1 = r1.split(" ")[0].trim().toLowerCase();
+  const clean2 = r2.split(" ")[0].trim().toLowerCase();
+  const idx1 = rasis.indexOf(clean1);
+  const idx2 = rasis.indexOf(clean2);
+  if (idx1 === -1 || idx2 === -1) return 7;
   
-  if (cleaned.includes("ashwini") || cleaned.includes("aswini")) return "Ashwini";
-  if (cleaned.includes("bharani")) return "Bharani";
-  if (cleaned.includes("krittika") || cleaned.includes("krithika")) return "Krittika";
-  if (cleaned.includes("rohini")) return "Rohini";
-  if (cleaned.includes("mrigashira") || cleaned.includes("mrigasira")) return "Mrigashira";
-  if (cleaned.includes("ardra")) return "Ardra";
-  if (cleaned.includes("punarvasu")) return "Punarvasu";
-  if (cleaned.includes("pushya")) return "Pushya";
-  if (cleaned.includes("ashlesha") || cleaned.includes("aslesha")) return "Ashlesha";
-  if (cleaned.includes("magha") || cleaned.includes("makha")) return "Magha";
-  if (cleaned.includes("purva phalguni") || cleaned.includes("purvaphalguni") || cleaned.includes("poorvaphalguni")) return "Purva Phalguni";
-  if (cleaned.includes("uttara phalguni") || cleaned.includes("uttaraphalguni")) return "Uttara Phalguni";
-  if (cleaned.includes("hasta")) return "Hasta";
-  if (cleaned.includes("chitra")) return "Chitra";
-  if (cleaned.includes("swati") || cleaned.includes("swathi")) return "Swati";
-  if (cleaned.includes("vishakha") || cleaned.includes("vishhaka")) return "Vishakha";
-  if (cleaned.includes("anuradha")) return "Anuradha";
-  if (cleaned.includes("jyeshtha") || cleaned.includes("jyeshta")) return "Jyeshtha";
-  if (cleaned.includes("moola") || cleaned.includes("mula")) return "Moola";
-  if (cleaned.includes("purva ashadha") || cleaned.includes("poorvashada") || cleaned.includes("purvaashadha")) return "Purva Ashadha";
-  if (cleaned.includes("uttara ashadha") || cleaned.includes("uttarashada") || cleaned.includes("uttaraashadha")) return "Uttara Ashadha";
-  if (cleaned.includes("shravana") || cleaned.includes("sravana")) return "Shravana";
-  if (cleaned.includes("dhanishta") || cleaned.includes("dhanistha")) return "Dhanishta";
-  if (cleaned.includes("shatabhisha") || cleaned.includes("sathabhisha")) return "Shatabhisha";
-  if (cleaned.includes("purva bhadrapada") || cleaned.includes("purvabhadra") || cleaned.includes("purvabhadrapada")) return "Purva Bhadrapada";
-  if (cleaned.includes("uttara bhadrapada") || cleaned.includes("uttarabhadra") || cleaned.includes("uttarabhadrapada")) return "Uttara Bhadrapada";
-  if (cleaned.includes("revati") || cleaned.includes("revathi")) return "Revati";
+  const diff = (idx2 - idx1 + 12) % 12 + 1;
   
-  return name.split(" - ")[0].trim();
-};
-
-const normalizeRasiName = (name) => {
-  if (!name) return "";
-  const cleaned = name.split(" ")[0].toLowerCase();
-  if (cleaned.includes("mesha") || cleaned.includes("aries")) return "Aries";
-  if (cleaned.includes("vrishabha") || cleaned.includes("vrishabh") || cleaned.includes("taurus")) return "Taurus";
-  if (cleaned.includes("mithuna") || cleaned.includes("mithun") || cleaned.includes("gemini")) return "Gemini";
-  if (cleaned.includes("karka") || cleaned.includes("kark") || cleaned.includes("cancer")) return "Cancer";
-  if (cleaned.includes("simha") || cleaned.includes("singh") || cleaned.includes("leo")) return "Leo";
-  if (cleaned.includes("kanya") || cleaned.includes("virgo")) return "Virgo";
-  if (cleaned.includes("tula") || cleaned.includes("libra")) return "Libra";
-  if (cleaned.includes("vrischika") || cleaned.includes("scorpio")) return "Scorpio";
-  if (cleaned.includes("dhanu") || cleaned.includes("sagittarius")) return "Sagittarius";
-  if (cleaned.includes("makara") || cleaned.includes("makar") || cleaned.includes("capricorn")) return "Capricorn";
-  if (cleaned.includes("kumbha") || cleaned.includes("kumbh") || cleaned.includes("aquarius")) return "Aquarius";
-  if (cleaned.includes("meena") || cleaned.includes("meen") || cleaned.includes("pisces")) return "Pisces";
-  
-  return name.split(" ")[0];
+  if ((diff === 2 || diff === 12) || (diff === 6 || diff === 8)) {
+    return 0;
+  }
+  return 7;
 };
 
 const calculateGunaMilan = (p1, p2) => {
-  const r1 = normalizeRasiName(p1.rasi);
-  const r2 = normalizeRasiName(p2.rasi);
-  const n1 = normalizeNakshatraName(p1.nakshatra);
-  const n2 = normalizeNakshatraName(p2.nakshatra);
-
-  // 1. Varna (Max: 1)
-  const v1 = getVarna(r1);
-  const v2 = getVarna(r2);
-  const varnaScore = v1.points >= v2.points ? 1 : 0;
-
-  // 2. Vashya (Max: 2)
-  const vg1 = getVashyaGroup(r1);
-  const vg2 = getVashyaGroup(r2);
-  let vashyaScore = 0;
-  if (vg1 === vg2) vashyaScore = 2;
-  else if ((vg1 === "Manav" && vg2 === "Jalachar") || (vg1 === "Jalachar" && vg2 === "Manav")) vashyaScore = 1;
-  else if ((vg1 === "Chatushpada" && vg2 === "Jalachar") || (vg1 === "Jalachar" && vg2 === "Chatushpada")) vashyaScore = 1;
-
-  // 3. Tara (Max: 3)
-  const idxN1 = NAKSHATRAS_LIST.indexOf(n1);
-  const idxN2 = NAKSHATRAS_LIST.indexOf(n2);
-  let taraScore = 0;
-  if (idxN1 !== -1 && idxN2 !== -1) {
-    const dist1 = ((idxN2 - idxN1 + 27) % 9) || 9;
-    const dist2 = ((idxN1 - idxN2 + 27) % 9) || 9;
-    const goodRemainders = [2, 4, 6, 8, 9];
-    const isGood1 = goodRemainders.includes(dist1);
-    const isGood2 = goodRemainders.includes(dist2);
-    if (isGood1 && isGood2) taraScore = 3;
-    else if (isGood1 || isGood2) taraScore = 1.5;
-  } else {
-    taraScore = 1.5;
-  }
-
-  // 4. Yoni (Max: 4)
-  const y1 = YONI_MAP[n1] || "Horse";
-  const y2 = YONI_MAP[n2] || "Horse";
-  const yoniScore = getYoniScore(y1, y2);
-
-  // 5. Graha Maitri (Max: 5)
-  const lord1 = LORD_MAP[r1] || "Mars";
-  const lord2 = LORD_MAP[r2] || "Mars";
-  const maitriScore = getMaitriScore(lord1, lord2);
-
-  // 6. Gana (Max: 6)
-  const g1 = GANA_MAP[n1] || "Deva";
-  const g2 = GANA_MAP[n2] || "Deva";
-  const ganaScore = getGanaScore(g1, g2);
-
-  // 7. Bhakoot (Max: 7)
-  const idxR1 = RASIS_LIST.indexOf(r1);
-  const idxR2 = RASIS_LIST.indexOf(r2);
-  let bhakootScore = 0;
-  if (idxR1 !== -1 && idxR2 !== -1) {
-    bhakootScore = getBhakootScore(idxR1, idxR2);
-  } else {
-    bhakootScore = 7;
-  }
-
-  // 8. Nadi (Max: 8)
-  const nad1 = NADI_MAP[n1] || "Adi";
-  const nad2 = NADI_MAP[n2] || "Adi";
-  const nadiScore = getNadiScore(nad1, nad2);
-
-  const totalScore = varnaScore + vashyaScore + taraScore + yoniScore + maitriScore + ganaScore + bhakootScore + nadiScore;
-
+  const r1 = p1.rasi || "";
+  const r2 = p2.rasi || "";
+  const n1 = p1.nakshatra || "";
+  const n2 = p2.nakshatra || "";
+  
+  const varna1 = getVarna(r1);
+  const varna2 = getVarna(r2);
+  const varnaScore = varna1 >= varna2 ? 1 : 0;
+  const vashyaScore = calculateVashyaScore(r1, r2);
+  const taraScore = calculateTaraScore(n1, n2);
+  const yoniScore = calculateYoniScore(NAKSHATRA_YONIS[cleanName(n1)] || "Horse", NAKSHATRA_YONIS[cleanName(n2)] || "Horse");
+  const maitriScore = calculateMaitriScore(r1, r2);
+  
+  const g1 = NAKSHATRA_GANAS[cleanName(n1)] || "Deva";
+  const g2 = NAKSHATRA_GANAS[cleanName(n2)] || "Deva";
+  let ganaScore = 0;
+  if (g1 === g2) ganaScore = 6;
+  else if ((g1 === "Deva" && g2 === "Manushya") || (g2 === "Deva" && g1 === "Manushya")) ganaScore = 5;
+  else if ((g1 === "Deva" && g2 === "Rakshasa") || (g2 === "Deva" && g1 === "Rakshasa")) ganaScore = 1;
+  
+  const bhakootScore = calculateBhakootScore(r1, r2);
+  
+  const nadi1 = NAKSHATRA_NADIS[cleanName(n1)] || "Adi";
+  const nadi2 = NAKSHATRA_NADIS[cleanName(n2)] || "Adi";
+  const nadiScore = nadi1 !== nadi2 ? 8 : 0;
+  
+  const total = varnaScore + vashyaScore + taraScore + yoniScore + maitriScore + ganaScore + bhakootScore + nadiScore;
+  
   return {
-    totalScore,
+    total,
     breakdown: [
-      { name: "Varna (Work & Ego Compatibility)", score: varnaScore, max: 1, desc: `${v1.name} to ${v2.name}` },
-      { name: "Vashya (Mutual Attraction & Control)", score: vashyaScore, max: 2, desc: `${vg1} to ${vg2}` },
-      { name: "Tara (Destiny & Auspiciousness)", score: taraScore, max: 3, desc: `${n1} to ${n2}` },
-      { name: "Yoni (Physical & Intimacy Compatibility)", score: yoniScore, max: 4, desc: `${y1} to ${y2}` },
-      { name: "Graha Maitri (Planetary Friendship of Lords)", score: maitriScore, max: 5, desc: `${lord1} to ${lord2}` },
-      { name: "Gana (Temperament & Social Behavior)", score: ganaScore, max: 6, desc: `${g1} to ${g2}` },
-      { name: "Bhakoot (Emotional Love & Longevity)", score: bhakootScore, max: 7, desc: `${r1} & ${r2} Placement` },
-      { name: "Nadi (Health, Temperament & Genetics)", score: nadiScore, max: 8, desc: `${nad1} & ${nad2} Nadis` }
+      { name: "Varna (Work & Ego Compatibility)", score: varnaScore, max: 1 },
+      { name: "Vashya (Mutual Attraction & Influence)", score: vashyaScore, max: 2 },
+      { name: "Tara (Destiny & Auspiciousness)", score: taraScore, max: 3 },
+      { name: "Yoni (Intimacy & Physical Harmony)", score: yoniScore, max: 4 },
+      { name: "Graha Maitri (Planetary Friendship & Mental Bond)", score: maitriScore, max: 5 },
+      { name: "Gana (Temperament & Behavior)", score: ganaScore, max: 6 },
+      { name: "Bhakoot (Love, Family & Prosperity)", score: bhakootScore, max: 7 },
+      { name: "Nadi (Health, Temperament & Genetics)", score: nadiScore, max: 8 }
     ]
   };
 };
 
-const runFlamesLogic = (name1, name2) => {
-  const n1 = name1.toLowerCase().replace(/\s+/g, "");
-  const n2 = name2.toLowerCase().replace(/\s+/g, "");
-  
+const calculateFlames = (name1, name2) => {
+  const n1 = name1.toLowerCase().replace(/[^a-z]/g, "");
+  const n2 = name2.toLowerCase().replace(/[^a-z]/g, "");
+  if (!n1 || !n2) return { value: "Connection", desc: "Please fill names properly." };
+
   let count1 = {};
   let count2 = {};
-  for (let c of n1) count1[c] = (count1[c] || 0) + 1;
-  for (let c of n2) count2[c] = (count2[c] || 0) + 1;
+  for (let char of n1) count1[char] = (count1[char] || 0) + 1;
+  for (let char of n2) count2[char] = (count2[char] || 0) + 1;
   
-  let uniqueCount = 0;
-  const allChars = new Set([...Object.keys(count1), ...Object.keys(count2)]);
+  let remaining = 0;
+  let allChars = new Set([...Object.keys(count1), ...Object.keys(count2)]);
   for (let char of allChars) {
-    const f1 = count1[char] || 0;
-    const f2 = count2[char] || 0;
-    uniqueCount += Math.abs(f1 - f2);
+    const c1 = count1[char] || 0;
+    const c2 = count2[char] || 0;
+    remaining += Math.abs(c1 - c2);
   }
-
-  const flames = [
-    { letter: "F", name: "Friends", desc: "You share a natural, easy-going bond filled with laughter, mutual support, and pure companionship.", color: "text-blue-500 bg-blue-50 border-blue-200" },
-    { letter: "L", name: "Lovers", desc: "A passionate, romantic spark connects your hearts. Your chemistry is magnetic and filled with deep emotional resonance.", color: "text-red-500 bg-red-50 border-red-200" },
-    { letter: "A", name: "Affection", desc: "A warm, tender, and caring relationship. You feel comfortable, secure, and deeply fond of each other.", color: "text-pink-500 bg-pink-50 border-pink-200" },
-    { letter: "M", name: "Marriage", desc: "A lifelong union of souls. The cosmic currents align you for deep commitment, building a home, and facing the future hand-in-hand.", color: "text-[#8E6B23] bg-[#B38B36]/5 border-[#B38B36]/20" },
-    { letter: "E", name: "Enemies", desc: "Tension and challenge. You bring out strong reactions in each other which can lead to friction, but also teaches valuable self-lessons.", color: "text-stone-500 bg-stone-50 border-stone-200" },
-    { letter: "S", name: "Siblings", desc: "A protective, familiar, and playful sibling-like connection. You look out for each other and share deep trust.", color: "text-teal-500 bg-teal-50 border-teal-200" }
-  ];
-
-  let list = [...flames];
-  let index = 0;
   
-  if (uniqueCount > 0) {
-    while (list.length > 1) {
-      index = (index + uniqueCount - 1) % list.length;
-      list.splice(index, 1);
-    }
-  } else {
-    list = [flames[0]];
+  const flamesArray = ["Friends", "Lovers", "Affection", "Marriage", "Enemies", "Siblings"];
+  let flames = [...flamesArray];
+  
+  let index = 0;
+  while (flames.length > 1) {
+    index = (index + remaining - 1) % flames.length;
+    if (index < 0) index = flames.length - 1;
+    flames.splice(index, 1);
   }
-
-  return {
-    calculatedValue: `FLAMES Compatibility: ${list[0].name}`,
-    description: list[0].desc,
-    letter: list[0].letter,
-    flamesName: list[0].name,
-    colorClass: list[0].color,
-    isFlames: true,
-    name1,
-    name2
+  
+  const resultStatus = flames[0];
+  const statusMap = {
+    Friends: {
+      value: "Friends 🤝",
+      desc: "A bond built on trust, laughter, and mutual understanding. You support each other's dreams and stand strong through life's tides. Friendship is the best foundation for any beautiful relationship!"
+    },
+    Lovers: {
+      value: "Lovers 💖",
+      desc: "A passionate, romantic alignment of souls. There is a strong magnetic pull, deep affection, and a beautiful spark between you. Your hearts beat in a shared cosmic rhythm."
+    },
+    Affection: {
+      value: "Affection 💕",
+      desc: "Warmth, care, and genuine concern define your relationship. You feel comfortable in each other's presence, sharing a sweet bond of emotional proximity and mutual respect."
+    },
+    Marriage: {
+      value: "Marriage 💍",
+      desc: "A lifetime commitment of companionship, alignment, and shared destinies. The stars indicate that you are meant to build a home, co-create a future, and walk hand-in-hand forever."
+    },
+    Enemies: {
+      value: "Enemies ⚡",
+      desc: "A dynamic of intense energy, friction, and contrasting perspectives. While challenging, this relationship offers powerful mirrors for personal reflection, growth, and learning."
+    },
+    Siblings: {
+      value: "Siblings 🌸",
+      desc: "A protective, familiar, and caring bond that feels like home. You share a deep-seated connection where you look out for each other with unconditional support and playfulness."
+    }
   };
+  
+  return statusMap[resultStatus] || { value: "Connection", desc: "A unique alignment of energies." };
 };
 
 const getCalculatorInsights = (data, calcId) => {
-  const astro = data.astrology_details;
-  const life = data.life_report;
+  const astro = data.astrology_details || {};
+  const life = data.life_report || {};
   
   const base = {
     rasi: astro.rasi,
@@ -400,7 +362,7 @@ const getCalculatorInsights = (data, calcId) => {
     case "baby-name":
       return {
         ...base,
-        calculatedValue: `Auspicious Syllables: ${astro.nakshatra.startsWith('Krithika') ? 'A, I, U, E' : 'L, A, E, O'}`,
+        calculatedValue: `Auspicious Syllables: ${astro.nakshatra?.startsWith('Krithika') ? 'A, I, U, E' : 'L, A, E, O'}`,
         description: `Auspicious naming sounds derived from your Nakshatra (${astro.nakshatra}). Naming the baby with these letters aligns them harmoniously with cosmic energy.`
       };
     default:
@@ -425,7 +387,6 @@ const CalculatorPage = () => {
     dob: "",
     tob: "",
     pob: "",
-    // Partner 2 / compatibility fields
     partnerName: "",
     partnerDob: "",
     partnerTob: "",
@@ -433,28 +394,29 @@ const CalculatorPage = () => {
   });
 
   const [countries, setCountries] = useState([]);
-  
-  // Partner 1 selections
   const [states, setStates] = useState([]);
   const [cities, setCities] = useState([]);
+
+  const [countriesPartner, setCountriesPartner] = useState([]);
+  const [statesPartner, setStatesPartner] = useState([]);
+  const [citiesPartner, setCitiesPartner] = useState([]);
+
   const [selectedCountry, setSelectedCountry] = useState("");
   const [selectedState, setSelectedState] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
 
-  // Partner 2 selections
-  const [statesPartner, setStatesPartner] = useState([]);
-  const [citiesPartner, setCitiesPartner] = useState([]);
   const [selectedCountryPartner, setSelectedCountryPartner] = useState("");
   const [selectedStatePartner, setSelectedStatePartner] = useState("");
   const [selectedCityPartner, setSelectedCityPartner] = useState("");
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    setCountries(Country.getAllCountries());
-    setResult(null); // clear results when id changes
+    const allCountries = Country.getAllCountries();
+    setCountries(allCountries);
+    setCountriesPartner(allCountries);
   }, [id]);
 
-  // Handle Country Change (Partner 1)
+  // Partner 1 Location Handlers
   const handleCountryChange = (e) => {
     const countryCode = e.target.value;
     setSelectedCountry(countryCode);
@@ -464,7 +426,6 @@ const CalculatorPage = () => {
     if (countryCode) {
       const countryStates = State.getStatesOfCountry(countryCode);
       setStates(countryStates);
-      
       if (countryStates.length === 0) {
         setCities(City.getCitiesOfCountry(countryCode));
       } else {
@@ -476,12 +437,10 @@ const CalculatorPage = () => {
     }
   };
 
-  // Handle State Change (Partner 1)
   const handleStateChange = (e) => {
     const stateCode = e.target.value;
     setSelectedState(stateCode);
     setSelectedCity("");
-    
     if (stateCode) {
       setCities(City.getCitiesOfState(selectedCountry, stateCode));
     } else {
@@ -489,13 +448,11 @@ const CalculatorPage = () => {
     }
   };
 
-  // Handle City Change (Partner 1)
   const handleCityChange = (e) => {
-    const cityName = e.target.value;
-    setSelectedCity(cityName);
+    setSelectedCity(e.target.value);
   };
 
-  // Handle Country Change (Partner 2)
+  // Partner 2 Location Handlers
   const handleCountryChangePartner = (e) => {
     const countryCode = e.target.value;
     setSelectedCountryPartner(countryCode);
@@ -505,7 +462,6 @@ const CalculatorPage = () => {
     if (countryCode) {
       const countryStates = State.getStatesOfCountry(countryCode);
       setStatesPartner(countryStates);
-      
       if (countryStates.length === 0) {
         setCitiesPartner(City.getCitiesOfCountry(countryCode));
       } else {
@@ -517,12 +473,10 @@ const CalculatorPage = () => {
     }
   };
 
-  // Handle State Change (Partner 2)
   const handleStateChangePartner = (e) => {
     const stateCode = e.target.value;
     setSelectedStatePartner(stateCode);
     setSelectedCityPartner("");
-    
     if (stateCode) {
       setCitiesPartner(City.getCitiesOfState(selectedCountryPartner, stateCode));
     } else {
@@ -530,183 +484,142 @@ const CalculatorPage = () => {
     }
   };
 
-  // Handle City Change (Partner 2)
   const handleCityChangePartner = (e) => {
-    const cityName = e.target.value;
-    setSelectedCityPartner(cityName);
+    setSelectedCityPartner(e.target.value);
   };
 
-  // Sync Partner 1 location to pob
+  // Sync selections to formData
   useEffect(() => {
     if (selectedCountry && selectedCity) {
       const countryObj = Country.getCountryByCode(selectedCountry);
       const stateObj = selectedState ? State.getStateByCodeAndCountry(selectedState, selectedCountry) : null;
-      
-      const parts = [
-        selectedCity,
-        stateObj ? stateObj.name : "",
-        countryObj ? countryObj.name : ""
-      ].filter(Boolean);
-      
-      setFormData((prev) => ({
-        ...prev,
-        pob: parts.join(", ")
-      }));
+      const parts = [selectedCity, stateObj ? stateObj.name : "", countryObj ? countryObj.name : ""].filter(Boolean);
+      setFormData(prev => ({ ...prev, pob: parts.join(", ") }));
     } else {
-      setFormData((prev) => ({
-        ...prev,
-        pob: ""
-      }));
+      setFormData(prev => ({ ...prev, pob: "" }));
     }
   }, [selectedCountry, selectedState, selectedCity]);
 
-  // Sync Partner 2 location to partnerPob
   useEffect(() => {
     if (selectedCountryPartner && selectedCityPartner) {
       const countryObj = Country.getCountryByCode(selectedCountryPartner);
       const stateObj = selectedStatePartner ? State.getStateByCodeAndCountry(selectedStatePartner, selectedCountryPartner) : null;
-      
-      const parts = [
-        selectedCityPartner,
-        stateObj ? stateObj.name : "",
-        countryObj ? countryObj.name : ""
-      ].filter(Boolean);
-      
-      setFormData((prev) => ({
-        ...prev,
-        partnerPob: parts.join(", ")
-      }));
+      const parts = [selectedCityPartner, stateObj ? stateObj.name : "", countryObj ? countryObj.name : ""].filter(Boolean);
+      setFormData(prev => ({ ...prev, partnerPob: parts.join(", ") }));
     } else {
-      setFormData((prev) => ({
-        ...prev,
-        partnerPob: ""
-      }));
+      setFormData(prev => ({ ...prev, partnerPob: "" }));
     }
   }, [selectedCountryPartner, selectedStatePartner, selectedCityPartner]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Verification by Mode
+    
     if (id === "flames") {
-      if (!formData.name || !formData.partnerName) {
-        alert("Please fill in names for both partners.");
+      if (!formData.name.trim() || !formData.partnerName.trim()) {
+        alert("Please fill in both names.");
         return;
       }
       setLoading(true);
       setTimeout(() => {
-        const flamesResult = runFlamesLogic(formData.name, formData.partnerName);
-        setResult(flamesResult);
+        const flamesResult = calculateFlames(formData.name, formData.partnerName);
+        setResult({
+          isFlames: true,
+          partner1Name: formData.name.trim(),
+          partner2Name: formData.partnerName.trim(),
+          calculatedValue: flamesResult.value,
+          description: flamesResult.desc
+        });
         setLoading(false);
-      }, 1200);
+      }, 1000);
       return;
     }
 
     if (id === "kundli-matching") {
       if (!formData.dob || !formData.tob || !formData.pob || !formData.partnerDob || !formData.partnerTob || !formData.partnerPob) {
-        alert("Please fill in all birth details for both partners.");
+        alert("Please fill in both partners' birth details.");
         return;
       }
-      setLoading(true);
-      
-      const f1 = {
-        name: formData.name.trim() || "Partner 1",
-        dob: formData.dob,
-        tob: formData.tob,
-        pob: formData.pob,
-        is_calculator: true
-      };
-      
-      const f2 = {
-        name: formData.partnerName.trim() || "Partner 2",
-        dob: formData.partnerDob,
-        tob: formData.partnerTob,
-        pob: formData.partnerPob,
-        is_calculator: true
-      };
+    } else {
+      if (!formData.dob || !formData.tob || !formData.pob) {
+        alert("Please fill in Birth Date, Birth Time, and Place of Birth.");
+        return;
+      }
+    }
+    
+    setLoading(true);
+    const apiUrl = process.env.REACT_APP_API_URL || "http://127.0.0.1:8005";
 
-      const apiUrl = process.env.REACT_APP_API_URL || "http://127.0.0.1:8005";
-
-      try {
+    try {
+      if (id === "kundli-matching") {
+        // Fetch calculations for both partners in parallel
         const [res1, res2] = await Promise.all([
           fetch(`${apiUrl}/api/horoscope/generate`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(f1)
+            body: JSON.stringify({
+              name: formData.name.trim() || "Partner 1",
+              dob: formData.dob,
+              tob: formData.tob,
+              pob: formData.pob,
+              is_calculator: true
+            })
           }),
           fetch(`${apiUrl}/api/horoscope/generate`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(f2)
+            body: JSON.stringify({
+              name: formData.partnerName.trim() || "Partner 2",
+              dob: formData.partnerDob,
+              tob: formData.partnerTob,
+              pob: formData.partnerPob,
+              is_calculator: true
+            })
           })
         ]);
 
         if (!res1.ok || !res2.ok) {
-          throw new Error("Vedic calculation endpoints returned error.");
+          throw new Error("One or both profile generations failed.");
         }
 
         const data1 = await res1.json();
         const data2 = await res2.json();
 
-        // Calculate Guna Milan client-side using retrieved planetary metrics
-        const matchInfo = calculateGunaMilan(data1.astrology_details, data2.astrology_details);
+        const gunaResult = calculateGunaMilan(data1.astrology_details, data2.astrology_details);
 
         setResult({
-          isKundliMatch: true,
-          totalScore: matchInfo.totalScore,
-          breakdown: matchInfo.breakdown,
-          rasi1: data1.astrology_details.rasi,
-          nakshatra1: data1.astrology_details.nakshatra,
-          lagna1: data1.astrology_details.lagna,
-          rasi2: data2.astrology_details.rasi,
-          nakshatra2: data2.astrology_details.nakshatra,
-          lagna2: data2.astrology_details.lagna,
-          name1: f1.name,
-          name2: f2.name,
-          calculatedValue: `Guna Match: ${matchInfo.totalScore} / 36`,
-          description: matchInfo.totalScore >= 18 
-            ? `An auspicious match! A Guna Milan score of ${matchInfo.totalScore} out of 36 represents strong compatibility, deep emotional alignment, and a high probability of marital happiness according to Vedic principles.` 
-            : `A moderate or challenging match. A Guna Milan score of ${matchInfo.totalScore} out of 36 suggests some areas of friction, particularly in temperaments or health guidelines. It is advised to perform deeper chart matching and consult remedial actions.`
+          isKundli: true,
+          reportId: data1.id, // For premium redirection CTA
+          partner1Name: formData.name.trim() || "Groom",
+          partner2Name: formData.partnerName.trim() || "Bride",
+          details1: data1.astrology_details,
+          details2: data2.astrology_details,
+          gunaResult: gunaResult
         });
-      } catch (error) {
-        console.error("Vedic calculation error:", error);
-        alert("Failed to calculate Kundli compatibility. Please reach celestial servers.");
-      } finally {
-        setLoading(false);
-      }
-      return;
-    }
-
-    // Default Single-Person Calculator Logic
-    if (!formData.dob || !formData.tob || !formData.pob) {
-      alert("Please fill in Birth Date, Birth Time, and Place of Birth.");
-      return;
-    }
-    
-    setLoading(true);
-    const finalFormData = {
-      name: formData.name.trim() || "Seeker",
-      dob: formData.dob,
-      tob: formData.tob,
-      pob: formData.pob,
-      is_calculator: true
-    };
-
-    const apiUrl = process.env.REACT_APP_API_URL || "http://127.0.0.1:8005";
-
-    try {
-      const response = await fetch(`${apiUrl}/api/horoscope/generate`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(finalFormData)
-      });
-      
-      const data = await response.json();
-      if (response.ok) {
-        const insights = getCalculatorInsights(data, id);
-        setResult(insights);
       } else {
-        alert(data.detail || "Failed to calculate. Please try again.");
+        // Single person calculator
+        const response = await fetch(`${apiUrl}/api/horoscope/generate`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: formData.name.trim() || "Seeker",
+            dob: formData.dob,
+            tob: formData.tob,
+            pob: formData.pob,
+            is_calculator: true
+          })
+        });
+        
+        const data = await response.json();
+        if (response.ok) {
+          const insights = getCalculatorInsights(data, id);
+          setResult({
+            ...insights,
+            reportId: data.id,
+            isSingle: true
+          });
+        } else {
+          alert(data.detail || "Failed to calculate. Please try again.");
+        }
       }
     } catch (error) {
       console.error("Calculator error:", error);
@@ -727,137 +640,195 @@ const CalculatorPage = () => {
   };
 
   return (
-    <div className="pt-24 pb-24 relative z-10 bg-[#FDFBF7] min-h-screen overflow-hidden font-[Outfit,sans-serif]">
+    <div className="pt-24 pb-24 relative z-10 bg-[#FDFBF7] min-h-screen overflow-hidden text-[#3C2A21] font-[Outfit,sans-serif]">
       
-      {/* Premium top banner */}
+      <style>{`
+        @keyframes spinSlow {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+        @keyframes twinkle {
+          0%, 100% { opacity: 0.15; transform: scale(0.85); }
+          50% { opacity: 0.8; transform: scale(1.15); }
+        }
+        @keyframes pulseGlow {
+          0%, 100% { opacity: 0.3; }
+          50% { opacity: 0.6; }
+        }
+      `}</style>
+
+      {/* Premium Dark Banner Section */}
       <motion.div 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1 }}
         className="relative w-full h-[220px] md:h-[260px] bg-[#3C2A21] flex items-center overflow-hidden border-b border-[#B38B36]/20"
       >
-        <div className="absolute inset-0 bg-black/55 z-10" />
+        <div className="absolute inset-0 bg-black/40 z-10" />
         
-        {/* Decorative background orbits */}
-        <div className="absolute -top-16 -left-16 w-80 h-80 rounded-full border border-[#B38B36]/15 border-dashed animate-spin pointer-events-none" style={{ animationDuration: '100s' }} />
-        <div className="absolute -bottom-16 -right-16 w-[350px] h-[350px] rounded-full border border-[#B38B36]/10 border-dotted animate-spin pointer-events-none" style={{ animationDuration: '80s', animationDirection: 'reverse' }} />
+        {/* Twinkling star watermark backgrounds */}
+        <div className="absolute top-8 left-12 text-[#B38B36]/30 text-xs animate-[twinkle_5s_infinite_linear] z-10">✦</div>
+        <div className="absolute bottom-10 right-20 text-[#B38B36]/20 text-[10px] animate-[twinkle_3s_infinite_linear] z-10" style={{ animationDelay: "1.5s" }}>✦</div>
+        <div className="absolute top-1/2 right-1/4 text-[#B38B36]/15 text-sm animate-[twinkle_6s_infinite_linear] z-10" style={{ animationDelay: "0.8s" }}>✦</div>
 
-        <div className="relative z-20 max-w-4xl mx-auto px-6 w-full text-center mt-6">
+        {/* Decorative background orbits */}
+        <div className="absolute -top-16 -left-16 w-72 h-72 rounded-full border border-[#B38B36]/15 border-dashed animate-spin pointer-events-none z-0" style={{ animationDuration: '120s' }} />
+        <div className="absolute -bottom-16 -right-16 w-80 h-80 rounded-full border border-[#B38B36]/10 border-dotted animate-spin pointer-events-none z-0" style={{ animationDuration: '90s', animationDirection: 'reverse' }} />
+
+        <div className="relative z-20 max-w-4xl mx-auto px-6 w-full text-center space-y-3 pt-6">
+          {/* Elegant Breadcrumb Back Button */}
           <button 
             onClick={handleGoBack} 
-            className="inline-flex items-center text-white/70 hover:text-[#B38B36] transition-colors mb-4 group cursor-pointer text-[10px] tracking-[0.25em] uppercase font-bold"
+            className="inline-flex items-center gap-1.5 text-stone-300 hover:text-[#B38B36] transition-colors text-[10px] font-bold tracking-widest uppercase cursor-pointer"
           >
-            <ArrowLeft className="w-3.5 h-3.5 mr-1.5 group-hover:-translate-x-1 transition-transform" />
+            <ArrowLeft className="w-3.5 h-3.5" />
             Back to Calculators
           </button>
-          <span className="text-[8px] tracking-[0.25em] text-[#B38B36] uppercase font-bold block mb-1">Free Calculators</span>
-          <h1 className="font-serif text-3xl md:text-4xl text-white font-bold tracking-wide">{calc.title}</h1>
-          <p className="text-white/70 max-w-xl mx-auto text-xs leading-relaxed font-light mt-1.5">{calc.desc}</p>
+          
+          <h1 className="font-serif text-3xl md:text-5xl text-white font-bold tracking-wide">{calc.title}</h1>
+          <p className="text-[#E5E1D8]/80 max-w-xl mx-auto text-xs md:text-sm font-light leading-relaxed">{calc.desc}</p>
         </div>
       </motion.div>
 
-      {/* Floating decorative elements for body content */}
-      <div className="absolute top-[350px] left-1/4 w-[50%] h-[50%] bg-[#B38B36]/5 blur-[120px] rounded-full z-0 pointer-events-none" />
-      <div className="absolute bottom-20 right-1/4 w-[50%] h-[50%] bg-[#725D46]/5 blur-[120px] rounded-full z-0 pointer-events-none" />
+      {/* Decorative ambient orbs in body background */}
+      <div className="absolute top-[300px] left-[-10%] w-[500px] h-[500px] rounded-full bg-[#E8D9FC]/20 blur-[130px] pointer-events-none z-0" />
+      <div className="absolute bottom-10 right-[-10%] w-[600px] h-[600px] rounded-full bg-[#FDE7BA]/20 blur-[140px] pointer-events-none z-0" />
 
+      {/* Main Form/Result Container */}
       <div className="max-w-4xl mx-auto px-6 relative z-10 mt-12">
+        
         {!result ? (
           <motion.form 
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 25 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
+            transition={{ duration: 0.6 }}
             onSubmit={handleSubmit}
-            className="bg-white/80 backdrop-blur-xl p-6 md:p-10 rounded-[2.5rem] shadow-[0_20px_50px_rgba(60,42,33,0.06)] border border-[#B38B36]/20"
+            className="bg-white/60 backdrop-blur-xl p-6 md:p-10 rounded-[2.5rem] shadow-[0_20px_50px_rgba(60,42,33,0.05)] border border-[#B38B36]/20 relative overflow-hidden"
           >
-            <div className="space-y-6">
-              
-              {/* Mode 1: Flames Calculator (Names only) */}
-              {id === "flames" && (
-                <div className="grid md:grid-cols-2 gap-6 text-left">
+            {/* Elegant inner gold rim */}
+            <div className="absolute inset-2.5 border border-[#B38B36]/10 rounded-[2rem] pointer-events-none" />
+
+            {/* FLAMES FORM STATE (HIDES ALL DATES/TIMES/PLACES) */}
+            {id === "flames" ? (
+              <div className="space-y-8 relative z-10 pt-2">
+                <div className="text-center">
+                  <span className="inline-flex items-center gap-1 px-3 py-1 border border-[#B38B36]/25 rounded-full bg-[#B38B36]/5 text-[9px] tracking-widest text-[#8E6B23] uppercase font-bold mb-3">
+                    ❤ Compatibility Game
+                  </span>
+                  <h3 className="font-serif text-xl font-medium">Name Compatibility Analysis</h3>
+                  <p className="text-stone-500 text-xs mt-1 font-light max-w-md mx-auto">
+                    Type in your name and your partner's name below to reveal the cosmic alignment between you two.
+                  </p>
+                </div>
+                
+                <div className="grid md:grid-cols-2 gap-8 text-left">
                   {/* Your Name */}
                   <div className="space-y-2">
-                    <label className="text-xs font-bold uppercase tracking-widest text-[#3C2A21] flex items-center gap-2">
+                    <label className="text-[10px] font-bold uppercase tracking-widest text-[#3C2A21] flex items-center gap-2">
                       <User className="w-4 h-4 text-[#B38B36]" /> Your Name
                     </label>
                     <input 
                       required
                       type="text" 
-                      className="w-full bg-[#FDFBF7]/60 border border-[#E5E1D8] rounded-xl px-4 py-3 outline-none focus:border-[#B38B36] focus:ring-1 focus:ring-[#B38B36]/30 transition-all text-sm text-[#3C2A21]" 
+                      className="w-full bg-[#FDFBF7]/60 border border-[#E5E1D8] rounded-xl px-4 py-3.5 outline-none focus:border-[#B38B36] focus:ring-1 focus:ring-[#B38B36]/30 transition-all text-sm text-[#3C2A21]" 
                       placeholder="Enter your name" 
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     />
                   </div>
-                  {/* Partner's Name */}
+
+                  {/* Partner Name */}
                   <div className="space-y-2">
-                    <label className="text-xs font-bold uppercase tracking-widest text-[#3C2A21] flex items-center gap-2">
-                      <User className="w-4 h-4 text-[#B38B36]" /> Partner's Name
+                    <label className="text-[10px] font-bold uppercase tracking-widest text-[#3C2A21] flex items-center gap-2">
+                      <Heart className="w-4 h-4 text-[#B38B36]" /> Partner's Name
                     </label>
                     <input 
                       required
                       type="text" 
-                      className="w-full bg-[#FDFBF7]/60 border border-[#E5E1D8] rounded-xl px-4 py-3 outline-none focus:border-[#B38B36] focus:ring-1 focus:ring-[#B38B36]/30 transition-all text-sm text-[#3C2A21]" 
+                      className="w-full bg-[#FDFBF7]/60 border border-[#E5E1D8] rounded-xl px-4 py-3.5 outline-none focus:border-[#B38B36] focus:ring-1 focus:ring-[#B38B36]/30 transition-all text-sm text-[#3C2A21]" 
                       placeholder="Enter partner's name" 
                       value={formData.partnerName}
                       onChange={(e) => setFormData({ ...formData, partnerName: e.target.value })}
                     />
                   </div>
                 </div>
-              )}
+              </div>
+            ) : id === "kundli-matching" ? (
+              // KUNDLI MATCHING FORM STATE (TWO COMPLETE DETAIL CARDS)
+              <div className="space-y-8 relative z-10 pt-2">
+                <div className="text-center border-b border-[#B38B36]/10 pb-4 mb-6">
+                  <span className="inline-flex items-center gap-1 px-3 py-1 border border-[#B38B36]/25 rounded-full bg-[#B38B36]/5 text-[9px] tracking-widest text-[#8E6B23] uppercase font-bold mb-3">
+                    💫 Astrological Union
+                  </span>
+                  <h3 className="font-serif text-xl font-medium">Partner Compatibility Profiles</h3>
+                  <p className="text-stone-500 text-xs mt-1 font-light max-w-md mx-auto">
+                    Provide the birth coordinates of both partners. Guna Milan will calculate the 36-point compatibility grid.
+                  </p>
+                </div>
 
-              {/* Mode 2: Kundli Matching (Two full birth details profiles) */}
-              {id === "kundli-matching" && (
-                <div className="space-y-8">
-                  {/* Partner 1 Info */}
-                  <div className="bg-[#FDFBF7]/50 p-6 rounded-2xl border border-[#B38B36]/15 text-left space-y-4">
-                    <h3 className="font-serif text-[#8E6B23] font-bold text-sm tracking-wider flex items-center gap-2 border-b border-[#B38B36]/10 pb-2">
-                      <User className="w-4 h-4" /> First Partner Details
-                    </h3>
-                    <div className="grid md:grid-cols-3 gap-4">
-                      <div className="space-y-1">
-                        <label className="text-[10px] font-bold uppercase tracking-wider text-[#6E5D53]">Full Name</label>
+                <div className="grid md:grid-cols-2 gap-8 text-left items-start">
+                  
+                  {/* PARTNER 1 DETAILS CARD */}
+                  <div className="bg-[#FFFDF9]/60 border border-[#B38B36]/15 rounded-2xl p-5 md:p-6 space-y-4">
+                    <h4 className="font-serif text-base text-[#8E6B23] font-medium flex items-center gap-2 border-b border-[#B38B36]/10 pb-2">
+                      <span className="w-5 h-5 rounded-full bg-[#B38B36]/10 text-xs text-[#8E6B23] flex items-center justify-center font-bold">1</span>
+                      Partner 1 (You / Groom)
+                    </h4>
+                    
+                    {/* Full Name */}
+                    <div className="space-y-1.5">
+                      <label className="text-[9px] font-bold uppercase tracking-widest text-[#3C2A21] flex items-center gap-1.5">
+                        <User className="w-3.5 h-3.5 text-[#B38B36]" /> Full Name
+                      </label>
+                      <input 
+                        type="text" 
+                        className="w-full bg-white/80 border border-[#E5E1D8] rounded-xl px-3 py-2.5 outline-none focus:border-[#B38B36] transition-all text-xs text-[#3C2A21]" 
+                        placeholder="Name (optional)" 
+                        value={formData.name}
+                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      />
+                    </div>
+
+                    {/* Birth Date and Time */}
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-1.5">
+                        <label className="text-[9px] font-bold uppercase tracking-widest text-[#3C2A21] flex items-center gap-1.5">
+                          <Calendar className="w-3.5 h-3.5 text-[#B38B36]" /> Birth Date
+                        </label>
                         <input 
-                          required
-                          type="text" 
-                          className="w-full bg-white/70 border border-[#E5E1D8] rounded-lg px-3 py-2 outline-none focus:border-[#B38B36] text-xs text-[#3C2A21]" 
-                          placeholder="Name / Seeker" 
-                          value={formData.name}
-                          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        />
-                      </div>
-                      <div className="space-y-1">
-                        <label className="text-[10px] font-bold uppercase tracking-wider text-[#6E5D53]">Date of Birth</label>
-                        <input 
-                          required
+                          required 
                           type="date" 
-                          className="w-full bg-white/70 border border-[#E5E1D8] rounded-lg px-3 py-2 outline-none focus:border-[#B38B36] text-xs text-[#3C2A21] cursor-pointer" 
+                          className="w-full bg-white/80 border border-[#E5E1D8] rounded-xl px-2 py-2.5 outline-none focus:border-[#B38B36] transition-all text-[11px] text-[#3C2A21] cursor-pointer" 
                           value={formData.dob}
                           onChange={(e) => setFormData({ ...formData, dob: e.target.value })}
                         />
                       </div>
-                      <div className="space-y-1">
-                        <label className="text-[10px] font-bold uppercase tracking-wider text-[#6E5D53]">Time of Birth</label>
+                      <div className="space-y-1.5">
+                        <label className="text-[9px] font-bold uppercase tracking-widest text-[#3C2A21] flex items-center gap-1.5">
+                          <Clock className="w-3.5 h-3.5 text-[#B38B36]" /> Birth Time
+                        </label>
                         <input 
-                          required
+                          required 
                           type="time" 
-                          className="w-full bg-white/70 border border-[#E5E1D8] rounded-lg px-3 py-2 outline-none focus:border-[#B38B36] text-xs text-[#3C2A21] cursor-pointer" 
+                          className="w-full bg-white/80 border border-[#E5E1D8] rounded-xl px-2 py-2.5 outline-none focus:border-[#B38B36] transition-all text-[11px] text-[#3C2A21] cursor-pointer" 
                           value={formData.tob}
                           onChange={(e) => setFormData({ ...formData, tob: e.target.value })}
                         />
                       </div>
                     </div>
 
-                    {/* Partner 1 Place of Birth Selectors */}
-                    <div className="space-y-1 text-left">
-                      <label className="text-[10px] font-bold uppercase tracking-wider text-[#6E5D53] flex items-center gap-1">
+                    {/* Place of Birth */}
+                    <div className="space-y-1.5">
+                      <label className="text-[9px] font-bold uppercase tracking-widest text-[#3C2A21] flex items-center gap-1.5">
                         <MapPin className="w-3.5 h-3.5 text-[#B38B36]" /> Place of Birth
                       </label>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                      <div className="space-y-2">
+                        {/* Country */}
                         <select
                           required
                           value={selectedCountry}
                           onChange={handleCountryChange}
-                          className="w-full bg-white/70 border border-[#E5E1D8] rounded-lg px-3 py-2 outline-none focus:border-[#B38B36] text-xs text-[#3C2A21] cursor-pointer"
+                          className="w-full bg-white/80 border border-[#E5E1D8] rounded-xl px-3 py-2.5 outline-none focus:border-[#B38B36] text-[11px] text-[#3C2A21] cursor-pointer"
                         >
                           <option value="">Select Country</option>
                           {countries.map((c) => (
@@ -865,25 +836,28 @@ const CalculatorPage = () => {
                           ))}
                         </select>
 
-                        <select
-                          required
-                          disabled={states.length === 0}
-                          value={selectedState}
-                          onChange={handleStateChange}
-                          className="w-full bg-white/70 border border-[#E5E1D8] rounded-lg px-3 py-2 outline-none focus:border-[#B38B36] text-xs text-[#3C2A21] cursor-pointer disabled:opacity-50"
-                        >
-                          <option value="">Select State</option>
-                          {states.map((s) => (
-                            <option key={s.isoCode} value={s.isoCode}>{s.name}</option>
-                          ))}
-                        </select>
+                        {/* State */}
+                        {states.length > 0 && (
+                          <select
+                            required
+                            value={selectedState}
+                            onChange={handleStateChange}
+                            className="w-full bg-white/80 border border-[#E5E1D8] rounded-xl px-3 py-2.5 outline-none focus:border-[#B38B36] text-[11px] text-[#3C2A21] cursor-pointer"
+                          >
+                            <option value="">Select State</option>
+                            {states.map((s) => (
+                              <option key={s.isoCode} value={s.isoCode}>{s.name}</option>
+                            ))}
+                          </select>
+                        )}
 
+                        {/* City */}
                         <select
                           required
                           disabled={!selectedCountry || (states.length > 0 && !selectedState)}
                           value={selectedCity}
                           onChange={handleCityChange}
-                          className="w-full bg-white/70 border border-[#E5E1D8] rounded-lg px-3 py-2 outline-none focus:border-[#B38B36] text-xs text-[#3C2A21] cursor-pointer disabled:opacity-50"
+                          className="w-full bg-white/80 border border-[#E5E1D8] rounded-xl px-3 py-2.5 outline-none focus:border-[#B38B36] text-[11px] text-[#3C2A21] cursor-pointer disabled:opacity-50"
                         >
                           <option value="">Select City</option>
                           {cities.map((city, idx) => (
@@ -894,82 +868,96 @@ const CalculatorPage = () => {
                     </div>
                   </div>
 
-                  {/* Partner 2 Info */}
-                  <div className="bg-[#FDFBF7]/50 p-6 rounded-2xl border border-[#B38B36]/15 text-left space-y-4">
-                    <h3 className="font-serif text-[#8E6B23] font-bold text-sm tracking-wider flex items-center gap-2 border-b border-[#B38B36]/10 pb-2">
-                      <User className="w-4 h-4" /> Second Partner Details
-                    </h3>
-                    <div className="grid md:grid-cols-3 gap-4">
-                      <div className="space-y-1">
-                        <label className="text-[10px] font-bold uppercase tracking-wider text-[#6E5D53]">Full Name</label>
+                  {/* PARTNER 2 DETAILS CARD */}
+                  <div className="bg-[#FFFDF9]/60 border border-[#B38B36]/15 rounded-2xl p-5 md:p-6 space-y-4">
+                    <h4 className="font-serif text-base text-[#8E6B23] font-medium flex items-center gap-2 border-b border-[#B38B36]/10 pb-2">
+                      <span className="w-5 h-5 rounded-full bg-[#B38B36]/10 text-xs text-[#8E6B23] flex items-center justify-center font-bold">2</span>
+                      Partner 2 (Spouse / Bride)
+                    </h4>
+                    
+                    {/* Full Name */}
+                    <div className="space-y-1.5">
+                      <label className="text-[9px] font-bold uppercase tracking-widest text-[#3C2A21] flex items-center gap-1.5">
+                        <User className="w-3.5 h-3.5 text-[#B38B36]" /> Full Name
+                      </label>
+                      <input 
+                        type="text" 
+                        className="w-full bg-white/80 border border-[#E5E1D8] rounded-xl px-3 py-2.5 outline-none focus:border-[#B38B36] transition-all text-xs text-[#3C2A21]" 
+                        placeholder="Name (optional)" 
+                        value={formData.partnerName}
+                        onChange={(e) => setFormData({ ...formData, partnerName: e.target.value })}
+                      />
+                    </div>
+
+                    {/* Birth Date and Time */}
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-1.5">
+                        <label className="text-[9px] font-bold uppercase tracking-widest text-[#3C2A21] flex items-center gap-1.5">
+                          <Calendar className="w-3.5 h-3.5 text-[#B38B36]" /> Birth Date
+                        </label>
                         <input 
-                          required
-                          type="text" 
-                          className="w-full bg-white/70 border border-[#E5E1D8] rounded-lg px-3 py-2 outline-none focus:border-[#B38B36] text-xs text-[#3C2A21]" 
-                          placeholder="Name / Partner" 
-                          value={formData.partnerName}
-                          onChange={(e) => setFormData({ ...formData, partnerName: e.target.value })}
-                        />
-                      </div>
-                      <div className="space-y-1">
-                        <label className="text-[10px] font-bold uppercase tracking-wider text-[#6E5D53]">Date of Birth</label>
-                        <input 
-                          required
+                          required 
                           type="date" 
-                          className="w-full bg-white/70 border border-[#E5E1D8] rounded-lg px-3 py-2 outline-none focus:border-[#B38B36] text-xs text-[#3C2A21] cursor-pointer" 
+                          className="w-full bg-white/80 border border-[#E5E1D8] rounded-xl px-2 py-2.5 outline-none focus:border-[#B38B36] transition-all text-[11px] text-[#3C2A21] cursor-pointer" 
                           value={formData.partnerDob}
                           onChange={(e) => setFormData({ ...formData, partnerDob: e.target.value })}
                         />
                       </div>
-                      <div className="space-y-1">
-                        <label className="text-[10px] font-bold uppercase tracking-wider text-[#6E5D53]">Time of Birth</label>
+                      <div className="space-y-1.5">
+                        <label className="text-[9px] font-bold uppercase tracking-widest text-[#3C2A21] flex items-center gap-1.5">
+                          <Clock className="w-3.5 h-3.5 text-[#B38B36]" /> Birth Time
+                        </label>
                         <input 
-                          required
+                          required 
                           type="time" 
-                          className="w-full bg-white/70 border border-[#E5E1D8] rounded-lg px-3 py-2 outline-none focus:border-[#B38B36] text-xs text-[#3C2A21] cursor-pointer" 
+                          className="w-full bg-white/80 border border-[#E5E1D8] rounded-xl px-2 py-2.5 outline-none focus:border-[#B38B36] transition-all text-[11px] text-[#3C2A21] cursor-pointer" 
                           value={formData.partnerTob}
                           onChange={(e) => setFormData({ ...formData, partnerTob: e.target.value })}
                         />
                       </div>
                     </div>
 
-                    {/* Partner 2 Place of Birth Selectors */}
-                    <div className="space-y-1 text-left">
-                      <label className="text-[10px] font-bold uppercase tracking-wider text-[#6E5D53] flex items-center gap-1">
+                    {/* Place of Birth */}
+                    <div className="space-y-1.5">
+                      <label className="text-[9px] font-bold uppercase tracking-widest text-[#3C2A21] flex items-center gap-1.5">
                         <MapPin className="w-3.5 h-3.5 text-[#B38B36]" /> Place of Birth
                       </label>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                      <div className="space-y-2">
+                        {/* Country */}
                         <select
                           required
                           value={selectedCountryPartner}
                           onChange={handleCountryChangePartner}
-                          className="w-full bg-white/70 border border-[#E5E1D8] rounded-lg px-3 py-2 outline-none focus:border-[#B38B36] text-xs text-[#3C2A21] cursor-pointer"
+                          className="w-full bg-white/80 border border-[#E5E1D8] rounded-xl px-3 py-2.5 outline-none focus:border-[#B38B36] text-[11px] text-[#3C2A21] cursor-pointer"
                         >
                           <option value="">Select Country</option>
-                          {countries.map((c) => (
+                          {countriesPartner.map((c) => (
                             <option key={c.isoCode} value={c.isoCode}>{c.name}</option>
                           ))}
                         </select>
 
-                        <select
-                          required
-                          disabled={statesPartner.length === 0}
-                          value={selectedStatePartner}
-                          onChange={handleStateChangePartner}
-                          className="w-full bg-white/70 border border-[#E5E1D8] rounded-lg px-3 py-2 outline-none focus:border-[#B38B36] text-xs text-[#3C2A21] cursor-pointer disabled:opacity-50"
-                        >
-                          <option value="">Select State</option>
-                          {statesPartner.map((s) => (
-                            <option key={s.isoCode} value={s.isoCode}>{s.name}</option>
-                          ))}
-                        </select>
+                        {/* State */}
+                        {statesPartner.length > 0 && (
+                          <select
+                            required
+                            value={selectedStatePartner}
+                            onChange={handleStateChangePartner}
+                            className="w-full bg-white/80 border border-[#E5E1D8] rounded-xl px-3 py-2.5 outline-none focus:border-[#B38B36] text-[11px] text-[#3C2A21] cursor-pointer"
+                          >
+                            <option value="">Select State</option>
+                            {statesPartner.map((s) => (
+                              <option key={s.isoCode} value={s.isoCode}>{s.name}</option>
+                            ))}
+                          </select>
+                        )}
 
+                        {/* City */}
                         <select
                           required
                           disabled={!selectedCountryPartner || (statesPartner.length > 0 && !selectedStatePartner)}
                           value={selectedCityPartner}
                           onChange={handleCityChangePartner}
-                          className="w-full bg-white/70 border border-[#E5E1D8] rounded-lg px-3 py-2 outline-none focus:border-[#B38B36] text-xs text-[#3C2A21] cursor-pointer disabled:opacity-50"
+                          className="w-full bg-white/80 border border-[#E5E1D8] rounded-xl px-3 py-2.5 outline-none focus:border-[#B38B36] text-[11px] text-[#3C2A21] cursor-pointer disabled:opacity-50"
                         >
                           <option value="">Select City</option>
                           {citiesPartner.map((city, idx) => (
@@ -979,307 +967,361 @@ const CalculatorPage = () => {
                       </div>
                     </div>
                   </div>
-                </div>
-              )}
 
-              {/* Mode 3: Default Single Person Calculators */}
-              {id !== "flames" && id !== "kundli-matching" && (
-                <>
-                  {/* Full Name */}
-                  <div className="space-y-2 text-left">
+                </div>
+              </div>
+            ) : (
+              // STANDARD SINGLE PERSON FORM STATE
+              <div className="space-y-6 relative z-10 pt-2">
+                {/* Full Name */}
+                <div className="space-y-2 text-left">
+                  <label className="text-xs font-bold uppercase tracking-widest text-[#3C2A21] flex items-center gap-2">
+                    <User className="w-4.5 h-4.5 text-[#B38B36]" /> Full Name
+                  </label>
+                  <input 
+                    type="text" 
+                    className="w-full bg-[#FDFBF7]/60 border border-[#E5E1D8] rounded-xl px-4 py-3.5 outline-none focus:border-[#B38B36] focus:ring-1 focus:ring-[#B38B36]/30 transition-all text-sm text-[#3C2A21]" 
+                    placeholder="Enter your name (optional)" 
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  />
+                </div>
+
+                {/* Birth Date and Time */}
+                <div className="grid md:grid-cols-2 gap-6 text-left">
+                  <div className="space-y-2">
                     <label className="text-xs font-bold uppercase tracking-widest text-[#3C2A21] flex items-center gap-2">
-                      <User className="w-4 h-4 text-[#B38B36]" /> Full Name
+                      <Calendar className="w-4.5 h-4.5 text-[#B38B36]" /> Date of Birth
                     </label>
                     <input 
-                      type="text" 
-                      className="w-full bg-[#FDFBF7]/60 border border-[#E5E1D8] rounded-xl px-4 py-3 outline-none focus:border-[#B38B36] focus:ring-1 focus:ring-[#B38B36]/30 transition-all text-sm text-[#3C2A21]" 
-                      placeholder="Enter your name (optional)" 
-                      value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      required 
+                      type="date" 
+                      className="w-full bg-[#FDFBF7]/60 border border-[#E5E1D8] rounded-xl px-4 py-3.5 outline-none focus:border-[#B38B36] focus:ring-1 focus:ring-[#B38B36]/30 transition-all text-sm text-[#3C2A21] cursor-pointer" 
+                      value={formData.dob}
+                      onChange={(e) => setFormData({ ...formData, dob: e.target.value })}
                     />
                   </div>
-
-                  {/* Birth Date and Time */}
-                  <div className="grid md:grid-cols-2 gap-6 text-left">
-                    <div className="space-y-2">
-                      <label className="text-xs font-bold uppercase tracking-widest text-[#3C2A21] flex items-center gap-2">
-                        <Calendar className="w-4 h-4 text-[#B38B36]" /> Date of Birth
-                      </label>
-                      <input 
-                        required 
-                        type="date" 
-                        className="w-full bg-[#FDFBF7]/60 border border-[#E5E1D8] rounded-xl px-4 py-3 outline-none focus:border-[#B38B36] focus:ring-1 focus:ring-[#B38B36]/30 transition-all text-sm text-[#3C2A21] cursor-pointer" 
-                        value={formData.dob}
-                        onChange={(e) => setFormData({ ...formData, dob: e.target.value })}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-xs font-bold uppercase tracking-widest text-[#3C2A21] flex items-center gap-2">
-                        <Clock className="w-4 h-4 text-[#B38B36]" /> Time of Birth
-                      </label>
-                      <input 
-                        required 
-                        type="time" 
-                        className="w-full bg-[#FDFBF7]/60 border border-[#E5E1D8] rounded-xl px-4 py-3 outline-none focus:border-[#B38B36] focus:ring-1 focus:ring-[#B38B36]/30 transition-all text-sm text-[#3C2A21] cursor-pointer" 
-                        value={formData.tob}
-                        onChange={(e) => setFormData({ ...formData, tob: e.target.value })}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Cascading Place of Birth Dropdowns */}
-                  <div className="space-y-2 text-left">
+                  <div className="space-y-2">
                     <label className="text-xs font-bold uppercase tracking-widest text-[#3C2A21] flex items-center gap-2">
-                      <MapPin className="w-4 h-4 text-[#B38B36]" /> Place of Birth
+                      <Clock className="w-4.5 h-4.5 text-[#B38B36]" /> Time of Birth
                     </label>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <div className="relative">
-                        <select
-                          required
-                          value={selectedCountry}
-                          onChange={handleCountryChange}
-                          className="w-full bg-[#FDFBF7]/60 border border-[#E5E1D8] rounded-xl px-4 py-3 outline-none focus:border-[#B38B36] focus:ring-1 focus:ring-[#B38B36]/30 transition-all text-sm text-[#3C2A21] cursor-pointer appearance-none"
-                        >
-                          <option value="">Select Country</option>
-                          {countries.map((c) => (
-                            <option key={c.isoCode} value={c.isoCode}>{c.name}</option>
-                          ))}
-                        </select>
-                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-[#B38B36]">
-                          <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
-                        </div>
-                      </div>
+                    <input 
+                      required 
+                      type="time" 
+                      className="w-full bg-[#FDFBF7]/60 border border-[#E5E1D8] rounded-xl px-4 py-3.5 outline-none focus:border-[#B38B36] focus:ring-1 focus:ring-[#B38B36]/30 transition-all text-sm text-[#3C2A21] cursor-pointer" 
+                      value={formData.tob}
+                      onChange={(e) => setFormData({ ...formData, tob: e.target.value })}
+                    />
+                  </div>
+                </div>
 
+                {/* Cascading Place of Birth Dropdowns */}
+                <div className="space-y-2 text-left">
+                  <label className="text-xs font-bold uppercase tracking-widest text-[#3C2A21] flex items-center gap-2">
+                    <MapPin className="w-4.5 h-4.5 text-[#B38B36]" /> Place of Birth
+                  </label>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {/* Country */}
+                    <div className="relative">
+                      <select
+                        required
+                        value={selectedCountry}
+                        onChange={handleCountryChange}
+                        className="w-full bg-[#FDFBF7]/60 border border-[#E5E1D8] rounded-xl px-4 py-3.5 outline-none focus:border-[#B38B36] text-sm text-[#3C2A21] cursor-pointer appearance-none animate-none"
+                      >
+                        <option value="">Select Country</option>
+                        {countries.map((c) => (
+                          <option key={c.isoCode} value={c.isoCode}>
+                            {c.name}
+                          </option>
+                        ))}
+                      </select>
+                      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-[#B38B36]">
+                        <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                      </div>
+                    </div>
+
+                    {/* State */}
+                    {states.length > 0 ? (
                       <div className="relative">
                         <select
                           required
-                          disabled={states.length === 0}
                           value={selectedState}
                           onChange={handleStateChange}
-                          className="w-full bg-[#FDFBF7]/60 border border-[#E5E1D8] rounded-xl px-4 py-3 outline-none focus:border-[#B38B36] focus:ring-1 focus:ring-[#B38B36]/30 transition-all text-sm text-[#3C2A21] cursor-pointer disabled:opacity-50 appearance-none"
+                          className="w-full bg-[#FDFBF7]/60 border border-[#E5E1D8] rounded-xl px-4 py-3.5 outline-none focus:border-[#B38B36] text-sm text-[#3C2A21] cursor-pointer appearance-none animate-none"
                         >
                           <option value="">Select State</option>
                           {states.map((s) => (
-                            <option key={s.isoCode} value={s.isoCode}>{s.name}</option>
+                            <option key={s.isoCode} value={s.isoCode}>
+                              {s.name}
+                            </option>
                           ))}
                         </select>
                         <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-[#B38B36]">
                           <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
                         </div>
                       </div>
+                    ) : (
+                      <div className="hidden md:block" />
+                    )}
 
-                      <div className="relative">
-                        <select
-                          required
-                          disabled={!selectedCountry || (states.length > 0 && !selectedState)}
-                          value={selectedCity}
-                          onChange={handleCityChange}
-                          className="w-full bg-[#FDFBF7]/60 border border-[#E5E1D8] rounded-xl px-4 py-3 outline-none focus:border-[#B38B36] focus:ring-1 focus:ring-[#B38B36]/30 transition-all text-sm text-[#3C2A21] cursor-pointer disabled:opacity-50 appearance-none"
-                        >
-                          <option value="">Select City</option>
-                          {cities.map((city, idx) => (
-                            <option key={idx} value={city.name}>{city.name}</option>
-                          ))}
-                        </select>
-                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-[#B38B36]">
-                          <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
-                        </div>
+                    {/* City */}
+                    <div className="relative">
+                      <select
+                        required
+                        disabled={!selectedCountry || (states.length > 0 && !selectedState)}
+                        value={selectedCity}
+                        onChange={handleCityChange}
+                        className="w-full bg-[#FDFBF7]/60 border border-[#E5E1D8] rounded-xl px-4 py-3.5 outline-none focus:border-[#B38B36] text-sm text-[#3C2A21] cursor-pointer disabled:opacity-50 appearance-none animate-none"
+                      >
+                        <option value="">Select City</option>
+                        {cities.map((city, idx) => (
+                          <option key={idx} value={city.name}>
+                            {city.name}
+                          </option>
+                        ))}
+                      </select>
+                      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-[#B38B36]">
+                        <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
                       </div>
                     </div>
                   </div>
+                </div>
+              </div>
+            )}
+
+            <button 
+              type="submit" 
+              disabled={loading}
+              className="w-full mt-10 bg-gradient-to-r from-[#BF953F] via-[#FCF6BA] to-[#B38728] hover:brightness-[1.12] text-[#1E110A] rounded-full py-4.5 font-serif font-bold tracking-[0.2em] uppercase text-xs flex items-center justify-center gap-2.5 transition-all duration-500 disabled:opacity-70 shadow-[0_4px_15px_rgba(179,139,54,0.35)] hover:scale-[1.02] transform cursor-pointer border border-[#FCF6BA]/40 relative z-10"
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin text-[#1E110A]" /> 
+                  <span>Calculating Cosmos...</span>
+                </>
+              ) : (
+                <>
+                  <Sparkles className="w-4 h-4 text-[#1E110A]" /> 
+                  <span>Reveal Insights</span>
                 </>
               )}
-
-              <button 
-                type="submit" 
-                disabled={loading}
-                className="w-full mt-8 bg-[#B38B36] text-white rounded-full py-4 font-bold tracking-widest uppercase text-xs flex items-center justify-center gap-2 hover:bg-[#9A752B] transition-all duration-300 disabled:opacity-70 shadow-lg hover:shadow-xl hover:-translate-y-0.5 transform cursor-pointer"
-              >
-                {loading ? (
-                  <span className="flex items-center gap-2">
-                    <RefreshCw className="w-4 h-4 animate-spin text-white" /> Calculating Cosmos...
-                  </span>
-                ) : (
-                  <span className="flex items-center gap-2">
-                    <Sparkles className="w-4 h-4 text-white" /> Reveal Insights
-                  </span>
-                )}
-              </button>
-            </div>
+            </button>
           </motion.form>
         ) : (
+          // ==================== RESULTS CARD DISPLAY ====================
           <motion.div 
             initial={{ opacity: 0, scale: 0.97 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-white/60 backdrop-blur-xl p-6 md:p-12 rounded-[2.5rem] shadow-[0_30px_60px_rgba(60,42,33,0.08)] border border-[#B38B36]/30 text-center relative overflow-hidden"
+            className="bg-white/70 backdrop-blur-2xl p-6 md:p-12 rounded-[2.5rem] shadow-[0_30px_60px_rgba(60,42,33,0.06)] border border-[#B38B36]/30 text-center relative overflow-hidden"
           >
             {/* Elegant double-line golden frames */}
             <div className="absolute inset-4 border border-[#B38B36]/20 rounded-[2rem] pointer-events-none z-0" />
-            <div className="absolute inset-5 border border-[#B38B36]/5 rounded-[1.8rem] pointer-events-none z-0" />
+            <div className="absolute inset-5.5 border border-[#B38B36]/5 rounded-[1.85rem] pointer-events-none z-0" />
             
-            {/* Fine line orbit visuals in background */}
-            <svg viewBox="0 0 100 100" className="absolute -right-20 -top-20 h-80 text-[#B38B36]/5 fill-none pointer-events-none z-0">
-              <circle cx="50" cy="50" r="40" stroke="currentColor" strokeWidth="0.5" />
-              <circle cx="50" cy="50" r="30" stroke="currentColor" strokeWidth="0.5" strokeDasharray="2 2" />
-            </svg>
+            {/* Rotating astronomical background graphic */}
+            <div className="absolute -right-24 -top-24 w-80 h-80 opacity-[0.04] animate-[spinSlow_150s_linear_infinite] pointer-events-none select-none z-0 text-[#B38B36]">
+              <svg viewBox="0 0 100 100" className="w-full h-full fill-none stroke-current">
+                <circle cx="50" cy="50" r="45" strokeWidth="0.3" />
+                <circle cx="50" cy="50" r="30" strokeWidth="0.3" />
+                <circle cx="50" cy="50" r="15" strokeWidth="0.3" strokeDasharray="1 1" />
+              </svg>
+            </div>
 
-            <div className="relative z-10 space-y-6">
+            <div className="relative z-10 max-w-3xl mx-auto space-y-8">
               
-              {/* Cosmic Insignia Icon */}
+              {/* Icon Badge */}
               <div className="w-16 h-16 mx-auto bg-[#B38B36]/10 rounded-full flex items-center justify-center border border-[#B38B36]/20 shadow-inner">
                 {result.isFlames ? (
-                  <Flame className="w-8 h-8 text-red-500 animate-pulse" />
-                ) : result.isKundliMatch ? (
-                  <Heart className="w-8 h-8 text-[#8E6B23] animate-pulse" />
+                  <Flame className="w-7 h-7 text-[#8E6B23] animate-pulse" />
+                ) : result.isKundli ? (
+                  <Heart className="w-7 h-7 text-[#8E6B23] animate-pulse" />
                 ) : (
-                  <Sparkles className="w-8 h-8 text-[#8E6B23] animate-pulse" />
+                  <Sparkles className="w-7 h-7 text-[#8E6B23] animate-pulse" />
                 )}
               </div>
 
-              {/* Title & Results Values */}
+              {/* Header Title */}
               <div>
-                <h3 className="font-serif text-2xl text-[#3C2A21] font-medium tracking-wide mb-1">
-                  {result.isKundliMatch ? "Vedic Horoscope Compatibility" : result.isFlames ? "FLAMES Friendship & Love Test" : "Your Celestial Blueprint"}
+                <span className="text-[9px] tracking-[0.25em] text-[#8E6B23] uppercase font-black block mb-1">Calculation Complete</span>
+                <h3 className="font-serif text-3xl text-[#3C2A21] font-semibold tracking-wide">
+                  {result.isFlames ? "Relationship Alignment" : result.isKundli ? "Kundli Matching Harmony" : "Your Cosmic Coordinates"}
                 </h3>
-                
-                {/* Score display */}
-                {result.isKundliMatch ? (
-                  <div className="inline-block px-6 py-2 border border-[#B38B36]/30 rounded-full bg-[#B38B36]/5 text-[#8E6B23] font-serif font-bold text-xl mt-2">
-                    {result.calculatedValue}
+              </div>
+
+              {/* ==================== 1. KUNDLI MATCHING RESULTS VIEW ==================== */}
+              {result.isKundli && (
+                <div className="space-y-6">
+                  {/* Both Partners Summary */}
+                  <div className="grid sm:grid-cols-2 gap-4 max-w-xl mx-auto text-left">
+                    <div className="bg-[#FFFDF9]/60 border border-[#B38B36]/15 rounded-2xl p-4">
+                      <span className="text-[9px] uppercase tracking-widest text-[#8E6B23] block mb-1.5 font-bold">Partner 1: {result.partner1Name}</span>
+                      <p className="text-xs text-[#3C2A21] font-serif font-bold">Rasi: {result.details1.rasi}</p>
+                      <p className="text-[10px] text-[#6E5D53] font-light mt-0.5">Nakshatra: {result.details1.nakshatra}</p>
+                    </div>
+                    <div className="bg-[#FFFDF9]/60 border border-[#B38B36]/15 rounded-2xl p-4">
+                      <span className="text-[9px] uppercase tracking-widest text-[#8E6B23] block mb-1.5 font-bold">Partner 2: {result.partner2Name}</span>
+                      <p className="text-xs text-[#3C2A21] font-serif font-bold">Rasi: {result.details2.rasi}</p>
+                      <p className="text-[10px] text-[#6E5D53] font-light mt-0.5">Nakshatra: {result.details2.nakshatra}</p>
+                    </div>
                   </div>
-                ) : result.isFlames ? (
-                  <div className="flex flex-col items-center gap-1 mt-2">
-                    <span className="text-[10px] uppercase font-bold text-stone-500 tracking-widest">{result.name1} & {result.name2}</span>
-                    <span className={`inline-block px-8 py-3 border rounded-full font-serif font-black text-2xl shadow-inner ${result.colorClass}`}>
-                      {result.flamesName}
-                    </span>
+
+                  {/* Compatibility Score Display */}
+                  <div className="border border-[#B38B36]/20 bg-[#FFFDF9]/90 shadow-inner rounded-2xl p-6 max-w-xl mx-auto space-y-2">
+                    <span className="text-[9px] text-[#6E5D53] uppercase tracking-wider font-semibold block">Vedic Guna Milan Score</span>
+                    <div className="text-[#8E6B23] font-serif text-3xl md:text-4xl font-black">
+                      {result.gunaResult.total} <span className="text-lg text-stone-400 font-light">/ 36 Gunas</span>
+                    </div>
+                    <div className="text-xs font-serif italic text-[#3C2A21] mt-2 font-medium">
+                      {result.gunaResult.total >= 25 ? (
+                        <span className="text-green-700">🌟 Excellent Compatibility! An exceptionally auspicious and harmonious union.</span>
+                      ) : result.gunaResult.total >= 18 ? (
+                        <span className="text-green-600">✨ Good Compatibility. A harmonious match suitable for a lasting partnership.</span>
+                      ) : (
+                        <span className="text-amber-700">⚠ Low Compatibility. Vedic alignment indicates areas of potential friction requiring understanding.</span>
+                      )}
+                    </div>
                   </div>
-                ) : (
-                  <h4 className="font-serif text-lg text-[#8E6B23] font-semibold tracking-wide border-b border-[#B38B36]/20 pb-2 px-6 inline-block">
+
+                  {/* 8 Kutas Table Breakdown */}
+                  <div className="max-w-2xl mx-auto space-y-3 text-left">
+                    <h5 className="font-serif text-[#8E6B23] text-xs uppercase tracking-widest text-center font-bold flex items-center justify-center gap-3">
+                      <span className="w-6 h-[1px] bg-[#B38B36]/30"></span>
+                      Detailed 8 Kuta Breakdown
+                      <span className="w-6 h-[1px] bg-[#B38B36]/30"></span>
+                    </h5>
+                    
+                    <div className="bg-[#FFFDF9]/40 border border-[#B38B36]/10 rounded-2xl p-2.5 md:p-4 overflow-x-auto shadow-sm">
+                      <table className="w-full text-xs">
+                        <thead>
+                          <tr className="border-b border-[#B38B36]/15 text-[10px] uppercase tracking-widest text-[#8E6B23]">
+                            <th className="py-2.5 px-3 text-left">Kuta (Vedic Coordinate)</th>
+                            <th className="py-2.5 px-3 text-right">Matched Score</th>
+                            <th className="py-2.5 px-3 text-right">Max Gunas</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {result.gunaResult.breakdown.map((kuta, idx) => (
+                            <tr key={idx} className="border-b border-[#B38B36]/5 hover:bg-white/50 transition-colors">
+                              <td className="py-2.5 px-3 font-serif text-[#3C2A21] font-semibold">{kuta.name}</td>
+                              <td className="py-2.5 px-3 text-right font-bold text-[#8E6B23]">{kuta.score}</td>
+                              <td className="py-2.5 px-3 text-right text-[#6E5D53]">{kuta.max}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* ==================== 2. FLAMES COMPATIBILITY RESULTS VIEW ==================== */}
+              {result.isFlames && (
+                <div className="space-y-6 max-w-xl mx-auto">
+                  {/* Names Summary */}
+                  <div className="flex items-center justify-center gap-3 font-serif text-lg text-[#3C2A21]">
+                    <span className="font-bold bg-[#B38B36]/10 px-3.5 py-1.5 border border-[#B38B36]/15 rounded-xl">{result.partner1Name}</span>
+                    <span className="text-[#8E6B23] animate-pulse">❤</span>
+                    <span className="font-bold bg-[#B38B36]/10 px-3.5 py-1.5 border border-[#B38B36]/15 rounded-xl">{result.partner2Name}</span>
+                  </div>
+
+                  {/* FLAMES Badge */}
+                  <div className="relative border border-[#B38B36]/25 bg-gradient-to-tr from-[#FFFDF9] to-[#FFF9ED] shadow-inner rounded-3xl p-8 overflow-hidden">
+                    <div className="absolute inset-1.5 border border-[#B38B36]/10 rounded-[1.3rem] pointer-events-none" />
+                    
+                    <span className="text-[9px] uppercase tracking-widest text-[#8E6B23] block mb-2 font-bold">Calculated FLAMES Status</span>
+                    <div className="font-serif text-3xl md:text-4xl text-[#8E6B23] font-black tracking-wide">
+                      {result.calculatedValue}
+                    </div>
+                    <div className="text-xs text-[#5C4D43] leading-relaxed mt-4 font-light italic px-4">
+                      "{result.description}"
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* ==================== 3. SINGLE-PERSON CALCULATORS RESULTS VIEW ==================== */}
+              {result.isSingle && (
+                <div className="space-y-6">
+                  {/* Calculated Value Highlight */}
+                  <h4 className="font-serif text-2xl md:text-3xl text-[#8E6B23] font-black tracking-wide border-b border-[#B38B36]/15 pb-4 px-6 inline-block">
                     {result.calculatedValue}
                   </h4>
-                )}
-              </div>
+                  
+                  {/* Detailed Description Prose */}
+                  <div className="bg-[#FFFDF9]/60 border border-[#B38B36]/15 rounded-2xl p-6 md:p-8 text-left text-sm md:text-[15px] text-[#5C4D43] leading-relaxed space-y-4 max-w-2xl mx-auto shadow-inner relative">
+                    <div className="absolute inset-1.5 border border-[#B38B36]/5 rounded-xl pointer-events-none" />
+                    <p className="first-letter:text-4xl first-letter:font-serif first-letter:text-[#8E6B23] first-letter:mr-1.5 first-letter:float-left leading-relaxed font-light">
+                      {result.description}
+                    </p>
+                  </div>
 
-              {/* Comparative Profile Layout for Kundli Match */}
-              {result.isKundliMatch && (
-                <div className="grid grid-cols-2 gap-4 max-w-xl mx-auto border-t border-b border-[#B38B36]/10 py-4 my-2">
-                  <div className="bg-white/40 border border-[#B38B36]/10 rounded-xl p-3.5 space-y-1">
-                    <h5 className="font-serif text-xs font-bold text-[#3C2A21] border-b border-stone-200 pb-1">{result.name1}</h5>
-                    <div className="text-[11px] text-stone-500 space-y-0.5 text-left pl-2">
-                      <p><strong>Moon Sign:</strong> {result.rasi1}</p>
-                      <p><strong>Nakshatra:</strong> {result.nakshatra1}</p>
-                      <p><strong>Ascendant:</strong> {result.lagna1}</p>
+                  {/* Astro Coordinates Badges */}
+                  <div className="grid grid-cols-3 gap-3 md:gap-4 max-w-2xl mx-auto">
+                    <div className="bg-[#FFFDF9]/40 border border-[#B38B36]/15 hover:border-[#B38B36]/40 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 rounded-xl p-4 text-left">
+                      <span className="text-[8px] uppercase tracking-widest text-[#8E6B23] block mb-1.5 font-bold">Moon Sign</span>
+                      <span className="text-xs md:text-sm text-[#3C2A21] font-serif font-bold">{result.rasi?.split(" ")[0]}</span>
+                    </div>
+                    <div className="bg-[#FFFDF9]/40 border border-[#B38B36]/15 hover:border-[#B38B36]/40 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 rounded-xl p-4 text-left">
+                      <span className="text-[8px] uppercase tracking-widest text-[#8E6B23] block mb-1.5 font-bold">Nakshatra</span>
+                      <span className="text-xs md:text-sm text-[#3C2A21] font-serif font-bold">{result.nakshatra}</span>
+                    </div>
+                    <div className="bg-[#FFFDF9]/40 border border-[#B38B36]/15 hover:border-[#B38B36]/40 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 rounded-xl p-4 text-left">
+                      <span className="text-[8px] uppercase tracking-widest text-[#8E6B23] block mb-1.5 font-bold">Rising Sign</span>
+                      <span className="text-xs md:text-sm text-[#3C2A21] font-serif font-bold">{result.lagna?.split(" ")[0]}</span>
                     </div>
                   </div>
-                  <div className="bg-white/40 border border-[#B38B36]/10 rounded-xl p-3.5 space-y-1">
-                    <h5 className="font-serif text-xs font-bold text-[#3C2A21] border-b border-stone-200 pb-1">{result.name2}</h5>
-                    <div className="text-[11px] text-stone-500 space-y-0.5 text-left pl-2">
-                      <p><strong>Moon Sign:</strong> {result.rasi2}</p>
-                      <p><strong>Nakshatra:</strong> {result.nakshatra2}</p>
-                      <p><strong>Ascendant:</strong> {result.lagna2}</p>
+
+                  {/* Graha Sthiti (Planetary Readouts) */}
+                  {result.planetaryPositions && (
+                    <div className="max-w-2xl mx-auto space-y-4 text-left">
+                      <h5 className="font-serif text-[#8E6B23] text-xs uppercase tracking-widest text-center font-bold flex items-center justify-center gap-3">
+                        <span className="w-6 h-[1px] bg-[#B38B36]/30"></span>
+                        Planetary Positions (Graha Sthiti)
+                        <span className="w-6 h-[1px] bg-[#B38B36]/30"></span>
+                      </h5>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 bg-[#FFFDF9]/40 p-4 md:p-5 rounded-2xl border border-[#B38B36]/10 shadow-sm">
+                        {Object.entries(result.planetaryPositions).map(([planet, sign]) => (
+                          <div key={planet} className="flex justify-between items-center px-3 py-2 border-b border-[#B38B36]/10 text-xs">
+                            <span className="text-[#6E5D53] font-medium">{planet}</span>
+                            <span className="text-[#3C2A21] font-serif font-bold">{sign}</span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </div>
               )}
 
-              {/* Description box */}
-              <div className="bg-white/45 border border-[#B38B36]/15 rounded-2xl p-6 text-left text-xs md:text-sm text-[#5C4D43] leading-relaxed max-w-2xl mx-auto shadow-[0_10px_30px_rgba(179,139,54,0.04)] font-light">
-                <p className="first-letter:text-2xl first-letter:font-serif first-letter:text-[#8E6B23] first-letter:mr-1 first-letter:float-left">
-                  {result.description}
-                </p>
-              </div>
-
-              {/* Kundli Match Breakdown of 8 Kutas */}
-              {result.isKundliMatch && (
-                <div className="max-w-2xl mx-auto text-left">
-                  <h5 className="font-serif text-[#8E6B23] text-xs uppercase tracking-widest text-center mb-4 font-semibold flex items-center justify-center gap-3">
-                    <span className="w-6 h-[1px] bg-[#B38B36]/30"></span>
-                    Ashta Koota Compatibility Breakdown
-                    <span className="w-6 h-[1px] bg-[#B38B36]/30"></span>
-                  </h5>
-                  <div className="bg-white/45 border border-[#B38B36]/10 rounded-2xl p-4 md:p-6 divide-y divide-[#B38B36]/10 shadow-[0_10px_30px_rgba(179,139,54,0.04)]">
-                    {result.breakdown.map((koot, idx) => (
-                      <div key={idx} className="flex justify-between items-center py-2.5 text-xs">
-                        <div className="space-y-0.5">
-                          <span className="text-[#3C2A21] font-serif font-bold block">{koot.name}</span>
-                          <span className="text-[10px] text-stone-500 italic block">{koot.desc}</span>
-                        </div>
-                        <span className={`font-mono font-bold px-3 py-1 rounded-full text-xs shadow-inner ${
-                          koot.score === 0 
-                            ? 'text-red-600 bg-red-50 border border-red-100' 
-                            : koot.score === koot.max 
-                            ? 'text-green-600 bg-green-50 border border-green-100'
-                            : 'text-[#8E6B23] bg-[#B38B36]/10 border border-[#B38B36]/10'
-                        }`}>
-                          {koot.score} / {koot.max}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Coordinates Grid (Single Person only) */}
-              {!result.isFlames && !result.isKundliMatch && (
-                <div className="grid grid-cols-3 gap-3 md:gap-4 mb-2 max-w-2xl mx-auto">
-                  <div className="bg-white/55 border border-[#B38B36]/15 hover:border-[#B38B36]/40 hover:shadow-[0_8px_25px_rgba(179,139,54,0.08)] hover:-translate-y-0.5 transition-all duration-300 rounded-xl p-3">
-                    <span className="text-[9px] uppercase tracking-widest text-[#6E5D53] block mb-1.5 font-bold">Moon Sign</span>
-                    <span className="text-xs md:text-sm text-[#3C2A21] font-serif font-semibold">{result.rasi?.split(" ")[0]}</span>
-                  </div>
-                  <div className="bg-white/55 border border-[#B38B36]/15 hover:border-[#B38B36]/40 hover:shadow-[0_8px_25px_rgba(179,139,54,0.08)] hover:-translate-y-0.5 transition-all duration-300 rounded-xl p-3">
-                    <span className="text-[9px] uppercase tracking-widest text-[#6E5D53] block mb-1.5 font-bold">Nakshatra</span>
-                    <span className="text-xs md:text-sm text-[#3C2A21] font-serif font-semibold">{result.nakshatra}</span>
-                  </div>
-                  <div className="bg-white/55 border border-[#B38B36]/15 hover:border-[#B38B36]/40 hover:shadow-[0_8px_25px_rgba(179,139,54,0.08)] hover:-translate-y-0.5 transition-all duration-300 rounded-xl p-3">
-                    <span className="text-[9px] uppercase tracking-widest text-[#6E5D53] block mb-1.5 font-bold">Rising Sign</span>
-                    <span className="text-xs md:text-sm text-[#3C2A21] font-serif font-semibold">{result.lagna?.split(" ")[0]}</span>
-                  </div>
-                </div>
-              )}
-
-              {/* Graha Sthiti (Single Person only) */}
-              {!result.isFlames && !result.isKundliMatch && result.planetaryPositions && (
-                <div className="max-w-2xl mx-auto mb-2 text-left">
-                  <h5 className="font-serif text-[#8E6B23] text-xs uppercase tracking-widest text-center mb-4 font-semibold flex items-center justify-center gap-3">
-                    <span className="w-6 h-[1px] bg-[#B38B36]/30"></span>
-                    Planetary Positions (Graha Sthiti)
-                    <span className="w-6 h-[1px] bg-[#B38B36]/30"></span>
-                  </h5>
-                  <div className="grid grid-cols-3 gap-3 bg-white/45 p-4 rounded-2xl border border-[#B38B36]/10 shadow-[0_10px_30px_rgba(179,139,54,0.04)]">
-                    {Object.entries(result.planetaryPositions).map(([planet, sign]) => (
-                      <div key={planet} className="flex justify-between items-center px-3 py-1.5 border-b border-[#B38B36]/10 text-xs">
-                        <span className="text-[#6E5D53] font-medium">{planet}</span>
-                        <span className="text-[#3C2A21] font-serif font-semibold">{sign}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Action Buttons */}
-              <div className="flex flex-col sm:flex-row justify-center items-center gap-4 max-w-xl mx-auto pt-4">
+              {/* ==================== BUTTON ACTIONS ==================== */}
+              <div className="flex flex-col sm:flex-row justify-center items-center gap-4 max-w-xl mx-auto pt-6 border-t border-[#B38B36]/15">
+                
+                {/* Recalculate Option */}
                 <button 
                   onClick={() => setResult(null)}
-                  className="text-xs uppercase tracking-widest font-bold text-[#6E5D53] border border-stone-300 hover:border-stone-500 bg-white px-8 py-4 rounded-full transition-all duration-300 shadow-sm hover:shadow flex items-center justify-center gap-2 w-full sm:w-auto cursor-pointer"
+                  className="w-full sm:w-auto text-[10px] uppercase tracking-widest font-bold text-[#6E5D53] hover:text-[#3C2A21] border border-stone-300 hover:border-stone-500 px-8 py-3.5 rounded-full transition-all duration-300 transform cursor-pointer flex items-center justify-center gap-1.5"
                 >
-                  <RefreshCw className="w-3.5 h-3.5 text-stone-500" />
+                  <Sparkles className="w-3.5 h-3.5" />
                   Recalculate
                 </button>
-                <button 
-                  onClick={handleGoBack}
-                  className="text-xs uppercase tracking-widest font-bold text-white bg-[#B38B36] hover:bg-[#8E6B23] px-8 py-4 rounded-full transition-all duration-300 shadow-md hover:shadow-xl hover:-translate-y-0.5 transform flex items-center justify-center gap-2 w-full sm:w-auto cursor-pointer"
-                >
-                  <ArrowLeft className="w-3.5 h-3.5 text-white" />
-                  Explore More Calculators
-                </button>
+
+                {/* Redirect to checkout flow for complete destiny analysis */}
+                {result.reportId && (
+                  <button 
+                    onClick={() => navigate(`/payment?reportId=${result.reportId}`)}
+                    className="w-full sm:w-auto text-[10px] uppercase tracking-widest font-serif font-bold text-[#1E110A] bg-gradient-to-r from-[#BF953F] via-[#FCF6BA] to-[#B38728] hover:brightness-[1.12] px-8 py-3.5 rounded-full transition-all duration-500 shadow-[0_4px_12px_rgba(179,139,54,0.3)] hover:scale-[1.01] transform cursor-pointer flex items-center justify-center gap-1.5 border border-[#FCF6BA]/40"
+                  >
+                    <Unlock className="w-3.5 h-3.5 stroke-[2.5px]" />
+                    <span>Unlock Full Report</span>
+                  </button>
+                )}
               </div>
 
             </div>
           </motion.div>
         )}
-      </div>
 
+      </div>
     </div>
   );
 };
