@@ -225,29 +225,28 @@ const CelestialOracleHero = () => {
               </span>
             </div>
 
-            <h1 className="font-serif text-[#3C2A21] text-5xl md:text-7xl lg:text-[7.5rem] leading-[0.95] tracking-tighter mb-12 animate-reveal opacity-0" style={{ animationDelay: '0.4s' }}>
-              Do You Know <br />
-              How Your Day <br />
-              Will <span className="italic font-light text-[#B38B36] ml-[5%]">Unfold Today?</span>
+            <h1 className="font-serif text-[#3C2A21] text-4xl md:text-6xl lg:text-[4.8rem] leading-[1.1] tracking-tight mb-8 animate-reveal opacity-0" style={{ animationDelay: '0.4s' }}>
+              Do You Know How Your Day Will <span className="italic font-light text-[#8E6B23] block sm:inline">Unfold Today?</span>
             </h1>
 
-            <div className="max-w-md ml-[5%] space-y-8 animate-reveal opacity-0" style={{ animationDelay: '0.6s' }}>
+            <div className="max-w-md space-y-8 animate-reveal opacity-0" style={{ animationDelay: '0.6s' }}>
               <p className="text-lg text-stone-500 leading-relaxed font-light">
                 Discover what the stars have planned for you. Reveal today's cosmic guidance, planetary movements, and see what destiny has planned in seconds.
               </p>
-              <div className="flex items-center gap-8">
+              <div className="flex flex-col sm:flex-row items-center gap-4">
                 <button 
                   onClick={handleHeroButtonClick}
-                  className="px-12 py-5 bg-gradient-to-r from-[#8E6B23] to-[#B38B36] text-white text-[10px] tracking-[0.4em] uppercase font-bold hover:from-[#B38B36] hover:to-[#8E6B23] hover:scale-105 transition-all duration-500 shadow-xl border border-[#B38B36]/35 cursor-pointer"
+                  className="w-full sm:w-auto px-8 py-4 bg-[#B38B36] hover:bg-[#8E6B23] text-white text-[10px] tracking-[0.3em] uppercase font-bold rounded-full transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5 transform cursor-pointer flex items-center justify-center gap-2"
                 >
+                  <Sparkles className="w-3.5 h-3.5" />
                   Check My Horoscope
                 </button>
-                <div className="flex items-center gap-3 group cursor-pointer" onClick={handleHeroButtonClick}>
-                  <div className="w-12 h-12 rounded-full border border-brand-dark/5 flex items-center justify-center group-hover:border-[#B38B36] transition-all">
-                    <div className="w-2 h-2 rounded-full bg-[#B38B36] animate-pulse" />
-                  </div>
-                  <span className="text-[9px] tracking-[0.3em] uppercase font-bold text-stone-400 group-hover:text-[#3C2A21] transition-colors">Reveal Future</span>
-                </div>
+                <button 
+                  onClick={handleHeroButtonClick}
+                  className="w-full sm:w-auto px-8 py-4 border border-[#B38B36]/40 hover:bg-[#B38B36] text-[#8E6B23] hover:text-white text-[10px] tracking-[0.3em] uppercase font-bold rounded-full transition-all duration-300 cursor-pointer flex items-center justify-center gap-2"
+                >
+                  Reveal Future
+                </button>
               </div>
             </div>
           </div>
