@@ -229,21 +229,21 @@ const CelestialOracleHero = () => {
               Do You Know How Your Day Will <span className="italic font-light text-[#8E6B23] block sm:inline">Unfold Today?</span>
             </h1>
 
-            <div className="max-w-md space-y-8 animate-reveal opacity-0" style={{ animationDelay: '0.6s' }}>
+            <div className="max-w-lg space-y-8 animate-reveal opacity-0" style={{ animationDelay: '0.6s' }}>
               <p className="text-lg text-stone-500 leading-relaxed font-light">
                 Discover what the stars have planned for you. Reveal today's cosmic guidance, planetary movements, and see what destiny has planned in seconds.
               </p>
-              <div className="flex flex-col sm:flex-row items-center gap-4">
+              <div className="flex flex-row items-center gap-4">
                 <button 
                   onClick={handleHeroButtonClick}
-                  className="w-full sm:w-auto px-8 py-4 bg-[#B38B36] hover:bg-[#8E6B23] text-white text-[10px] tracking-[0.3em] uppercase font-bold rounded-full transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5 transform cursor-pointer flex items-center justify-center gap-2"
+                  className="px-6 py-3.5 bg-[#B38B36] hover:bg-[#8E6B23] text-white text-[9px] tracking-[0.2em] uppercase font-bold rounded-full transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5 transform cursor-pointer flex items-center justify-center gap-2 whitespace-nowrap"
                 >
                   <Sparkles className="w-3.5 h-3.5" />
                   Check My Horoscope
                 </button>
                 <button 
                   onClick={handleHeroButtonClick}
-                  className="w-full sm:w-auto px-8 py-4 border border-[#B38B36]/40 hover:bg-[#B38B36] text-[#8E6B23] hover:text-white text-[10px] tracking-[0.3em] uppercase font-bold rounded-full transition-all duration-300 cursor-pointer flex items-center justify-center gap-2"
+                  className="px-6 py-3.5 border border-[#B38B36]/40 hover:bg-[#B38B36] text-[#8E6B23] hover:text-white text-[9px] tracking-[0.2em] uppercase font-bold rounded-full transition-all duration-300 cursor-pointer flex items-center justify-center gap-2 whitespace-nowrap"
                 >
                   Reveal Future
                 </button>
