@@ -14,6 +14,7 @@ import {
   Loader2, 
   Download, 
   ArrowRight,
+  ArrowLeft,
   TrendingUp,
   Heart,
   Briefcase,
@@ -342,8 +343,18 @@ const PaymentPage = () => {
         </svg>
       </div>
 
-      <div className="max-w-6xl mx-auto px-6 relative z-10 space-y-12">
+      <div className="max-w-6xl mx-auto px-6 relative z-10 space-y-6">
         
+        {/* Back navigation button */}
+        <div className="flex justify-start pt-2">
+          <button 
+            onClick={() => navigate(-1)} 
+            className="inline-flex items-center gap-1.5 text-[#6E5D53] hover:text-[#B38B36] border border-stone-300/80 hover:border-[#B38B36] bg-white/70 hover:bg-[#B38B36]/5 px-3.5 py-1.5 rounded-full transition-all duration-300 text-[10px] uppercase font-bold tracking-wider cursor-pointer shadow-sm shrink-0"
+          >
+            <ArrowLeft className="w-3 h-3" /> Back
+          </button>
+        </div>
+
         {/* Banner Card */}
         <div className="relative border border-[#B38B36]/20 bg-white/70 shadow-[0_15px_40px_rgba(179,139,54,0.06)] rounded-3xl p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 backdrop-blur-xl overflow-hidden">
           {/* Subtle gold inner accent frame */}
