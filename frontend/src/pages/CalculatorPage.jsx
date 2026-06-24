@@ -657,7 +657,7 @@ const CalculatorPage = () => {
   };
 
   return (
-    <div className="pt-24 pb-24 relative z-10 bg-[#FFFDF9] min-h-screen overflow-hidden text-[#3C2A21] font-[Outfit,sans-serif]">
+    <div className="pt-20 md:pt-24 pb-6 md:pb-8 relative z-10 bg-[#FFFDF9] min-h-screen overflow-hidden text-[#3C2A21] font-[Outfit,sans-serif]">
       
       <style>{`
         @keyframes spinSlow {
@@ -715,26 +715,26 @@ const CalculatorPage = () => {
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
-        className="relative w-full py-10 md:py-14 bg-gradient-to-b from-[#FAF5EB] to-[#FFFDF9] flex items-center overflow-hidden border-b border-[#B38B36]/15"
+        className="relative w-full py-4 md:py-5 bg-gradient-to-b from-[#FAF5EB] to-[#FFFDF9] flex items-center overflow-hidden border-b border-[#B38B36]/15"
       >
         {/* Subtle decorative orbits in gold */}
         <div className="absolute -top-12 -left-12 w-64 h-64 rounded-full border border-[#B38B36]/10 border-dashed animate-[spinSlow_160s_linear_infinite] pointer-events-none z-0" />
         <div className="absolute -bottom-16 -right-16 w-80 h-80 rounded-full border border-[#B38B36]/10 border-dotted animate-[spinSlow_100s_linear_infinite_reverse] pointer-events-none z-0" />
 
-        <div className="relative z-20 max-w-4xl mx-auto px-6 w-full text-center space-y-4 pt-4">
+        <div className="relative z-20 max-w-4xl mx-auto px-6 w-full text-center space-y-2 pt-2">
           {/* Breadcrumb Navigation */}
           <button 
             onClick={handleGoBack} 
-            className="inline-flex items-center gap-1.5 text-stone-500 hover:text-[#B38B36] transition-colors text-[10px] font-bold tracking-widest uppercase cursor-pointer"
+            className="inline-flex items-center gap-1.5 text-stone-500 hover:text-[#B38B36] transition-colors text-[9px] font-bold tracking-widest uppercase cursor-pointer"
           >
-            <ArrowLeft className="w-3.5 h-3.5" />
+            <ArrowLeft className="w-3 h-3" />
             Back to Calculators
           </button>
           
-          <h1 className="font-serif text-3.5xl md:text-5xl text-[#3C2A21] font-bold tracking-wide leading-tight">
+          <h1 className="font-serif text-2xl md:text-3.5xl text-[#3C2A21] font-bold tracking-wide leading-tight">
             {calc.title}
           </h1>
-          <p className="text-[#725D46] max-w-xl mx-auto text-xs md:text-sm font-light leading-relaxed">
+          <p className="text-[#725D46] max-w-xl mx-auto text-[11px] md:text-xs font-light leading-normal">
             {calc.desc}
           </p>
         </div>
@@ -745,7 +745,7 @@ const CalculatorPage = () => {
       <div className="absolute bottom-5 right-[-15%] w-[700px] h-[700px] rounded-full bg-[#FDE7BA]/30 blur-[130px] pointer-events-none z-0 animate-[pulseGlow_16s_infinite_ease-in-out_reverse]" />
 
       {/* Main Form/Result Container (Smooth Spring Transition) */}
-      <div className="max-w-4xl mx-auto px-6 relative z-10 mt-12">
+      <div className="max-w-4xl mx-auto px-6 relative z-10 mt-4 md:mt-6">
         
         {!result ? (
           <motion.form 
@@ -753,7 +753,7 @@ const CalculatorPage = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ type: "spring", stiffness: 45, damping: 14 }}
             onSubmit={handleSubmit}
-            className="bg-white/45 backdrop-blur-3xl p-6 md:p-12 rounded-[2.5rem] shadow-[0_30px_70px_rgba(179,139,54,0.06),0_1px_3px_rgba(0,0,0,0.02)] border border-white/80 relative overflow-hidden"
+            className="bg-white/45 backdrop-blur-3xl p-4 md:p-6 md:py-8 rounded-[2rem] shadow-[0_30px_70px_rgba(179,139,54,0.06),0_1px_3px_rgba(0,0,0,0.02)] border border-white/80 relative overflow-hidden"
           >
             {/* Double Border Frame accent */}
             <div className="absolute inset-4 border border-[#B38B36]/15 rounded-[2rem] pointer-events-none z-0" />
@@ -784,18 +784,18 @@ const CalculatorPage = () => {
 
             {/* FLAMES FORM STATE (HIDES ALL DATES/TIMES/PLACES) */}
             {id === "flames" ? (
-              <div className="space-y-8 relative z-10 pt-4">
+              <div className="space-y-4 md:space-y-6 relative z-10 pt-2">
                 <div className="text-center">
-                  <span className="inline-flex items-center gap-1 px-3 py-1 border border-[#B38B36]/25 rounded-full bg-[#B38B36]/5 text-[9px] tracking-widest text-[#8E6B23] uppercase font-bold mb-3">
+                  <span className="inline-flex items-center gap-1 px-3 py-1 border border-[#B38B36]/25 rounded-full bg-[#B38B36]/5 text-[9px] tracking-widest text-[#8E6B23] uppercase font-bold mb-2">
                     ❤ Compatibility Game
                   </span>
-                  <h3 className="font-serif text-xl font-medium text-[#3C2A21]">Name Compatibility Analysis</h3>
-                  <p className="text-stone-500 text-xs mt-1 font-light max-w-md mx-auto">
+                  <h3 className="font-serif text-lg md:text-xl font-medium text-[#3C2A21]">Name Compatibility Analysis</h3>
+                  <p className="text-stone-500 text-xs mt-0.5 font-light max-w-md mx-auto">
                     Type in your name and your partner's name below to reveal the cosmic alignment between you two.
                   </p>
                 </div>
                 
-                <div className="grid md:grid-cols-2 gap-8 text-left">
+                <div className="grid md:grid-cols-2 gap-4 md:gap-6 text-left">
                   {/* Your Name */}
                   <div className="space-y-2">
                     <label className="text-[10px] font-bold uppercase tracking-widest text-[#3C2A21] flex items-center gap-2">
@@ -804,7 +804,7 @@ const CalculatorPage = () => {
                     <input 
                       required
                       type="text" 
-                      className="w-full bg-[#FFFDF9]/65 backdrop-blur-md border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-4 py-3.5 outline-none focus:ring-1 focus:ring-[#B38B36]/30 transition-all text-sm text-[#3C2A21] shadow-sm font-light hover:bg-[#FFFDF9]/90 duration-300" 
+                      className="w-full bg-[#FFFDF9]/65 backdrop-blur-md border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-3.5 py-2.5 outline-none focus:ring-1 focus:ring-[#B38B36]/30 transition-all text-sm text-[#3C2A21] shadow-sm font-light hover:bg-[#FFFDF9]/90 duration-300" 
                       placeholder="Enter your name" 
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -819,7 +819,7 @@ const CalculatorPage = () => {
                     <input 
                       required
                       type="text" 
-                      className="w-full bg-[#FFFDF9]/65 backdrop-blur-md border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-4 py-3.5 outline-none focus:ring-1 focus:ring-[#B38B36]/30 transition-all text-sm text-[#3C2A21] shadow-sm font-light hover:bg-[#FFFDF9]/90 duration-300" 
+                      className="w-full bg-[#FFFDF9]/65 backdrop-blur-md border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-3.5 py-2.5 outline-none focus:ring-1 focus:ring-[#B38B36]/30 transition-all text-sm text-[#3C2A21] shadow-sm font-light hover:bg-[#FFFDF9]/90 duration-300" 
                       placeholder="Enter partner's name" 
                       value={formData.partnerName}
                       onChange={(e) => setFormData({ ...formData, partnerName: e.target.value })}
@@ -829,22 +829,22 @@ const CalculatorPage = () => {
               </div>
             ) : id === "kundli-matching" ? (
               // KUNDLI MATCHING FORM STATE (TWO COMPLETE DETAIL CARDS)
-              <div className="space-y-8 relative z-10 pt-4">
-                <div className="text-center border-b border-[#B38B36]/10 pb-4 mb-6">
-                  <span className="inline-flex items-center gap-1 px-3 py-1 border border-[#B38B36]/25 rounded-full bg-[#B38B36]/5 text-[9px] tracking-widest text-[#8E6B23] uppercase font-bold mb-3">
+              <div className="space-y-4 md:space-y-6 relative z-10 pt-2">
+                <div className="text-center border-b border-[#B38B36]/10 pb-2 mb-4">
+                  <span className="inline-flex items-center gap-1 px-3 py-1 border border-[#B38B36]/25 rounded-full bg-[#B38B36]/5 text-[9px] tracking-widest text-[#8E6B23] uppercase font-bold mb-2">
                     💫 Astrological Union
                   </span>
-                  <h3 className="font-serif text-xl font-medium text-[#3C2A21]">Partner Compatibility Profiles</h3>
-                  <p className="text-stone-500 text-xs mt-1 font-light max-w-md mx-auto">
+                  <h3 className="font-serif text-lg md:text-xl font-medium text-[#3C2A21]">Partner Compatibility Profiles</h3>
+                  <p className="text-stone-500 text-[11px] md:text-xs mt-0.5 font-light max-w-md mx-auto">
                     Provide the birth coordinates of both partners. Guna Milan will calculate the 36-point compatibility grid.
                   </p>
                 </div>
 
-                <div className="grid md:grid-cols-2 gap-8 text-left items-start">
+                <div className="grid md:grid-cols-2 gap-4 md:gap-6 text-left items-start">
                   
                   {/* PARTNER 1 DETAILS CARD */}
-                  <div className="bg-[#FFFDF9]/50 backdrop-blur-xl border border-[#B38B36]/15 rounded-2xl p-5 md:p-6 space-y-4 shadow-sm hover:border-[#B38B36]/30 transition-all duration-300">
-                    <h4 className="font-serif text-base text-[#8E6B23] font-medium flex items-center gap-2 border-b border-[#B38B36]/15 pb-2">
+                  <div className="bg-[#FFFDF9]/50 backdrop-blur-xl border border-[#B38B36]/15 rounded-2xl p-4 md:p-5 space-y-3 shadow-sm hover:border-[#B38B36]/30 transition-all duration-300">
+                    <h4 className="font-serif text-sm md:text-base text-[#8E6B23] font-medium flex items-center gap-2 border-b border-[#B38B36]/15 pb-1.5">
                       <span className="w-5 h-5 rounded-full bg-[#B38B36]/10 text-xs text-[#8E6B23] flex items-center justify-center font-bold">1</span>
                       👦 Groom's Details
                     </h4>
@@ -856,7 +856,7 @@ const CalculatorPage = () => {
                       </label>
                       <input 
                         type="text" 
-                        className="w-full bg-[#FFFDF9]/65 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-3 py-2.5 outline-none transition-all text-xs text-[#3C2A21] shadow-sm hover:bg-[#FFFDF9]/90 duration-300" 
+                        className="w-full bg-[#FFFDF9]/65 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-3 py-2 outline-none transition-all text-xs text-[#3C2A21] shadow-sm hover:bg-[#FFFDF9]/90 duration-300" 
                         placeholder="Name (optional)" 
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -872,7 +872,7 @@ const CalculatorPage = () => {
                         <input 
                           required 
                           type="date" 
-                          className="w-full bg-[#FFFDF9]/65 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-2 py-2.5 outline-none transition-all text-[11px] text-[#3C2A21] cursor-pointer shadow-sm hover:bg-[#FFFDF9]/90 duration-300" 
+                          className="w-full bg-[#FFFDF9]/65 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-2 py-2 outline-none transition-all text-[11px] text-[#3C2A21] cursor-pointer shadow-sm hover:bg-[#FFFDF9]/90 duration-300" 
                           value={formData.dob}
                           onChange={(e) => setFormData({ ...formData, dob: e.target.value })}
                         />
@@ -884,7 +884,7 @@ const CalculatorPage = () => {
                         <input 
                           required 
                           type="time" 
-                          className="w-full bg-[#FFFDF9]/65 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-2 py-2.5 outline-none transition-all text-[11px] text-[#3C2A21] cursor-pointer shadow-sm hover:bg-[#FFFDF9]/90 duration-300" 
+                          className="w-full bg-[#FFFDF9]/65 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-2 py-2 outline-none transition-all text-[11px] text-[#3C2A21] cursor-pointer shadow-sm hover:bg-[#FFFDF9]/90 duration-300" 
                           value={formData.tob}
                           onChange={(e) => setFormData({ ...formData, tob: e.target.value })}
                         />
@@ -892,8 +892,8 @@ const CalculatorPage = () => {
                     </div>
 
                     {/* Place of Birth Subgroup */}
-                    <div className="space-y-1.5 bg-[#FFFDF9]/40 border border-[#B38B36]/10 rounded-2xl p-3.5 space-y-2">
-                      <label className="text-[9px] font-bold uppercase tracking-widest text-[#3C2A21] flex items-center gap-1.5 mb-1">
+                    <div className="bg-[#FFFDF9]/40 border border-[#B38B36]/10 rounded-2xl p-2.5 md:p-3 space-y-1.5">
+                      <label className="text-[9px] font-bold uppercase tracking-widest text-[#3C2A21] flex items-center gap-1.5 mb-0.5">
                         <MapPin className="w-3.5 h-3.5 text-[#B38B36]" /> Place of Birth
                       </label>
                       
@@ -902,7 +902,7 @@ const CalculatorPage = () => {
                         required
                         value={selectedCountry}
                         onChange={handleCountryChange}
-                        className="w-full bg-white/80 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-3 py-2.5 outline-none text-[11px] text-[#3C2A21] cursor-pointer shadow-sm hover:bg-white duration-300"
+                        className="w-full bg-white/80 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-3 py-2 outline-none text-[11px] text-[#3C2A21] cursor-pointer shadow-sm hover:bg-white duration-300"
                       >
                         <option value="">Select Country</option>
                         {countries.map((c) => (
@@ -916,7 +916,7 @@ const CalculatorPage = () => {
                           required
                           value={selectedState}
                           onChange={handleStateChange}
-                          className="w-full bg-white/80 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-3 py-2.5 outline-none text-[11px] text-[#3C2A21] cursor-pointer shadow-sm hover:bg-white duration-300"
+                          className="w-full bg-white/80 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-3 py-2 outline-none text-[11px] text-[#3C2A21] cursor-pointer shadow-sm hover:bg-white duration-300"
                         >
                           <option value="">Select State</option>
                           {states.map((s) => (
@@ -931,7 +931,7 @@ const CalculatorPage = () => {
                         disabled={!selectedCountry || (states.length > 0 && !selectedState)}
                         value={selectedCity}
                         onChange={handleCityChange}
-                        className="w-full bg-white/80 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-3 py-2.5 outline-none text-[11px] text-[#3C2A21] cursor-pointer disabled:opacity-50 shadow-sm hover:bg-white duration-300"
+                        className="w-full bg-white/80 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-3 py-2 outline-none text-[11px] text-[#3C2A21] cursor-pointer disabled:opacity-50 shadow-sm hover:bg-white duration-300"
                       >
                         <option value="">Select City</option>
                         {cities.map((city, idx) => (
@@ -942,8 +942,8 @@ const CalculatorPage = () => {
                   </div>
 
                   {/* PARTNER 2 DETAILS CARD */}
-                  <div className="bg-[#FFFDF9]/50 backdrop-blur-xl border border-[#B38B36]/15 rounded-2xl p-5 md:p-6 space-y-4 shadow-sm hover:border-[#B38B36]/30 transition-all duration-300">
-                    <h4 className="font-serif text-base text-[#8E6B23] font-medium flex items-center gap-2 border-b border-[#B38B36]/15 pb-2">
+                  <div className="bg-[#FFFDF9]/50 backdrop-blur-xl border border-[#B38B36]/15 rounded-2xl p-4 md:p-5 space-y-3 shadow-sm hover:border-[#B38B36]/30 transition-all duration-300">
+                    <h4 className="font-serif text-sm md:text-base text-[#8E6B23] font-medium flex items-center gap-2 border-b border-[#B38B36]/15 pb-1.5">
                       <span className="w-5 h-5 rounded-full bg-[#B38B36]/10 text-xs text-[#8E6B23] flex items-center justify-center font-bold">2</span>
                       👧 Bride's Details
                     </h4>
@@ -955,7 +955,7 @@ const CalculatorPage = () => {
                       </label>
                       <input 
                         type="text" 
-                        className="w-full bg-[#FFFDF9]/65 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-3 py-2.5 outline-none transition-all text-xs text-[#3C2A21] shadow-sm hover:bg-[#FFFDF9]/90 duration-300" 
+                        className="w-full bg-[#FFFDF9]/65 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-3 py-2 outline-none transition-all text-xs text-[#3C2A21] shadow-sm hover:bg-[#FFFDF9]/90 duration-300" 
                         placeholder="Name (optional)" 
                         value={formData.partnerName}
                         onChange={(e) => setFormData({ ...formData, partnerName: e.target.value })}
@@ -971,7 +971,7 @@ const CalculatorPage = () => {
                         <input 
                           required 
                           type="date" 
-                          className="w-full bg-[#FFFDF9]/65 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-2 py-2.5 outline-none transition-all text-[11px] text-[#3C2A21] cursor-pointer shadow-sm hover:bg-[#FFFDF9]/90 duration-300" 
+                          className="w-full bg-[#FFFDF9]/65 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-2 py-2 outline-none transition-all text-[11px] text-[#3C2A21] cursor-pointer shadow-sm hover:bg-[#FFFDF9]/90 duration-300" 
                           value={formData.partnerDob}
                           onChange={(e) => setFormData({ ...formData, partnerDob: e.target.value })}
                         />
@@ -983,7 +983,7 @@ const CalculatorPage = () => {
                         <input 
                           required 
                           type="time" 
-                          className="w-full bg-[#FFFDF9]/65 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-2 py-2.5 outline-none transition-all text-[11px] text-[#3C2A21] cursor-pointer shadow-sm hover:bg-[#FFFDF9]/90 duration-300" 
+                          className="w-full bg-[#FFFDF9]/65 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-2 py-2 outline-none transition-all text-[11px] text-[#3C2A21] cursor-pointer shadow-sm hover:bg-[#FFFDF9]/90 duration-300" 
                           value={formData.partnerTob}
                           onChange={(e) => setFormData({ ...formData, partnerTob: e.target.value })}
                         />
@@ -991,8 +991,8 @@ const CalculatorPage = () => {
                     </div>
 
                     {/* Place of Birth Subgroup */}
-                    <div className="space-y-1.5 bg-[#FFFDF9]/40 border border-[#B38B36]/10 rounded-2xl p-3.5 space-y-2">
-                      <label className="text-[9px] font-bold uppercase tracking-widest text-[#3C2A21] flex items-center gap-1.5 mb-1">
+                    <div className="bg-[#FFFDF9]/40 border border-[#B38B36]/10 rounded-2xl p-2.5 md:p-3 space-y-1.5">
+                      <label className="text-[9px] font-bold uppercase tracking-widest text-[#3C2A21] flex items-center gap-1.5 mb-0.5">
                         <MapPin className="w-3.5 h-3.5 text-[#B38B36]" /> Place of Birth
                       </label>
                       
@@ -1001,7 +1001,7 @@ const CalculatorPage = () => {
                         required
                         value={selectedCountryPartner}
                         onChange={handleCountryChangePartner}
-                        className="w-full bg-white/80 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-3 py-2.5 outline-none text-[11px] text-[#3C2A21] cursor-pointer shadow-sm hover:bg-white duration-300"
+                        className="w-full bg-white/80 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-3 py-2 outline-none text-[11px] text-[#3C2A21] cursor-pointer shadow-sm hover:bg-white duration-300"
                       >
                         <option value="">Select Country</option>
                         {countriesPartner.map((c) => (
@@ -1015,7 +1015,7 @@ const CalculatorPage = () => {
                           required
                           value={selectedStatePartner}
                           onChange={handleStateChangePartner}
-                          className="w-full bg-white/80 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-3 py-2.5 outline-none text-[11px] text-[#3C2A21] cursor-pointer shadow-sm hover:bg-white duration-300"
+                          className="w-full bg-white/80 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-3 py-2 outline-none text-[11px] text-[#3C2A21] cursor-pointer shadow-sm hover:bg-white duration-300"
                         >
                           <option value="">Select State</option>
                           {statesPartner.map((s) => (
@@ -1030,7 +1030,7 @@ const CalculatorPage = () => {
                         disabled={!selectedCountryPartner || (statesPartner.length > 0 && !selectedStatePartner)}
                         value={selectedCityPartner}
                         onChange={handleCityChangePartner}
-                        className="w-full bg-white/80 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-3 py-2.5 outline-none text-[11px] text-[#3C2A21] cursor-pointer disabled:opacity-50 shadow-sm hover:bg-white duration-300"
+                        className="w-full bg-white/80 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-3 py-2 outline-none text-[11px] text-[#3C2A21] cursor-pointer disabled:opacity-50 shadow-sm hover:bg-white duration-300"
                       >
                         <option value="">Select City</option>
                         {citiesPartner.map((city, idx) => (
@@ -1044,16 +1044,16 @@ const CalculatorPage = () => {
               </div>
             ) : (
               // STANDARD SINGLE PERSON FORM STATE
-              <div className="space-y-8 relative z-10 pt-4">
+              <div className="space-y-4 md:space-y-5 relative z-10 pt-2">
                 
                 {/* Full Name */}
-                <div className="space-y-2 text-left">
-                  <label className="text-xs font-bold uppercase tracking-widest text-[#3C2A21] flex items-center gap-2">
-                    <User className="w-4.5 h-4.5 text-[#B38B36]" /> Full Name
+                <div className="space-y-1.5 text-left">
+                  <label className="text-[10px] font-bold uppercase tracking-widest text-[#3C2A21] flex items-center gap-2">
+                    <User className="w-4 h-4 text-[#B38B36]" /> Full Name
                   </label>
                   <input 
                     type="text" 
-                    className="w-full bg-[#FFFDF9]/65 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-4 py-3.5 outline-none focus:ring-1 focus:ring-[#B38B36]/30 transition-all text-sm text-[#3C2A21] shadow-sm hover:bg-[#FFFDF9]/90 duration-300 font-light" 
+                    className="w-full bg-[#FFFDF9]/65 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-3.5 py-2.5 outline-none focus:ring-1 focus:ring-[#B38B36]/30 transition-all text-sm text-[#3C2A21] shadow-sm hover:bg-[#FFFDF9]/90 duration-300 font-light" 
                     placeholder="Enter your name (optional)" 
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -1061,27 +1061,27 @@ const CalculatorPage = () => {
                 </div>
 
                 {/* Birth Date and Time */}
-                <div className="grid md:grid-cols-2 gap-6 text-left">
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold uppercase tracking-widest text-[#3C2A21] flex items-center gap-2">
-                      <Calendar className="w-4.5 h-4.5 text-[#B38B36]" /> Date of Birth
+                <div className="grid md:grid-cols-2 gap-4 md:gap-5 text-left">
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-bold uppercase tracking-widest text-[#3C2A21] flex items-center gap-2">
+                      <Calendar className="w-4 h-4 text-[#B38B36]" /> Date of Birth
                     </label>
                     <input 
                       required 
                       type="date" 
-                      className="w-full bg-[#FFFDF9]/65 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-4 py-3.5 outline-none focus:ring-1 focus:ring-[#B38B36]/30 transition-all text-sm text-[#3C2A21] cursor-pointer shadow-sm hover:bg-[#FFFDF9]/90 duration-300" 
+                      className="w-full bg-[#FFFDF9]/65 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-3.5 py-2.5 outline-none focus:ring-1 focus:ring-[#B38B36]/30 transition-all text-sm text-[#3C2A21] cursor-pointer shadow-sm hover:bg-[#FFFDF9]/90 duration-300" 
                       value={formData.dob}
                       onChange={(e) => setFormData({ ...formData, dob: e.target.value })}
                     />
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold uppercase tracking-widest text-[#3C2A21] flex items-center gap-2">
-                      <Clock className="w-4.5 h-4.5 text-[#B38B36]" /> Time of Birth
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-bold uppercase tracking-widest text-[#3C2A21] flex items-center gap-2">
+                      <Clock className="w-4 h-4 text-[#B38B36]" /> Time of Birth
                     </label>
                     <input 
                       required 
                       type="time" 
-                      className="w-full bg-[#FFFDF9]/65 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-4 py-3.5 outline-none focus:ring-1 focus:ring-[#B38B36]/30 transition-all text-sm text-[#3C2A21] cursor-pointer shadow-sm hover:bg-[#FFFDF9]/90 duration-300" 
+                      className="w-full bg-[#FFFDF9]/65 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-3.5 py-2.5 outline-none focus:ring-1 focus:ring-[#B38B36]/30 transition-all text-sm text-[#3C2A21] cursor-pointer shadow-sm hover:bg-[#FFFDF9]/90 duration-300" 
                       value={formData.tob}
                       onChange={(e) => setFormData({ ...formData, tob: e.target.value })}
                     />
@@ -1089,18 +1089,18 @@ const CalculatorPage = () => {
                 </div>
 
                 {/* Cascading Place of Birth Dropdowns Grouped Container */}
-                <div className="space-y-3 text-left bg-[#FFFDF9]/40 border border-[#B38B36]/15 rounded-2xl p-5 md:p-6 shadow-sm hover:border-[#B38B36]/35 transition-all duration-300">
-                  <label className="text-xs font-bold uppercase tracking-widest text-[#3C2A21] flex items-center gap-2 mb-1">
-                    <MapPin className="w-4.5 h-4.5 text-[#B38B36]" /> Place of Birth
+                <div className="space-y-2 text-left bg-[#FFFDF9]/40 border border-[#B38B36]/15 rounded-2xl p-4 md:p-5 shadow-sm hover:border-[#B38B36]/35 transition-all duration-300">
+                  <label className="text-[10px] font-bold uppercase tracking-widest text-[#3C2A21] flex items-center gap-2 mb-0.5">
+                    <MapPin className="w-4 h-4 text-[#B38B36]" /> Place of Birth
                   </label>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                     {/* Country */}
                     <div className="relative">
                       <select
                         required
                         value={selectedCountry}
                         onChange={handleCountryChange}
-                        className="w-full bg-white/80 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-4 py-3.5 outline-none text-sm text-[#3C2A21] cursor-pointer shadow-sm hover:bg-white duration-300"
+                        className="w-full bg-white/80 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-3.5 py-2.5 outline-none text-sm text-[#3C2A21] cursor-pointer shadow-sm hover:bg-white duration-300"
                       >
                         <option value="">Select Country</option>
                         {countries.map((c) => (
@@ -1121,7 +1121,7 @@ const CalculatorPage = () => {
                           required
                           value={selectedState}
                           onChange={handleStateChange}
-                          className="w-full bg-white/80 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-4 py-3.5 outline-none text-sm text-[#3C2A21] cursor-pointer shadow-sm hover:bg-white duration-300"
+                          className="w-full bg-white/80 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-3.5 py-2.5 outline-none text-sm text-[#3C2A21] cursor-pointer shadow-sm hover:bg-white duration-300"
                         >
                           <option value="">Select State</option>
                           {states.map((s) => (
@@ -1145,7 +1145,7 @@ const CalculatorPage = () => {
                         disabled={!selectedCountry || (states.length > 0 && !selectedState)}
                         value={selectedCity}
                         onChange={handleCityChange}
-                        className="w-full bg-white/80 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-4 py-3.5 outline-none text-sm text-[#3C2A21] cursor-pointer disabled:opacity-50 shadow-sm hover:bg-white duration-300"
+                        className="w-full bg-white/80 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-3.5 py-2.5 outline-none text-sm text-[#3C2A21] cursor-pointer disabled:opacity-50 shadow-sm hover:bg-white duration-300"
                       >
                         <option value="">Select City</option>
                         {cities.map((city, idx) => (
@@ -1167,9 +1167,9 @@ const CalculatorPage = () => {
             <motion.button 
               type="submit" 
               disabled={loading}
-              whileHover={{ scale: 1.02, y: -2 }}
+              whileHover={{ scale: 1.02, y: -1.5 }}
               whileTap={{ scale: 0.98 }}
-              className="w-full mt-10 bg-gradient-to-r from-[#BF953F] via-[#FCF6BA] to-[#B38728] hover:brightness-[1.12] text-[#1E110A] rounded-full py-4.5 font-serif font-bold tracking-[0.2em] uppercase text-xs flex items-center justify-center gap-2.5 transition-all duration-300 disabled:opacity-70 shadow-[0_6px_20px_rgba(179,139,54,0.35)] cursor-pointer border border-[#FCF6BA]/40 relative z-10"
+              className="w-full mt-6 md:mt-8 bg-gradient-to-r from-[#BF953F] via-[#FCF6BA] to-[#B38728] hover:brightness-[1.12] text-[#1E110A] rounded-full py-3.5 font-serif font-bold tracking-[0.2em] uppercase text-xs flex items-center justify-center gap-2.5 transition-all duration-300 disabled:opacity-70 shadow-[0_6px_20px_rgba(179,139,54,0.35)] cursor-pointer border border-[#FCF6BA]/40 relative z-10"
             >
               {loading ? (
                 <>
@@ -1190,11 +1190,11 @@ const CalculatorPage = () => {
             initial={{ opacity: 0, scale: 0.97 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ type: "spring", stiffness: 45, damping: 14 }}
-            className="bg-white/45 backdrop-blur-3xl p-6 md:p-12 rounded-[2.5rem] shadow-[0_30px_70px_rgba(179,139,54,0.06),0_1px_3px_rgba(0,0,0,0.02)] border border-white/80 text-center relative overflow-hidden"
+            className="bg-white/45 backdrop-blur-3xl p-4 md:p-6 md:py-8 rounded-[2rem] shadow-[0_30px_70px_rgba(179,139,54,0.06),0_1px_3px_rgba(0,0,0,0.02)] border border-white/80 text-center relative overflow-hidden"
           >
             {/* Elegant double-line golden frames */}
-            <div className="absolute inset-4 border border-[#B38B36]/20 rounded-[2rem] pointer-events-none z-0" />
-            <div className="absolute inset-5.5 border border-[#B38B36]/5 rounded-[1.85rem] pointer-events-none z-0" />
+            <div className="absolute inset-4 border border-[#B38B36]/20 rounded-[1.65rem] pointer-events-none z-0" />
+            <div className="absolute inset-5.5 border border-[#B38B36]/5 rounded-[1.5rem] pointer-events-none z-0" />
             
             {/* Rotating astronomical background graphic */}
             <div className="absolute -right-24 -top-24 w-80 h-80 opacity-[0.04] animate-[spinSlow_150s_linear_infinite] pointer-events-none select-none z-0 text-[#B38B36]">
@@ -1205,16 +1205,16 @@ const CalculatorPage = () => {
               </svg>
             </div>
 
-            <div className="relative z-10 max-w-3xl mx-auto space-y-8">
+            <div className="relative z-10 max-w-3xl mx-auto space-y-4 md:space-y-6">
               
               {/* Icon Badge */}
-              <div className="w-16 h-16 mx-auto bg-[#B38B36]/10 rounded-full flex items-center justify-center border border-[#B38B36]/20 shadow-inner">
+              <div className="w-12 h-12 mx-auto bg-[#B38B36]/10 rounded-full flex items-center justify-center border border-[#B38B36]/20 shadow-inner">
                 {result.isFlames ? (
-                  <Flame className="w-7 h-7 text-[#8E6B23] animate-pulse" />
+                  <Flame className="w-5.5 h-5.5 text-[#8E6B23] animate-pulse" />
                 ) : result.isKundli ? (
-                  <Heart className="w-7 h-7 text-[#8E6B23] animate-pulse" />
+                  <Heart className="w-5.5 h-5.5 text-[#8E6B23] animate-pulse" />
                 ) : (
-                  <Sparkles className="w-7 h-7 text-[#8E6B23] animate-pulse" />
+                  <Sparkles className="w-5.5 h-5.5 text-[#8E6B23] animate-pulse" />
                 )}
               </div>
 
@@ -1244,12 +1244,12 @@ const CalculatorPage = () => {
                   </div>
 
                   {/* Compatibility Score Display */}
-                  <div className="border border-[#B38B36]/20 bg-[#FFFDF9]/90 shadow-inner rounded-2xl p-6 max-w-xl mx-auto space-y-2">
+                  <div className="border border-[#B38B36]/20 bg-[#FFFDF9]/90 shadow-inner rounded-2xl p-4 max-w-xl mx-auto space-y-1.5">
                     <span className="text-[9px] text-[#6E5D53] uppercase tracking-wider font-semibold block">Vedic Guna Milan Score</span>
-                    <div className="text-[#8E6B23] font-serif text-3xl md:text-4xl font-black">
-                      {result.gunaResult.total} <span className="text-lg text-stone-400 font-light">/ 36 Gunas</span>
+                    <div className="text-[#8E6B23] font-serif text-2xl md:text-3xl font-black">
+                      {result.gunaResult.total} <span className="text-sm text-stone-400 font-light">/ 36 Gunas</span>
                     </div>
-                    <div className="text-xs font-serif italic text-[#3C2A21] mt-2 font-medium">
+                    <div className="text-xs font-serif italic text-[#3C2A21] mt-1.5 font-medium">
                       {result.gunaResult.total >= 25 ? (
                         <span className="text-green-700">🌟 Excellent Compatibility! An exceptionally auspicious and harmonious union.</span>
                       ) : result.gunaResult.total >= 18 ? (
@@ -1261,28 +1261,28 @@ const CalculatorPage = () => {
                   </div>
 
                   {/* 8 Kutas Table Breakdown */}
-                  <div className="max-w-2xl mx-auto space-y-3 text-left">
-                    <h5 className="font-serif text-[#8E6B23] text-xs uppercase tracking-widest text-center font-bold flex items-center justify-center gap-3">
+                  <div className="max-w-2xl mx-auto space-y-2 text-left">
+                    <h5 className="font-serif text-[#8E6B23] text-[10px] uppercase tracking-widest text-center font-bold flex items-center justify-center gap-3">
                       <span className="w-6 h-[1px] bg-[#B38B36]/30"></span>
                       Detailed 8 Kuta Breakdown
                       <span className="w-6 h-[1px] bg-[#B38B36]/30"></span>
                     </h5>
                     
-                    <div className="bg-[#FFFDF9]/40 border border-[#B38B36]/10 rounded-2xl p-2.5 md:p-4 overflow-x-auto shadow-sm">
+                    <div className="bg-[#FFFDF9]/40 border border-[#B38B36]/10 rounded-2xl p-2 md:p-3 overflow-x-auto shadow-sm">
                       <table className="w-full text-xs">
                         <thead>
-                          <tr className="border-b border-[#B38B36]/15 text-[10px] uppercase tracking-widest text-[#8E6B23]">
-                            <th className="py-2.5 px-3 text-left">Kuta (Vedic Coordinate)</th>
-                            <th className="py-2.5 px-3 text-right">Matched Score</th>
-                            <th className="py-2.5 px-3 text-right">Max Gunas</th>
+                          <tr className="border-b border-[#B38B36]/15 text-[9px] uppercase tracking-widest text-[#8E6B23]">
+                            <th className="py-1.5 px-3 text-left">Kuta (Vedic Coordinate)</th>
+                            <th className="py-1.5 px-3 text-right">Matched Score</th>
+                            <th className="py-1.5 px-3 text-right">Max Gunas</th>
                           </tr>
                         </thead>
                         <tbody>
                           {result.gunaResult.breakdown.map((kuta, idx) => (
                             <tr key={idx} className="border-b border-[#B38B36]/5 hover:bg-white/50 transition-colors">
-                              <td className="py-2.5 px-3 font-serif text-[#3C2A21] font-semibold">{kuta.name}</td>
-                              <td className="py-2.5 px-3 text-right font-bold text-[#8E6B23]">{kuta.score}</td>
-                              <td className="py-2.5 px-3 text-right text-[#6E5D53]">{kuta.max}</td>
+                              <td className="py-1.5 px-3 font-serif text-[#3C2A21] font-semibold">{kuta.name}</td>
+                              <td className="py-1.5 px-3 text-right font-bold text-[#8E6B23]">{kuta.score}</td>
+                              <td className="py-1.5 px-3 text-right text-[#6E5D53]">{kuta.max}</td>
                             </tr>
                           ))}
                         </tbody>
@@ -1303,14 +1303,14 @@ const CalculatorPage = () => {
                   </div>
 
                   {/* FLAMES Badge */}
-                  <div className="relative border border-[#B38B36]/25 bg-gradient-to-tr from-[#FFFDF9] to-[#FFF9ED] shadow-inner rounded-3xl p-8 overflow-hidden">
-                    <div className="absolute inset-1.5 border border-[#B38B36]/10 rounded-[1.3rem] pointer-events-none" />
+                  <div className="relative border border-[#B38B36]/25 bg-gradient-to-tr from-[#FFFDF9] to-[#FFF9ED] shadow-inner rounded-2xl p-4 md:p-6 overflow-hidden">
+                    <div className="absolute inset-1.5 border border-[#B38B36]/10 rounded-[1.1rem] pointer-events-none" />
                     
-                    <span className="text-[9px] uppercase tracking-widest text-[#8E6B23] block mb-2 font-bold">Calculated FLAMES Status</span>
-                    <div className="font-serif text-3xl md:text-4xl text-[#8E6B23] font-black tracking-wide">
+                    <span className="text-[9px] uppercase tracking-widest text-[#8E6B23] block mb-1 font-bold">Calculated FLAMES Status</span>
+                    <div className="font-serif text-2xl md:text-3xl text-[#8E6B23] font-black tracking-wide">
                       {result.calculatedValue}
                     </div>
-                    <div className="text-xs text-[#5C4D43] leading-relaxed mt-4 font-light italic px-4">
+                    <div className="text-xs text-[#5C4D43] leading-relaxed mt-2.5 font-light italic px-4">
                       "{result.description}"
                     </div>
                   </div>
@@ -1321,45 +1321,45 @@ const CalculatorPage = () => {
               {result.isSingle && (
                 <div className="space-y-6">
                   {/* Calculated Value Highlight */}
-                  <h4 className="font-serif text-2xl md:text-3xl text-[#8E6B23] font-black tracking-wide border-b border-[#B38B36]/15 pb-4 px-6 inline-block">
+                  <h4 className="font-serif text-xl md:text-2xl text-[#8E6B23] font-black tracking-wide border-b border-[#B38B36]/15 pb-2 px-6 inline-block">
                     {result.calculatedValue}
                   </h4>
                   
                   {/* Detailed Description Prose */}
-                  <div className="bg-[#FFFDF9]/60 border border-[#B38B36]/15 rounded-2xl p-6 md:p-8 text-left text-sm md:text-[15px] text-[#5C4D43] leading-relaxed space-y-4 max-w-2xl mx-auto shadow-inner relative">
+                  <div className="bg-[#FFFDF9]/60 border border-[#B38B36]/15 rounded-2xl p-4 md:p-5 text-left text-xs md:text-sm text-[#5C4D43] leading-relaxed space-y-3 max-w-2xl mx-auto shadow-inner relative">
                     <div className="absolute inset-1.5 border border-[#B38B36]/5 rounded-xl pointer-events-none" />
-                    <p className="first-letter:text-4xl first-letter:font-serif first-letter:text-[#8E6B23] first-letter:mr-1.5 first-letter:float-left leading-relaxed font-light">
+                    <p className="first-letter:text-3xl first-letter:font-serif first-letter:text-[#8E6B23] first-letter:mr-1 first-letter:float-left leading-normal font-light">
                       {result.description}
                     </p>
                   </div>
 
                   {/* Astro Coordinates Badges */}
-                  <div className="grid grid-cols-3 gap-3 md:gap-4 max-w-2xl mx-auto">
-                    <div className="bg-[#FFFDF9]/40 border border-[#B38B36]/15 hover:border-[#B38B36]/40 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 rounded-xl p-4 text-left">
-                      <span className="text-[8px] uppercase tracking-widest text-[#8E6B23] block mb-1.5 font-bold">Moon Sign</span>
-                      <span className="text-xs md:text-sm text-[#3C2A21] font-serif font-bold">{result.rasi?.split(" ")[0]}</span>
+                  <div className="grid grid-cols-3 gap-2.5 md:gap-3.5 max-w-2xl mx-auto">
+                    <div className="bg-[#FFFDF9]/40 border border-[#B38B36]/15 hover:border-[#B38B36]/40 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 rounded-xl p-3 text-left">
+                      <span className="text-[8px] uppercase tracking-widest text-[#8E6B23] block mb-1 font-bold">Moon Sign</span>
+                      <span className="text-xs text-[#3C2A21] font-serif font-bold">{result.rasi?.split(" ")[0]}</span>
                     </div>
-                    <div className="bg-[#FFFDF9]/40 border border-[#B38B36]/15 hover:border-[#B38B36]/40 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 rounded-xl p-4 text-left">
-                      <span className="text-[8px] uppercase tracking-widest text-[#8E6B23] block mb-1.5 font-bold">Nakshatra</span>
-                      <span className="text-xs md:text-sm text-[#3C2A21] font-serif font-bold">{result.nakshatra}</span>
+                    <div className="bg-[#FFFDF9]/40 border border-[#B38B36]/15 hover:border-[#B38B36]/40 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 rounded-xl p-3 text-left">
+                      <span className="text-[8px] uppercase tracking-widest text-[#8E6B23] block mb-1 font-bold">Nakshatra</span>
+                      <span className="text-xs text-[#3C2A21] font-serif font-bold">{result.nakshatra}</span>
                     </div>
-                    <div className="bg-[#FFFDF9]/40 border border-[#B38B36]/15 hover:border-[#B38B36]/40 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 rounded-xl p-4 text-left">
-                      <span className="text-[8px] uppercase tracking-widest text-[#8E6B23] block mb-1.5 font-bold">Rising Sign</span>
-                      <span className="text-xs md:text-sm text-[#3C2A21] font-serif font-bold">{result.lagna?.split(" ")[0]}</span>
+                    <div className="bg-[#FFFDF9]/40 border border-[#B38B36]/15 hover:border-[#B38B36]/40 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 rounded-xl p-3 text-left">
+                      <span className="text-[8px] uppercase tracking-widest text-[#8E6B23] block mb-1 font-bold">Rising Sign</span>
+                      <span className="text-xs text-[#3C2A21] font-serif font-bold">{result.lagna?.split(" ")[0]}</span>
                     </div>
                   </div>
 
                   {/* Graha Sthiti (Planetary Readouts) */}
                   {result.planetaryPositions && (
-                    <div className="max-w-2xl mx-auto space-y-4 text-left">
-                      <h5 className="font-serif text-[#8E6B23] text-xs uppercase tracking-widest text-center font-bold flex items-center justify-center gap-3">
+                    <div className="max-w-2xl mx-auto space-y-2 text-left">
+                      <h5 className="font-serif text-[#8E6B23] text-[10px] uppercase tracking-widest text-center font-bold flex items-center justify-center gap-3">
                         <span className="w-6 h-[1px] bg-[#B38B36]/30"></span>
                         Planetary Positions (Graha Sthiti)
                         <span className="w-6 h-[1px] bg-[#B38B36]/30"></span>
                       </h5>
-                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 bg-[#FFFDF9]/40 p-4 md:p-5 rounded-2xl border border-[#B38B36]/10 shadow-sm">
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 bg-[#FFFDF9]/40 p-3 md:p-4 rounded-2xl border border-[#B38B36]/10 shadow-sm">
                         {Object.entries(result.planetaryPositions).map(([planet, sign]) => (
-                          <div key={planet} className="flex justify-between items-center px-3 py-2 border-b border-[#B38B36]/10 text-xs">
+                          <div key={planet} className="flex justify-between items-center px-2 py-1.5 border-b border-[#B38B36]/10 text-xs">
                             <span className="text-[#6E5D53] font-medium">{planet}</span>
                             <span className="text-[#3C2A21] font-serif font-bold">{sign}</span>
                           </div>
@@ -1371,14 +1371,14 @@ const CalculatorPage = () => {
               )}
 
               {/* ==================== BUTTON ACTIONS ==================== */}
-              <div className="flex flex-col sm:flex-row justify-center items-center gap-4 max-w-xl mx-auto pt-6 border-t border-[#B38B36]/15">
+              <div className="flex flex-col sm:flex-row justify-center items-center gap-3.5 max-w-xl mx-auto pt-4 border-t border-[#B38B36]/15">
                 
                 {/* Recalculate Option */}
                 <motion.button 
                   onClick={() => setResult(null)}
                   whileHover={{ scale: 1.02, y: -1 }}
                   whileTap={{ scale: 0.98 }}
-                  className="w-full sm:w-auto text-[10px] uppercase tracking-widest font-bold text-[#6E5D53] hover:text-[#3C2A21] border border-stone-300 hover:border-stone-500 px-8 py-3.5 rounded-full transition-all duration-300 transform cursor-pointer flex items-center justify-center gap-1.5 bg-white shadow-sm"
+                  className="w-full sm:w-auto text-[10px] uppercase tracking-widest font-bold text-[#6E5D53] hover:text-[#3C2A21] border border-stone-300 hover:border-stone-500 px-6 py-2.5 rounded-full transition-all duration-300 transform cursor-pointer flex items-center justify-center gap-1.5 bg-white shadow-sm"
                 >
                   <Sparkles className="w-3.5 h-3.5" />
                   Recalculate
@@ -1390,7 +1390,7 @@ const CalculatorPage = () => {
                     onClick={() => navigate(`/payment?reportId=${result.reportId}`)}
                     whileHover={{ scale: 1.02, y: -1 }}
                     whileTap={{ scale: 0.98 }}
-                    className="w-full sm:w-auto text-[10px] uppercase tracking-widest font-serif font-bold text-[#1E110A] bg-gradient-to-r from-[#BF953F] via-[#FCF6BA] to-[#B38728] hover:brightness-[1.12] px-8 py-3.5 rounded-full transition-all duration-500 shadow-[0_4px_12px_rgba(179,139,54,0.3)] transform cursor-pointer flex items-center justify-center gap-1.5 border border-[#FCF6BA]/40"
+                    className="w-full sm:w-auto text-[10px] uppercase tracking-widest font-serif font-bold text-[#1E110A] bg-gradient-to-r from-[#BF953F] via-[#FCF6BA] to-[#B38728] hover:brightness-[1.12] px-6 py-2.5 rounded-full transition-all duration-500 shadow-[0_4px_12px_rgba(179,139,54,0.3)] transform cursor-pointer flex items-center justify-center gap-1.5 border border-[#FCF6BA]/40"
                   >
                     <Unlock className="w-3.5 h-3.5 stroke-[2.5px]" />
                     <span>Unlock Full Report</span>
