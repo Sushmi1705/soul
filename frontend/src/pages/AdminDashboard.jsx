@@ -33,7 +33,12 @@ const AdminDashboard = () => {
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-  const [activeTab, setActiveTab] = useState("list"); // "list" or "create"
+  const [activeTab, setActiveTab] = useState("list"); // "list" or "create" or "horoscope_reports"
+  
+  // Horoscope state
+  const [reports, setReports] = useState([]);
+  const [loadingReports, setLoadingReports] = useState(false);
+  const [selectedReportId, setSelectedReportId] = useState(null);
   
   // Form state
   const [title, setTitle] = useState("");
@@ -58,7 +63,31 @@ const AdminDashboard = () => {
       return;
     }
     fetchBlogs();
+    fetchReports();
   }, [token, navigate]);
+
+  const fetchReports = async () => {
+    setLoadingReports(true);
+    try {
+      const response = await fetch(`${apiUrl}/api/horoscope/reports`, {
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        data.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        setReports(data);
+      } else {
+        toast.error("Failed to retrieve horoscope logs.");
+      }
+    } catch (error) {
+      console.error("Fetch reports error:", error);
+      toast.error("Failed to connect to the horoscope registry.");
+    } finally {
+      setLoadingReports(false);
+    }
+  };
 
   const fetchBlogs = async () => {
     try {
@@ -330,6 +359,18 @@ const AdminDashboard = () => {
               <motion.div layoutId="tab-underline" className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#B38B36]" />
             )}
           </button>
+          <button
+            onClick={() => setActiveTab("horoscope_reports")}
+            className={`pb-4 px-2 text-sm uppercase tracking-wider font-semibold transition-all relative flex items-center gap-2 ${
+              activeTab === "horoscope_reports" ? "text-[#B38B36]" : "text-[#A89E8D] hover:text-white"
+            }`}
+          >
+            <Compass className="w-4 h-4" />
+            <span>Horoscope Reports ({reports.length})</span>
+            {activeTab === "horoscope_reports" && (
+              <motion.div layoutId="tab-underline" className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#B38B36]" />
+            )}
+          </button>
         </div>
 
         {/* Tab Content */}
@@ -415,7 +456,7 @@ const AdminDashboard = () => {
                 </div>
               )}
             </motion.div>
-          ) : (
+          ) : activeTab === "create" ? (
             <motion.div
               key="create"
               initial={{ opacity: 0, y: 15 }}
@@ -596,6 +637,197 @@ const AdminDashboard = () => {
                 </motion.button>
 
               </form>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="horoscope_reports"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.4 }}
+              className="space-y-6"
+            >
+              {loadingReports ? (
+                <div className="flex flex-col items-center justify-center py-20 text-[#A89E8D]">
+                  <div className="border-4 border-[#B38B36] border-t-transparent w-10 h-10 rounded-full animate-spin mb-4"></div>
+                  <p className="text-sm tracking-wider uppercase">Loading horoscope archives...</p>
+                </div>
+              ) : reports.length === 0 ? (
+                <div className="text-center py-20 bg-black/20 border border-[#B38B36]/10 rounded-2xl">
+                  <Compass className="w-12 h-12 text-[#B38B36]/40 mx-auto mb-4 animate-spin-slow" />
+                  <p className="text-lg font-serif">No horoscope readings generated yet.</p>
+                  <p className="text-sm text-[#A89E8D] mt-2">When visitors check their horoscope on the site, their reports will appear here.</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {reports.map((rep) => {
+                    const isExpanded = selectedReportId === rep.id;
+                    const dateStr = new Date(rep.timestamp).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
+                    
+                    return (
+                      <div
+                        key={rep.id}
+                        className="bg-[#0f0a05]/60 border border-[#B38B36]/20 rounded-xl overflow-hidden hover:border-[#B38B36]/40 transition-all"
+                      >
+                        {/* Summary Header Row */}
+                        <div 
+                          onClick={() => setSelectedReportId(isExpanded ? null : rep.id)}
+                          className="p-6 flex flex-col md:flex-row md:items-center justify-between gap-4 cursor-pointer hover:bg-white/[0.02] transition-colors"
+                        >
+                          <div className="flex items-center gap-4">
+                            <div className="w-10 h-10 rounded-full bg-[#B38B36]/10 border border-[#B38B36]/30 flex items-center justify-center text-[#B38B36]">
+                              <User className="w-4 h-4" />
+                            </div>
+                            <div>
+                              <h3 className="text-base font-serif font-bold text-white flex items-center gap-2">
+                                {rep.name}
+                                <span className={`text-[8px] uppercase tracking-widest px-2 py-0.5 rounded font-black border ${
+                                  rep.is_paid 
+                                    ? "bg-green-950/40 border-green-600/40 text-green-400" 
+                                    : "bg-[#B38B36]/10 border-[#B38B36]/30 text-[#B38B36]"
+                                }`}>
+                                  {rep.is_paid ? "Premium Unlocked" : "Free Preview"}
+                                </span>
+                              </h3>
+                              <p className="text-xs text-[#A89E8D]/80 mt-1 font-light">
+                                Born: {rep.dob} at {rep.tob} {rep.pob && `in ${rep.pob}`} · Sign: <span className="text-[#B38B36] font-semibold">{rep.astrology_details?.zodiac}</span>
+                              </p>
+                            </div>
+                          </div>
+                          
+                          <div className="flex items-center gap-4 justify-between md:justify-end">
+                            <span className="text-xs text-[#A89E8D]/60">{dateStr}</span>
+                            <button className="px-3.5 py-1.5 border border-[#B38B36]/20 hover:border-[#B38B36]/60 rounded text-xs font-semibold text-[#B38B36] hover:bg-[#B38B36]/10 transition-all uppercase tracking-wider text-[10px]">
+                              {isExpanded ? "Collapse" : "View Report"}
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Collapsible Details */}
+                        {isExpanded && (
+                          <div className="border-t border-[#B38B36]/10 bg-black/40 p-6 space-y-6 text-xs text-[#A89E8D] leading-relaxed">
+                            
+                            {/* Astrology Details Row */}
+                            <div className="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-9 gap-3">
+                              {Object.entries(rep.astrology_details || {}).map(([key, value]) => (
+                                <div key={key} className="bg-black/40 border border-[#B38B36]/10 p-2.5 rounded text-center">
+                                  <span className="text-[8px] block uppercase tracking-wider text-[#A89E8D]/60 font-semibold">{key.replace("_", " ")}</span>
+                                  <span className="text-white font-medium text-xs mt-1 block truncate text-[#B38B36]">{value}</span>
+                                </div>
+                              ))}
+                            </div>
+
+                            {/* Today's / Tomorrow's Horoscope */}
+                            <div className="grid md:grid-cols-2 gap-6">
+                              <div className="bg-black/20 p-4 rounded-lg border border-[#B38B36]/10">
+                                <h5 className="font-serif text-white font-bold text-sm mb-3 uppercase tracking-wider border-b border-[#B38B36]/10 pb-2 text-[#B38B36]">Today's Predictions</h5>
+                                <div className="space-y-2">
+                                  <p><strong>Overall:</strong> <span className="text-stone-300">"{rep.today_prediction?.overall}"</span></p>
+                                  <p><strong>Career:</strong> <span className="text-stone-400">{rep.today_prediction?.career}</span></p>
+                                  <p><strong>Finance:</strong> <span className="text-stone-400">{rep.today_prediction?.finance}</span></p>
+                                  <p><strong>Relations:</strong> <span className="text-stone-400">{rep.today_prediction?.relationship}</span></p>
+                                  <p><strong>Health:</strong> <span className="text-stone-400">{rep.today_prediction?.health}</span></p>
+                                </div>
+                              </div>
+                              <div className="bg-black/20 p-4 rounded-lg border border-[#B38B36]/10">
+                                <h5 className="font-serif text-white font-bold text-sm mb-3 uppercase tracking-wider border-b border-[#B38B36]/10 pb-2 text-[#B38B36]">Tomorrow's Predictions</h5>
+                                <div className="space-y-2">
+                                  <p><strong>Energy:</strong> <span className="text-stone-300">"{rep.tomorrow_prediction?.energy}"</span></p>
+                                  <p><strong>Career:</strong> <span className="text-stone-400">{rep.tomorrow_prediction?.career}</span></p>
+                                  <p><strong>Finance:</strong> <span className="text-stone-400">{rep.tomorrow_prediction?.finance}</span></p>
+                                  <p><strong>Relations:</strong> <span className="text-stone-400">{rep.tomorrow_prediction?.relationship}</span></p>
+                                  <p><strong>Health:</strong> <span className="text-stone-400">{rep.tomorrow_prediction?.health}</span></p>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Detailed Life Report Analysis */}
+                            <div className="space-y-4">
+                              <h5 className="font-serif text-white font-bold text-sm uppercase tracking-wider border-b border-[#B38B36]/10 pb-2 text-[#B38B36]">Full Life Report Details</h5>
+                              
+                              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                {/* Personality */}
+                                <div className="bg-[#120d08]/40 border border-[#B38B36]/10 p-4 rounded-lg">
+                                  <h6 className="font-serif font-bold text-white uppercase text-[10px] tracking-wider mb-2 flex items-center gap-1.5">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-green-500" /> Personality
+                                  </h6>
+                                  <div className="space-y-1.5 text-[11px] font-light">
+                                    <p><strong>Strengths:</strong> {rep.life_report?.personality?.strengths}</p>
+                                    <p><strong>Weaknesses:</strong> {rep.life_report?.personality?.weaknesses}</p>
+                                    <p><strong>Talents:</strong> {rep.life_report?.personality?.hidden_talents}</p>
+                                  </div>
+                                </div>
+
+                                {/* Career */}
+                                <div className="bg-[#120d08]/40 border border-[#B38B36]/10 p-4 rounded-lg">
+                                  <h6 className="font-serif font-bold text-white uppercase text-[10px] tracking-wider mb-2 flex items-center gap-1.5">
+                                    <span className={`w-1.5 h-1.5 rounded-full ${rep.is_paid ? 'bg-green-500' : 'bg-[#B38B36]'}`} /> Career Forecast
+                                  </h6>
+                                  <div className="space-y-1.5 text-[11px] font-light">
+                                    <p><strong>Growth:</strong> {rep.life_report?.career?.growth}</p>
+                                    <p><strong>Business:</strong> {rep.life_report?.career?.business}</p>
+                                    <p><strong>Leadership:</strong> {rep.life_report?.career?.leadership}</p>
+                                  </div>
+                                </div>
+
+                                {/* Relationship */}
+                                <div className="bg-[#120d08]/40 border border-[#B38B36]/10 p-4 rounded-lg">
+                                  <h6 className="font-serif font-bold text-white uppercase text-[10px] tracking-wider mb-2 flex items-center gap-1.5">
+                                    <span className={`w-1.5 h-1.5 rounded-full ${rep.is_paid ? 'bg-green-500' : 'bg-[#B38B36]'}`} /> Marriage & Compatibility
+                                  </h6>
+                                  <div className="space-y-1.5 text-[11px] font-light">
+                                    <p><strong>Marriage:</strong> {rep.life_report?.relationship?.marriage}</p>
+                                    <p><strong>Compatibility:</strong> {rep.life_report?.relationship?.compatibility}</p>
+                                    <p><strong>Family:</strong> {rep.life_report?.relationship?.family}</p>
+                                  </div>
+                                </div>
+
+                                {/* Financial */}
+                                <div className="bg-[#120d08]/40 border border-[#B38B36]/10 p-4 rounded-lg">
+                                  <h6 className="font-serif font-bold text-white uppercase text-[10px] tracking-wider mb-2 flex items-center gap-1.5">
+                                    <span className={`w-1.5 h-1.5 rounded-full ${rep.is_paid ? 'bg-green-500' : 'bg-[#B38B36]'}`} /> Wealth Forecast
+                                  </h6>
+                                  <div className="space-y-1.5 text-[11px] font-light">
+                                    <p><strong>Wealth:</strong> {rep.life_report?.financial?.wealth}</p>
+                                    <p><strong>Habits:</strong> {rep.life_report?.financial?.habits}</p>
+                                    <p><strong>Opportunities:</strong> {rep.life_report?.financial?.opportunities}</p>
+                                  </div>
+                                </div>
+
+                                {/* Health */}
+                                <div className="bg-[#120d08]/40 border border-[#B38B36]/10 p-4 rounded-lg">
+                                  <h6 className="font-serif font-bold text-white uppercase text-[10px] tracking-wider mb-2 flex items-center gap-1.5">
+                                    <span className={`w-1.5 h-1.5 rounded-full ${rep.is_paid ? 'bg-green-500' : 'bg-[#B38B36]'}`} /> Health & Vitality
+                                  </h6>
+                                  <div className="space-y-1.5 text-[11px] font-light">
+                                    <p><strong>Physical:</strong> {rep.life_report?.health?.physical}</p>
+                                    <p><strong>Mental:</strong> {rep.life_report?.health?.mental}</p>
+                                    <p><strong>Lifestyle:</strong> {rep.life_report?.health?.lifestyle}</p>
+                                  </div>
+                                </div>
+
+                                {/* Spiritual */}
+                                <div className="bg-[#120d08]/40 border border-[#B38B36]/10 p-4 rounded-lg">
+                                  <h6 className="font-serif font-bold text-white uppercase text-[10px] tracking-wider mb-2 flex items-center gap-1.5">
+                                    <span className={`w-1.5 h-1.5 rounded-full ${rep.is_paid ? 'bg-green-500' : 'bg-[#B38B36]'}`} /> Karma & Soul Purpose
+                                  </h6>
+                                  <div className="space-y-1.5 text-[11px] font-light">
+                                    <p><strong>Karma:</strong> {rep.life_report?.spiritual?.karma}</p>
+                                    <p><strong>Lessons:</strong> {rep.life_report?.spiritual?.lessons}</p>
+                                    <p><strong>Purpose:</strong> {rep.life_report?.spiritual?.purpose}</p>
+                                  </div>
+                                </div>
+                              </div>
+
+                            </div>
+
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </motion.div>
           )}
         </AnimatePresence>

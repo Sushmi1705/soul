@@ -4,7 +4,7 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { CartProvider } from "@/context/CartContext";
 import { Toaster } from "@/components/ui/sonner";
 import Header from "@/components/Header";
-import HeroAstrology from "@/components/HeroAstrology";
+import CelestialOracleHero from "@/components/CelestialOracleHero";
 import NebulaBackground from "@/components/NebulaBackground";
 import Panchang from "@/components/Panchang";
 import StatsBar from "@/components/StatsBar";
@@ -29,6 +29,7 @@ import ContactPage from "@/pages/ContactPage";
 import CalculatorPage from "@/pages/CalculatorPage";
 import AdminLogin from "@/pages/AdminLogin";
 import AdminDashboard from "@/pages/AdminDashboard";
+import PaymentPage from "@/pages/PaymentPage";
 
 const Layout = ({ children }) => {
   const { pathname } = useLocation();
@@ -79,7 +80,7 @@ const Home = () => {
   return (
     <>
       <NebulaBackground />
-      <HeroAstrology />
+      <CelestialOracleHero />
       <Calculators />
       <About />
       <Panchang />
@@ -111,6 +112,7 @@ function App() {
               <Route path="/calculator/:id" element={<CalculatorPage />} />
               <Route path="/admin/login" element={<AdminLogin />} />
               <Route path="/admin" element={<AdminDashboard />} />
+              <Route path="/payment" element={<PaymentPage />} />
             </Routes>
           </Layout>
         </BrowserRouter>

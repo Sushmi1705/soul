@@ -50,7 +50,7 @@ const DesignSwitcher = () => {
                 onClick={() => handleSelect(d.id)}
                 className={`w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold transition-all duration-300 ${
                   isActive
-                    ? "bg-[#3C2A21] text-white dark:bg-[#B38B36] dark:text-stone-950 shadow-md scale-110 border border-[#B38B36]/50"
+                    ? "bg-[#B38B36] text-white dark:bg-[#B38B36] dark:text-stone-950 shadow-md scale-110 border border-[#B38B36]/50"
                     : isLocked
                     ? "opacity-30 cursor-not-allowed text-stone-400"
                     : "text-[#3C2A21]/70 dark:text-[#FDFBF7]/70 hover:bg-[#B38B36]/20 hover:text-[#3C2A21] dark:hover:text-[#FDFBF7] border border-stone-200 dark:border-stone-850"

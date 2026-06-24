@@ -102,14 +102,14 @@ const Header = () => {
           {/* Connect Now Button */}
           <Link
             to="/contact"
-            className="hidden md:flex items-center justify-center px-8 py-2.5 bg-gradient-to-r from-[#1A050A] to-[#4A0E1B] text-[#D4AF37] border border-[#D4AF37]/50 text-[10px] xl:text-[11px] tracking-[0.25em] uppercase font-bold hover:shadow-[0_0_20px_rgba(212,175,55,0.3)] hover:border-[#D4AF37] transition-all duration-500 relative overflow-hidden group/btn"
+            className="hidden md:flex items-center justify-center px-8 py-2.5 bg-gradient-to-r from-[#4A0E1B] to-[#6A1E2F] text-[#D4AF37] border border-[#D4AF37]/50 text-[10px] xl:text-[11px] tracking-[0.25em] uppercase font-bold hover:shadow-[0_0_20px_rgba(212,175,55,0.3)] hover:border-[#D4AF37] transition-all duration-500 relative overflow-hidden group/btn"
           >
             <span className="relative z-10 flex items-center gap-2 whitespace-nowrap">
               <span className="w-6 h-[1px] bg-[#D4AF37]/50 group-hover/btn:w-3 transition-all duration-500"></span>
               Connect Now
               <span className="w-6 h-[1px] bg-[#D4AF37]/50 group-hover/btn:w-3 transition-all duration-500"></span>
             </span>
-            <div className="absolute inset-0 bg-gradient-to-r from-[#4A0E1B] to-[#1A050A] opacity-0 group-hover/btn:opacity-100 transition-opacity duration-500"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-[#6A1E2F] to-[#4A0E1B] opacity-0 group-hover/btn:opacity-100 transition-opacity duration-500"></div>
           </Link>
 
           {/* Mobile Menu Toggle */}
