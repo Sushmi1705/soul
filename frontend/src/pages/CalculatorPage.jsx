@@ -65,7 +65,7 @@ const NAKSHATRA_GANAS = {
 
 const NAKSHATRA_NADIS = {
   ashwini: "Adi", ardra: "Adi", punarvasu: "Adi", uttara_phalguni: "Adi", hasta: "Adi", jyeshtha: "Adi", moola: "Adi", shatabhisha: "Adi", purva_bhadrapada: "Adi",
-  bharani: "Madhya", mrigashira: "Madhya", pushya: "Madhya", purva_phalguni: "Madhya", chitra: "Madhya", anuradha: "Madhya", purva_ashadha: "Madhya", dhanishta: "Madhya", uttara_bhadrapada: "Madhya",
+  bharani: "Madhya", mrigashira: "Madhya", pushya: "Madhya", purva_phalguni: "Madhya", chitra: "Madhya", anuradha: "Madhya", purva_ashadha: "Madhya", dhanishta: "Madhya", uttarabhadra: "Madhya",
   krittika: "Antya", rohini: "Antya", ashlesha: "Antya", magha: "Antya", swati: "Antya", vishakha: "Antya", uttara_ashadha: "Antya", shravana: "Antya", revati: "Antya"
 };
 
@@ -652,17 +652,17 @@ const CalculatorPage = () => {
           50% { opacity: 0.8; transform: scale(1.15); }
         }
         @keyframes pulseGlow {
-          0%, 100% { opacity: 0.3; }
-          50% { opacity: 0.6; }
+          0%, 100% { opacity: 0.25; transform: scale(0.95); }
+          50% { opacity: 0.55; transform: scale(1.05); }
         }
       `}</style>
 
-      {/* Premium Dark Banner Section */}
+      {/* Premium Dark Celestial Banner Section */}
       <motion.div 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1 }}
-        className="relative w-full h-[220px] md:h-[260px] bg-[#3C2A21] flex items-center overflow-hidden border-b border-[#B38B36]/20"
+        className="relative w-full h-[220px] md:h-[260px] bg-[#3C2A21] flex items-center overflow-hidden border-b border-[#B38B36]/20 shadow-md"
       >
         <div className="absolute inset-0 bg-black/40 z-10" />
         
@@ -690,9 +690,9 @@ const CalculatorPage = () => {
         </div>
       </motion.div>
 
-      {/* Decorative ambient orbs in body background */}
-      <div className="absolute top-[300px] left-[-10%] w-[500px] h-[500px] rounded-full bg-[#E8D9FC]/20 blur-[130px] pointer-events-none z-0" />
-      <div className="absolute bottom-10 right-[-10%] w-[600px] h-[600px] rounded-full bg-[#FDE7BA]/20 blur-[140px] pointer-events-none z-0" />
+      {/* Decorative ambient orbs in body background (Increased visibility, mixed warm gold and violet tones) */}
+      <div className="absolute top-[260px] left-[-15%] w-[600px] h-[600px] rounded-full bg-[#E8D9FC]/25 blur-[120px] pointer-events-none z-0 animate-[pulseGlow_12s_infinite_ease-in-out]" />
+      <div className="absolute bottom-5 right-[-15%] w-[700px] h-[700px] rounded-full bg-[#FDE7BA]/30 blur-[130px] pointer-events-none z-0 animate-[pulseGlow_16s_infinite_ease-in-out_reverse]" />
 
       {/* Main Form/Result Container */}
       <div className="max-w-4xl mx-auto px-6 relative z-10 mt-12">
@@ -703,14 +703,38 @@ const CalculatorPage = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             onSubmit={handleSubmit}
-            className="bg-white/60 backdrop-blur-xl p-6 md:p-10 rounded-[2.5rem] shadow-[0_20px_50px_rgba(60,42,33,0.05)] border border-[#B38B36]/20 relative overflow-hidden"
+            className="bg-white/40 backdrop-blur-2xl p-6 md:p-12 rounded-[2.5rem] shadow-[0_30px_70px_rgba(179,139,54,0.08),0_1px_3px_rgba(0,0,0,0.02)] border border-[#B38B36]/25 relative overflow-hidden"
           >
             {/* Elegant inner gold rim */}
-            <div className="absolute inset-2.5 border border-[#B38B36]/10 rounded-[2rem] pointer-events-none" />
+            <div className="absolute inset-4 border border-[#B38B36]/15 rounded-[2rem] pointer-events-none z-0" />
+            <div className="absolute inset-5.5 border border-[#B38B36]/5 rounded-[1.85rem] pointer-events-none z-0" />
+            
+            {/* Corner Decorative Star Glyphs */}
+            <div className="absolute top-6 left-6 text-[#B38B36]/35 text-xs pointer-events-none select-none">✦</div>
+            <div className="absolute top-6 right-6 text-[#B38B36]/35 text-xs pointer-events-none select-none">✦</div>
+            <div className="absolute bottom-6 left-6 text-[#B38B36]/35 text-xs pointer-events-none select-none">✦</div>
+            <div className="absolute bottom-6 right-6 text-[#B38B36]/35 text-xs pointer-events-none select-none">✦</div>
+
+            {/* Constellation background drawing in form card */}
+            <svg viewBox="0 0 200 200" className="absolute inset-0 w-full h-full text-[#B38B36] opacity-[0.06] pointer-events-none select-none z-0">
+              <circle cx="40" cy="50" r="1.5" className="fill-current" />
+              <circle cx="80" cy="30" r="1.5" className="fill-current" />
+              <circle cx="120" cy="40" r="2.2" className="fill-current" />
+              <circle cx="160" cy="80" r="1.5" className="fill-current" />
+              <circle cx="140" cy="140" r="1.2" className="fill-current" />
+              <circle cx="60" cy="150" r="1.5" className="fill-current" />
+              <line x1="40" y1="50" x2="80" y2="30" stroke="currentColor" strokeWidth="0.3" strokeDasharray="1 1" />
+              <line x1="80" y1="30" x2="120" y2="40" stroke="currentColor" strokeWidth="0.3" />
+              <line x1="120" y1="40" x2="160" y2="80" stroke="currentColor" strokeWidth="0.3" />
+              <line x1="160" y1="80" x2="140" y2="140" stroke="currentColor" strokeWidth="0.3" strokeDasharray="2 2" />
+              <line x1="140" y1="140" x2="60" y2="150" stroke="currentColor" strokeWidth="0.3" />
+              <line x1="60" y1="150" x2="40" y2="50" stroke="currentColor" strokeWidth="0.3" />
+              <circle cx="100" cy="100" r="72" stroke="currentColor" strokeWidth="0.25" strokeDasharray="3 3" />
+            </svg>
 
             {/* FLAMES FORM STATE (HIDES ALL DATES/TIMES/PLACES) */}
             {id === "flames" ? (
-              <div className="space-y-8 relative z-10 pt-2">
+              <div className="space-y-8 relative z-10 pt-4">
                 <div className="text-center">
                   <span className="inline-flex items-center gap-1 px-3 py-1 border border-[#B38B36]/25 rounded-full bg-[#B38B36]/5 text-[9px] tracking-widest text-[#8E6B23] uppercase font-bold mb-3">
                     ❤ Compatibility Game
@@ -730,7 +754,7 @@ const CalculatorPage = () => {
                     <input 
                       required
                       type="text" 
-                      className="w-full bg-[#FDFBF7]/60 border border-[#E5E1D8] rounded-xl px-4 py-3.5 outline-none focus:border-[#B38B36] focus:ring-1 focus:ring-[#B38B36]/30 transition-all text-sm text-[#3C2A21]" 
+                      className="w-full bg-[#FDFBF7]/50 backdrop-blur-md border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-4 py-3.5 outline-none focus:ring-1 focus:ring-[#B38B36]/30 transition-all text-sm text-[#3C2A21] shadow-inner" 
                       placeholder="Enter your name" 
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -745,7 +769,7 @@ const CalculatorPage = () => {
                     <input 
                       required
                       type="text" 
-                      className="w-full bg-[#FDFBF7]/60 border border-[#E5E1D8] rounded-xl px-4 py-3.5 outline-none focus:border-[#B38B36] focus:ring-1 focus:ring-[#B38B36]/30 transition-all text-sm text-[#3C2A21]" 
+                      className="w-full bg-[#FDFBF7]/50 backdrop-blur-md border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-4 py-3.5 outline-none focus:ring-1 focus:ring-[#B38B36]/30 transition-all text-sm text-[#3C2A21] shadow-inner" 
                       placeholder="Enter partner's name" 
                       value={formData.partnerName}
                       onChange={(e) => setFormData({ ...formData, partnerName: e.target.value })}
@@ -755,7 +779,7 @@ const CalculatorPage = () => {
               </div>
             ) : id === "kundli-matching" ? (
               // KUNDLI MATCHING FORM STATE (TWO COMPLETE DETAIL CARDS)
-              <div className="space-y-8 relative z-10 pt-2">
+              <div className="space-y-8 relative z-10 pt-4">
                 <div className="text-center border-b border-[#B38B36]/10 pb-4 mb-6">
                   <span className="inline-flex items-center gap-1 px-3 py-1 border border-[#B38B36]/25 rounded-full bg-[#B38B36]/5 text-[9px] tracking-widest text-[#8E6B23] uppercase font-bold mb-3">
                     💫 Astrological Union
@@ -769,10 +793,10 @@ const CalculatorPage = () => {
                 <div className="grid md:grid-cols-2 gap-8 text-left items-start">
                   
                   {/* PARTNER 1 DETAILS CARD */}
-                  <div className="bg-[#FFFDF9]/60 border border-[#B38B36]/15 rounded-2xl p-5 md:p-6 space-y-4">
-                    <h4 className="font-serif text-base text-[#8E6B23] font-medium flex items-center gap-2 border-b border-[#B38B36]/10 pb-2">
+                  <div className="bg-[#FFFDF9]/40 backdrop-blur-xl border border-[#B38B36]/15 rounded-2xl p-5 md:p-6 space-y-4 shadow-sm hover:border-[#B38B36]/30 transition-all duration-300">
+                    <h4 className="font-serif text-base text-[#8E6B23] font-medium flex items-center gap-2 border-b border-[#B38B36]/15 pb-2">
                       <span className="w-5 h-5 rounded-full bg-[#B38B36]/10 text-xs text-[#8E6B23] flex items-center justify-center font-bold">1</span>
-                      Partner 1 (You / Groom)
+                      👦 Groom's Details
                     </h4>
                     
                     {/* Full Name */}
@@ -782,7 +806,7 @@ const CalculatorPage = () => {
                       </label>
                       <input 
                         type="text" 
-                        className="w-full bg-white/80 border border-[#E5E1D8] rounded-xl px-3 py-2.5 outline-none focus:border-[#B38B36] transition-all text-xs text-[#3C2A21]" 
+                        className="w-full bg-[#FDFBF7]/50 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-3 py-2.5 outline-none transition-all text-xs text-[#3C2A21] shadow-inner" 
                         placeholder="Name (optional)" 
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -798,7 +822,7 @@ const CalculatorPage = () => {
                         <input 
                           required 
                           type="date" 
-                          className="w-full bg-white/80 border border-[#E5E1D8] rounded-xl px-2 py-2.5 outline-none focus:border-[#B38B36] transition-all text-[11px] text-[#3C2A21] cursor-pointer" 
+                          className="w-full bg-[#FDFBF7]/50 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-2 py-2.5 outline-none transition-all text-[11px] text-[#3C2A21] cursor-pointer" 
                           value={formData.dob}
                           onChange={(e) => setFormData({ ...formData, dob: e.target.value })}
                         />
@@ -810,69 +834,68 @@ const CalculatorPage = () => {
                         <input 
                           required 
                           type="time" 
-                          className="w-full bg-white/80 border border-[#E5E1D8] rounded-xl px-2 py-2.5 outline-none focus:border-[#B38B36] transition-all text-[11px] text-[#3C2A21] cursor-pointer" 
+                          className="w-full bg-[#FDFBF7]/50 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-2 py-2.5 outline-none transition-all text-[11px] text-[#3C2A21] cursor-pointer" 
                           value={formData.tob}
                           onChange={(e) => setFormData({ ...formData, tob: e.target.value })}
                         />
                       </div>
                     </div>
 
-                    {/* Place of Birth */}
-                    <div className="space-y-1.5">
-                      <label className="text-[9px] font-bold uppercase tracking-widest text-[#3C2A21] flex items-center gap-1.5">
+                    {/* Place of Birth Subgroup */}
+                    <div className="space-y-1.5 bg-[#FFFDF9]/40 border border-[#B38B36]/10 rounded-2xl p-3.5 space-y-2">
+                      <label className="text-[9px] font-bold uppercase tracking-widest text-[#3C2A21] flex items-center gap-1.5 mb-1">
                         <MapPin className="w-3.5 h-3.5 text-[#B38B36]" /> Place of Birth
                       </label>
-                      <div className="space-y-2">
-                        {/* Country */}
+                      
+                      {/* Country */}
+                      <select
+                        required
+                        value={selectedCountry}
+                        onChange={handleCountryChange}
+                        className="w-full bg-white/80 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-3 py-2.5 outline-none text-[11px] text-[#3C2A21] cursor-pointer"
+                      >
+                        <option value="">Select Country</option>
+                        {countries.map((c) => (
+                          <option key={c.isoCode} value={c.isoCode}>{c.name}</option>
+                        ))}
+                      </select>
+
+                      {/* State */}
+                      {states.length > 0 && (
                         <select
                           required
-                          value={selectedCountry}
-                          onChange={handleCountryChange}
-                          className="w-full bg-white/80 border border-[#E5E1D8] rounded-xl px-3 py-2.5 outline-none focus:border-[#B38B36] text-[11px] text-[#3C2A21] cursor-pointer"
+                          value={selectedState}
+                          onChange={handleStateChange}
+                          className="w-full bg-white/80 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-3 py-2.5 outline-none text-[11px] text-[#3C2A21] cursor-pointer"
                         >
-                          <option value="">Select Country</option>
-                          {countries.map((c) => (
-                            <option key={c.isoCode} value={c.isoCode}>{c.name}</option>
+                          <option value="">Select State</option>
+                          {states.map((s) => (
+                            <option key={s.isoCode} value={s.isoCode}>{s.name}</option>
                           ))}
                         </select>
+                      )}
 
-                        {/* State */}
-                        {states.length > 0 && (
-                          <select
-                            required
-                            value={selectedState}
-                            onChange={handleStateChange}
-                            className="w-full bg-white/80 border border-[#E5E1D8] rounded-xl px-3 py-2.5 outline-none focus:border-[#B38B36] text-[11px] text-[#3C2A21] cursor-pointer"
-                          >
-                            <option value="">Select State</option>
-                            {states.map((s) => (
-                              <option key={s.isoCode} value={s.isoCode}>{s.name}</option>
-                            ))}
-                          </select>
-                        )}
-
-                        {/* City */}
-                        <select
-                          required
-                          disabled={!selectedCountry || (states.length > 0 && !selectedState)}
-                          value={selectedCity}
-                          onChange={handleCityChange}
-                          className="w-full bg-white/80 border border-[#E5E1D8] rounded-xl px-3 py-2.5 outline-none focus:border-[#B38B36] text-[11px] text-[#3C2A21] cursor-pointer disabled:opacity-50"
-                        >
-                          <option value="">Select City</option>
-                          {cities.map((city, idx) => (
-                            <option key={idx} value={city.name}>{city.name}</option>
-                          ))}
-                        </select>
-                      </div>
+                      {/* City */}
+                      <select
+                        required
+                        disabled={!selectedCountry || (states.length > 0 && !selectedState)}
+                        value={selectedCity}
+                        onChange={handleCityChange}
+                        className="w-full bg-white/80 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-3 py-2.5 outline-none text-[11px] text-[#3C2A21] cursor-pointer disabled:opacity-50"
+                      >
+                        <option value="">Select City</option>
+                        {cities.map((city, idx) => (
+                          <option key={idx} value={city.name}>{city.name}</option>
+                        ))}
+                      </select>
                     </div>
                   </div>
 
                   {/* PARTNER 2 DETAILS CARD */}
-                  <div className="bg-[#FFFDF9]/60 border border-[#B38B36]/15 rounded-2xl p-5 md:p-6 space-y-4">
-                    <h4 className="font-serif text-base text-[#8E6B23] font-medium flex items-center gap-2 border-b border-[#B38B36]/10 pb-2">
+                  <div className="bg-[#FFFDF9]/40 backdrop-blur-xl border border-[#B38B36]/15 rounded-2xl p-5 md:p-6 space-y-4 shadow-sm hover:border-[#B38B36]/30 transition-all duration-300">
+                    <h4 className="font-serif text-base text-[#8E6B23] font-medium flex items-center gap-2 border-b border-[#B38B36]/15 pb-2">
                       <span className="w-5 h-5 rounded-full bg-[#B38B36]/10 text-xs text-[#8E6B23] flex items-center justify-center font-bold">2</span>
-                      Partner 2 (Spouse / Bride)
+                      👧 Bride's Details
                     </h4>
                     
                     {/* Full Name */}
@@ -882,7 +905,7 @@ const CalculatorPage = () => {
                       </label>
                       <input 
                         type="text" 
-                        className="w-full bg-white/80 border border-[#E5E1D8] rounded-xl px-3 py-2.5 outline-none focus:border-[#B38B36] transition-all text-xs text-[#3C2A21]" 
+                        className="w-full bg-[#FDFBF7]/50 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-3 py-2.5 outline-none transition-all text-xs text-[#3C2A21] shadow-inner" 
                         placeholder="Name (optional)" 
                         value={formData.partnerName}
                         onChange={(e) => setFormData({ ...formData, partnerName: e.target.value })}
@@ -898,7 +921,7 @@ const CalculatorPage = () => {
                         <input 
                           required 
                           type="date" 
-                          className="w-full bg-white/80 border border-[#E5E1D8] rounded-xl px-2 py-2.5 outline-none focus:border-[#B38B36] transition-all text-[11px] text-[#3C2A21] cursor-pointer" 
+                          className="w-full bg-[#FDFBF7]/50 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-2 py-2.5 outline-none transition-all text-[11px] text-[#3C2A21] cursor-pointer" 
                           value={formData.partnerDob}
                           onChange={(e) => setFormData({ ...formData, partnerDob: e.target.value })}
                         />
@@ -910,61 +933,60 @@ const CalculatorPage = () => {
                         <input 
                           required 
                           type="time" 
-                          className="w-full bg-white/80 border border-[#E5E1D8] rounded-xl px-2 py-2.5 outline-none focus:border-[#B38B36] transition-all text-[11px] text-[#3C2A21] cursor-pointer" 
+                          className="w-full bg-[#FDFBF7]/50 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-2 py-2.5 outline-none transition-all text-[11px] text-[#3C2A21] cursor-pointer" 
                           value={formData.partnerTob}
                           onChange={(e) => setFormData({ ...formData, partnerTob: e.target.value })}
                         />
                       </div>
                     </div>
 
-                    {/* Place of Birth */}
-                    <div className="space-y-1.5">
-                      <label className="text-[9px] font-bold uppercase tracking-widest text-[#3C2A21] flex items-center gap-1.5">
+                    {/* Place of Birth Subgroup */}
+                    <div className="space-y-1.5 bg-[#FFFDF9]/40 border border-[#B38B36]/10 rounded-2xl p-3.5 space-y-2">
+                      <label className="text-[9px] font-bold uppercase tracking-widest text-[#3C2A21] flex items-center gap-1.5 mb-1">
                         <MapPin className="w-3.5 h-3.5 text-[#B38B36]" /> Place of Birth
                       </label>
-                      <div className="space-y-2">
-                        {/* Country */}
+                      
+                      {/* Country */}
+                      <select
+                        required
+                        value={selectedCountryPartner}
+                        onChange={handleCountryChangePartner}
+                        className="w-full bg-white/80 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-3 py-2.5 outline-none text-[11px] text-[#3C2A21] cursor-pointer"
+                      >
+                        <option value="">Select Country</option>
+                        {countriesPartner.map((c) => (
+                          <option key={c.isoCode} value={c.isoCode}>{c.name}</option>
+                        ))}
+                      </select>
+
+                      {/* State */}
+                      {statesPartner.length > 0 && (
                         <select
                           required
-                          value={selectedCountryPartner}
-                          onChange={handleCountryChangePartner}
-                          className="w-full bg-white/80 border border-[#E5E1D8] rounded-xl px-3 py-2.5 outline-none focus:border-[#B38B36] text-[11px] text-[#3C2A21] cursor-pointer"
+                          value={selectedStatePartner}
+                          onChange={handleStateChangePartner}
+                          className="w-full bg-white/80 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-3 py-2.5 outline-none text-[11px] text-[#3C2A21] cursor-pointer"
                         >
-                          <option value="">Select Country</option>
-                          {countriesPartner.map((c) => (
-                            <option key={c.isoCode} value={c.isoCode}>{c.name}</option>
+                          <option value="">Select State</option>
+                          {statesPartner.map((s) => (
+                            <option key={s.isoCode} value={s.isoCode}>{s.name}</option>
                           ))}
                         </select>
+                      )}
 
-                        {/* State */}
-                        {statesPartner.length > 0 && (
-                          <select
-                            required
-                            value={selectedStatePartner}
-                            onChange={handleStateChangePartner}
-                            className="w-full bg-white/80 border border-[#E5E1D8] rounded-xl px-3 py-2.5 outline-none focus:border-[#B38B36] text-[11px] text-[#3C2A21] cursor-pointer"
-                          >
-                            <option value="">Select State</option>
-                            {statesPartner.map((s) => (
-                              <option key={s.isoCode} value={s.isoCode}>{s.name}</option>
-                            ))}
-                          </select>
-                        )}
-
-                        {/* City */}
-                        <select
-                          required
-                          disabled={!selectedCountryPartner || (statesPartner.length > 0 && !selectedStatePartner)}
-                          value={selectedCityPartner}
-                          onChange={handleCityChangePartner}
-                          className="w-full bg-white/80 border border-[#E5E1D8] rounded-xl px-3 py-2.5 outline-none focus:border-[#B38B36] text-[11px] text-[#3C2A21] cursor-pointer disabled:opacity-50"
-                        >
-                          <option value="">Select City</option>
-                          {citiesPartner.map((city, idx) => (
-                            <option key={idx} value={city.name}>{city.name}</option>
-                          ))}
-                        </select>
-                      </div>
+                      {/* City */}
+                      <select
+                        required
+                        disabled={!selectedCountryPartner || (statesPartner.length > 0 && !selectedStatePartner)}
+                        value={selectedCityPartner}
+                        onChange={handleCityChangePartner}
+                        className="w-full bg-white/80 border border-[#E5E1D8] rounded-xl px-3 py-2.5 outline-none text-[11px] text-[#3C2A21] cursor-pointer disabled:opacity-50"
+                      >
+                        <option value="">Select City</option>
+                        {citiesPartner.map((city, idx) => (
+                          <option key={idx} value={city.name}>{city.name}</option>
+                        ))}
+                      </select>
                     </div>
                   </div>
 
@@ -972,7 +994,8 @@ const CalculatorPage = () => {
               </div>
             ) : (
               // STANDARD SINGLE PERSON FORM STATE
-              <div className="space-y-6 relative z-10 pt-2">
+              <div className="space-y-8 relative z-10 pt-4">
+                
                 {/* Full Name */}
                 <div className="space-y-2 text-left">
                   <label className="text-xs font-bold uppercase tracking-widest text-[#3C2A21] flex items-center gap-2">
@@ -980,7 +1003,7 @@ const CalculatorPage = () => {
                   </label>
                   <input 
                     type="text" 
-                    className="w-full bg-[#FDFBF7]/60 border border-[#E5E1D8] rounded-xl px-4 py-3.5 outline-none focus:border-[#B38B36] focus:ring-1 focus:ring-[#B38B36]/30 transition-all text-sm text-[#3C2A21]" 
+                    className="w-full bg-[#FDFBF7]/50 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-4 py-3.5 outline-none focus:ring-1 focus:ring-[#B38B36]/30 transition-all text-sm text-[#3C2A21] shadow-inner" 
                     placeholder="Enter your name (optional)" 
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -996,7 +1019,7 @@ const CalculatorPage = () => {
                     <input 
                       required 
                       type="date" 
-                      className="w-full bg-[#FDFBF7]/60 border border-[#E5E1D8] rounded-xl px-4 py-3.5 outline-none focus:border-[#B38B36] focus:ring-1 focus:ring-[#B38B36]/30 transition-all text-sm text-[#3C2A21] cursor-pointer" 
+                      className="w-full bg-[#FDFBF7]/50 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-4 py-3.5 outline-none focus:ring-1 focus:ring-[#B38B36]/30 transition-all text-sm text-[#3C2A21] cursor-pointer shadow-inner" 
                       value={formData.dob}
                       onChange={(e) => setFormData({ ...formData, dob: e.target.value })}
                     />
@@ -1008,16 +1031,16 @@ const CalculatorPage = () => {
                     <input 
                       required 
                       type="time" 
-                      className="w-full bg-[#FDFBF7]/60 border border-[#E5E1D8] rounded-xl px-4 py-3.5 outline-none focus:border-[#B38B36] focus:ring-1 focus:ring-[#B38B36]/30 transition-all text-sm text-[#3C2A21] cursor-pointer" 
+                      className="w-full bg-[#FDFBF7]/50 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-4 py-3.5 outline-none focus:ring-1 focus:ring-[#B38B36]/30 transition-all text-sm text-[#3C2A21] cursor-pointer shadow-inner" 
                       value={formData.tob}
                       onChange={(e) => setFormData({ ...formData, tob: e.target.value })}
                     />
                   </div>
                 </div>
 
-                {/* Cascading Place of Birth Dropdowns */}
-                <div className="space-y-2 text-left">
-                  <label className="text-xs font-bold uppercase tracking-widest text-[#3C2A21] flex items-center gap-2">
+                {/* Cascading Place of Birth Dropdowns Grouped Container */}
+                <div className="space-y-3 text-left bg-[#FFFDF9]/40 border border-[#B38B36]/15 rounded-2xl p-5 md:p-6 shadow-sm">
+                  <label className="text-xs font-bold uppercase tracking-widest text-[#3C2A21] flex items-center gap-2 mb-1">
                     <MapPin className="w-4.5 h-4.5 text-[#B38B36]" /> Place of Birth
                   </label>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -1027,7 +1050,7 @@ const CalculatorPage = () => {
                         required
                         value={selectedCountry}
                         onChange={handleCountryChange}
-                        className="w-full bg-[#FDFBF7]/60 border border-[#E5E1D8] rounded-xl px-4 py-3.5 outline-none focus:border-[#B38B36] text-sm text-[#3C2A21] cursor-pointer appearance-none animate-none"
+                        className="w-full bg-white/80 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-4 py-3.5 outline-none text-sm text-[#3C2A21] cursor-pointer appearance-none animate-none"
                       >
                         <option value="">Select Country</option>
                         {countries.map((c) => (
@@ -1048,7 +1071,7 @@ const CalculatorPage = () => {
                           required
                           value={selectedState}
                           onChange={handleStateChange}
-                          className="w-full bg-[#FDFBF7]/60 border border-[#E5E1D8] rounded-xl px-4 py-3.5 outline-none focus:border-[#B38B36] text-sm text-[#3C2A21] cursor-pointer appearance-none animate-none"
+                          className="w-full bg-white/80 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-4 py-3.5 outline-none text-sm text-[#3C2A21] cursor-pointer appearance-none animate-none"
                         >
                           <option value="">Select State</option>
                           {states.map((s) => (
@@ -1072,7 +1095,7 @@ const CalculatorPage = () => {
                         disabled={!selectedCountry || (states.length > 0 && !selectedState)}
                         value={selectedCity}
                         onChange={handleCityChange}
-                        className="w-full bg-[#FDFBF7]/60 border border-[#E5E1D8] rounded-xl px-4 py-3.5 outline-none focus:border-[#B38B36] text-sm text-[#3C2A21] cursor-pointer disabled:opacity-50 appearance-none animate-none"
+                        className="w-full bg-white/80 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-4 py-3.5 outline-none text-sm text-[#3C2A21] cursor-pointer disabled:opacity-50 appearance-none animate-none"
                       >
                         <option value="">Select City</option>
                         {cities.map((city, idx) => (
@@ -1093,7 +1116,7 @@ const CalculatorPage = () => {
             <button 
               type="submit" 
               disabled={loading}
-              className="w-full mt-10 bg-gradient-to-r from-[#BF953F] via-[#FCF6BA] to-[#B38728] hover:brightness-[1.12] text-[#1E110A] rounded-full py-4.5 font-serif font-bold tracking-[0.2em] uppercase text-xs flex items-center justify-center gap-2.5 transition-all duration-500 disabled:opacity-70 shadow-[0_4px_15px_rgba(179,139,54,0.35)] hover:scale-[1.02] transform cursor-pointer border border-[#FCF6BA]/40 relative z-10"
+              className="w-full mt-10 bg-gradient-to-r from-[#BF953F] via-[#FCF6BA] to-[#B38728] hover:brightness-[1.15] text-[#1E110A] rounded-full py-4.5 font-serif font-bold tracking-[0.2em] uppercase text-xs flex items-center justify-center gap-2.5 transition-all duration-500 disabled:opacity-70 shadow-[0_4px_15px_rgba(179,139,54,0.35)] hover:scale-[1.02] transform cursor-pointer border border-[#FCF6BA]/40 relative z-10"
             >
               {loading ? (
                 <>
