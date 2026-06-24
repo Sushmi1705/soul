@@ -242,6 +242,18 @@ const PaymentPage = () => {
   const isPaid = report?.is_paid || false;
   const pdfUrl = report?.pdf_url ? (report.pdf_url.startsWith("http") ? report.pdf_url : `${apiUrl}${report.pdf_url}`) : "";
 
+  const CONFIG_ITEMS = [
+    { label: "Rasi (Moon Sign)", value: getAstroData().rasi?.split(" ")[0], desc: getAstroData().rasi, icon: <Moon className="w-4 h-4 text-[#8E6B23]" /> },
+    { label: "Nakshatra", value: getAstroData().nakshatra, desc: "Lunar Mansion", icon: <Sparkles className="w-4 h-4 text-[#8E6B23]" /> },
+    { label: "Lagna (Rising)", value: getAstroData().lagna?.split(" ")[0], desc: "Ascendant sign", icon: <TrendingUp className="w-4 h-4 text-[#8E6B23]" /> },
+    { label: "Zodiac (Sun)", value: getAstroData().zodiac, desc: "Solar Sign", icon: <Star className="w-4 h-4 text-[#8E6B23]" /> },
+    { label: "Moon Sign", value: getAstroData().moon_sign, desc: "Emotional core", icon: <Moon className="w-4 h-4 text-[#8E6B23]" /> },
+    { label: "Birth Star", value: getAstroData().birth_star, desc: "Constellation", icon: <Star className="w-4 h-4 text-[#8E6B23]" /> },
+    { label: "Lucky Number", value: getAstroData().lucky_number, desc: "Cosmic vibration", icon: <Sparkles className="w-4 h-4 text-[#8E6B23]" /> },
+    { label: "Lucky Color", value: getAstroData().lucky_color, desc: "Auric energy", icon: <Heart className="w-4 h-4 text-[#8E6B23]" /> },
+    { label: "Lucky Day", value: getAstroData().lucky_day, desc: "Weekly alignment", icon: <Calendar className="w-4 h-4 text-[#8E6B23]" /> }
+  ];
+
   if (loading) {
     return (
       <div className="min-h-screen bg-[#FFFDF9] flex flex-col items-center justify-center py-20 relative overflow-hidden">
@@ -269,61 +281,128 @@ const PaymentPage = () => {
   }
 
   return (
-    <div id="payment-page-root" className="min-h-screen bg-[#FFFDF9] text-[#3C2A21] font-[Outfit,sans-serif] relative pb-20 pt-28 md:pt-36">
+    <div id="payment-page-root" className="min-h-screen bg-[#FFFDF9] text-[#3C2A21] font-[Outfit,sans-serif] relative pb-20 pt-28 md:pt-36 overflow-hidden">
       
       <style>{`
         body, html {
           overflow: auto !important;
           pointer-events: auto !important;
         }
+        @keyframes spinSlow {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+        @keyframes twinkle {
+          0%, 100% { opacity: 0.15; transform: scale(0.85); }
+          50% { opacity: 0.8; transform: scale(1.15); }
+        }
       `}</style>
       
       {/* Decorative Orbs */}
-      <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] rounded-full bg-[#E8D9FC]/40 blur-[120px] pointer-events-none z-0" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] rounded-full bg-[#FDE7BA]/40 blur-[130px] pointer-events-none z-0" />
+      <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] rounded-full bg-[#E8D9FC]/30 blur-[120px] pointer-events-none z-0 animate-pulse" style={{ animationDuration: '8s' }} />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] rounded-full bg-[#FDE7BA]/30 blur-[130px] pointer-events-none z-0 animate-pulse" style={{ animationDuration: '10s' }} />
 
-      <div className="max-w-6xl mx-auto px-6 relative z-10 space-y-8">
+      {/* Slow Rotating Background Zodiac Wheel Watermarks */}
+      <div className="absolute top-[8%] left-[-15%] w-[65vw] h-[65vw] max-w-[650px] text-[#B38B36] opacity-[0.03] animate-[spinSlow_150s_linear_infinite] pointer-events-none select-none z-0">
+        <svg viewBox="0 0 1000 1000" className="w-full h-full fill-none stroke-current">
+          <circle cx="500" cy="500" r="480" strokeWidth="0.5" />
+          <circle cx="500" cy="500" r="300" strokeWidth="0.5" />
+          <circle cx="500" cy="500" r="150" strokeWidth="0.5" strokeDasharray="3 3" />
+          {Array.from({ length: 12 }).map((_, i) => {
+            const angle = (i * 30 * Math.PI) / 180;
+            return (
+              <line
+                key={i}
+                x1="500" y1="500"
+                x2={500 + Math.cos(angle) * 480}
+                y2={500 + Math.sin(angle) * 480}
+                strokeWidth="0.3"
+              />
+            );
+          })}
+        </svg>
+      </div>
+
+      <div className="absolute bottom-[10%] right-[-15%] w-[60vw] h-[60vw] max-w-[600px] text-[#B38B36] opacity-[0.03] animate-[spinSlow_120s_linear_infinite_reverse] pointer-events-none select-none z-0">
+        <svg viewBox="0 0 1000 1000" className="w-full h-full fill-none stroke-current">
+          <circle cx="500" cy="500" r="480" strokeWidth="0.5" />
+          <circle cx="500" cy="500" r="300" strokeWidth="0.5" />
+          {Array.from({ length: 12 }).map((_, i) => {
+            const angle = (i * 30 * Math.PI) / 180;
+            return (
+              <line
+                key={i}
+                x1="500" y1="500"
+                x2={500 + Math.cos(angle) * 480}
+                y2={500 + Math.sin(angle) * 480}
+                strokeWidth="0.3"
+              />
+            );
+          })}
+        </svg>
+      </div>
+
+      <div className="max-w-6xl mx-auto px-6 relative z-10 space-y-12">
         
         {/* Banner Card */}
-        <div className="border border-white/60 bg-white/45 shadow-sm rounded-2xl p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 backdrop-blur-md">
-          <div className="space-y-2 text-center md:text-left">
-            <span className="text-[9px] tracking-widest text-[#8E6B23] uppercase font-bold block">Cosmic Reading Room</span>
-            <h1 className="font-serif text-3xl md:text-4xl text-[#3C2A21] font-semibold">
-              Destiny Report for <em className="italic text-[#8E6B23]">{report.name}</em>
-            </h1>
-            <p className="text-xs text-[#6E5D53] font-light">
-              Birth details: {new Date(report.dob).toLocaleDateString(undefined, { dateStyle: "long" })} at {report.tob} {report.pob && `in ${report.pob}`}
-            </p>
-          </div>
+        <div className="relative border border-[#B38B36]/20 bg-white/70 shadow-[0_15px_40px_rgba(179,139,54,0.06)] rounded-3xl p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 backdrop-blur-xl overflow-hidden">
+          {/* Subtle gold inner accent frame */}
+          <div className="absolute inset-2 border border-[#B38B36]/10 rounded-[1.3rem] pointer-events-none" />
           
-          {isPaid ? (
-            <a
-              href={pdfUrl}
-              download
-              className="px-8 py-4 bg-[#B38B36] hover:bg-[#8E6B23] text-white font-bold text-xs tracking-widest uppercase rounded-lg transition-all duration-300 flex items-center gap-2.5 shadow-md hover:scale-[1.02]"
-            >
-              <Download className="w-4 h-4" />
-              <span>Download Premium PDF</span>
-            </a>
-          ) : (
-            <button
-              onClick={handlePayment}
-              disabled={processingPayment}
-              className="px-8 py-4 bg-gradient-to-r from-[#B38B36] to-[#8E6B23] hover:from-[#8E6B23] hover:to-[#3C2A21] text-white font-bold text-xs tracking-widest uppercase rounded-lg transition-all duration-500 flex items-center gap-2.5 shadow-md hover:scale-[1.02] cursor-pointer"
-            >
-              {processingPayment ? (
+          {/* Star backgrounds */}
+          <div className="absolute top-3 left-4 text-[#B38B36]/30 text-xs animate-[twinkle_4s_infinite_linear]">✦</div>
+          <div className="absolute bottom-3 right-6 text-[#B38B36]/25 text-[10px] animate-[twinkle_3s_infinite_linear]" style={{ animationDelay: "1.5s" }}>✦</div>
+
+          <div className="space-y-2 text-center md:text-left relative z-10">
+            <span className="inline-flex items-center gap-1 px-3 py-1 border border-[#B38B36]/25 rounded-full bg-[#B38B36]/5 text-[9px] tracking-widest text-[#8E6B23] uppercase font-bold">
+              ✨ Cosmic Reading Room
+            </span>
+            <h1 className="font-serif text-3xl md:text-4xl text-[#3C2A21] font-semibold leading-tight mt-1">
+              Destiny Report for <em className="italic text-[#8E6B23]">{report.name || "Seeker"}</em>
+            </h1>
+            <div className="flex flex-col md:flex-row items-center justify-center md:justify-start gap-2 md:gap-4 text-xs text-[#6E5D53] mt-2">
+              <span className="flex items-center gap-1 font-light"><Calendar className="w-3.5 h-3.5 text-[#B38B36]" /> {new Date(report.dob).toLocaleDateString(undefined, { dateStyle: "long" })}</span>
+              <span className="hidden md:inline text-stone-300">•</span>
+              <span className="flex items-center gap-1 font-light"><Clock className="w-3.5 h-3.5 text-[#B38B36]" /> {report.tob}</span>
+              {report.pob && (
                 <>
-                  <Loader2 className="w-4 h-4 animate-spin text-white" />
-                  <span>Processing...</span>
-                </>
-              ) : (
-                <>
-                  <Unlock className="w-4 h-4 text-white" />
-                  <span>Unlock Full Report - ₹499</span>
+                  <span className="hidden md:inline text-stone-300">•</span>
+                  <span className="flex items-center gap-1 font-light"><MapPin className="w-3.5 h-3.5 text-[#B38B36]" /> {report.pob}</span>
                 </>
               )}
-            </button>
-          )}
+            </div>
+          </div>
+          
+          <div className="relative z-10 shrink-0">
+            {isPaid ? (
+              <a
+                href={pdfUrl}
+                download
+                className="px-8 py-4 bg-gradient-to-r from-[#B38B36] to-[#8E6B23] hover:brightness-[1.1] text-white font-bold text-xs tracking-widest uppercase rounded-full transition-all duration-300 flex items-center gap-2.5 shadow-md hover:scale-[1.02] border border-white/20"
+              >
+                <Download className="w-4 h-4 text-white" />
+                <span>Download Premium PDF</span>
+              </a>
+            ) : (
+              <button
+                onClick={handlePayment}
+                disabled={processingPayment}
+                className="px-8 py-4 bg-gradient-to-r from-[#BF953F] via-[#FCF6BA] to-[#B38728] hover:brightness-[1.12] text-[#1E110A] font-serif font-bold text-xs tracking-[0.2em] uppercase rounded-full transition-all duration-500 flex items-center gap-2.5 shadow-[0_4px_15px_rgba(179,139,54,0.35)] hover:scale-[1.02] cursor-pointer border border-[#FCF6BA]/40"
+              >
+                {processingPayment ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin text-[#1E110A]" />
+                    <span>Processing...</span>
+                  </>
+                ) : (
+                  <>
+                    <Unlock className="w-4 h-4 text-[#1E110A] stroke-[2.5px]" />
+                    <span>Unlock Full Report - ₹499</span>
+                  </>
+                )}
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Paid Confirmation Screen if just unlocked */}
@@ -344,31 +423,29 @@ const PaymentPage = () => {
         )}
 
         {/* Astro Parameter Dashboard Grid */}
-        <div>
-          <h2 className="font-serif text-lg text-[#3C2A21] mb-4 border-l-2 border-[#B38B36] pl-3 uppercase tracking-wider text-xs font-semibold">
+        <div className="space-y-4">
+          <h2 className="font-serif text-[#3C2A21] border-l-2 border-[#B38B36] pl-3 uppercase tracking-widest text-[10px] font-bold">
             Astronomical Configurations
           </h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-9 gap-3">
-            {[
-              { label: "Rasi (Moon Sign)", value: getAstroData().rasi?.split(" ")[0], desc: getAstroData().rasi },
-              { label: "Nakshatra", value: getAstroData().nakshatra, desc: "Lunar Mansion" },
-              { label: "Lagna (Rising)", value: getAstroData().lagna?.split(" ")[0], desc: "Ascendant sign" },
-              { label: "Zodiac (Sun)", value: getAstroData().zodiac, desc: "Solar Sign" },
-              { label: "Moon Sign", value: getAstroData().moon_sign, desc: "Emotional core" },
-              { label: "Birth Star", value: getAstroData().birth_star, desc: "Constellation" },
-              { label: "Lucky Number", value: getAstroData().lucky_number, desc: "Cosmic vibration" },
-              { label: "Lucky Color", value: getAstroData().lucky_color, desc: "Auric energy" },
-              { label: "Lucky Day", value: getAstroData().lucky_day, desc: "Weekly alignment" }
-            ].map((item, idx) => (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-9 gap-3.5">
+            {CONFIG_ITEMS.map((item, idx) => (
               <div 
                 key={idx} 
-                className="bg-white/55 border border-white/70 shadow-sm hover:shadow-[0_8px_25px_rgba(179,139,54,0.12)] hover:border-[#B38B36]/40 transition-all duration-300 rounded-xl p-4 flex flex-col justify-between text-center"
+                className="group relative overflow-hidden bg-white/60 backdrop-blur-md border border-white/70 shadow-sm hover:shadow-[0_12px_30px_rgba(179,139,54,0.15)] hover:border-[#B38B36]/50 hover:-translate-y-1 transition-all duration-300 rounded-2xl p-4 flex flex-col items-center justify-between text-center min-h-[145px]"
               >
-                <span className="text-[8px] uppercase tracking-widest text-[#6E5D53] font-bold">{item.label}</span>
-                <div className="my-2 text-[#8E6B23] font-serif font-bold text-base truncate">
-                  {item.value}
+                {/* Micro glow overlay */}
+                <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-[#B38B36]/2 to-[#B38B36]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                
+                {/* Icon wrapper */}
+                <div className="w-8 h-8 rounded-full bg-[#B38B36]/10 border border-[#B38B36]/20 flex items-center justify-center mb-2 group-hover:scale-110 group-hover:bg-[#B38B36]/15 transition-all duration-300 shadow-inner text-[#8E6B23]">
+                  {item.icon}
                 </div>
-                <span className="text-[8px] text-[#6E5D53]/70 italic font-light truncate">{item.desc}</span>
+                
+                <span className="text-[8px] uppercase tracking-widest text-[#6E5D53] font-bold leading-tight line-clamp-1">{item.label}</span>
+                <div className="my-1.5 text-[#8E6B23] font-serif font-bold text-sm tracking-wide line-clamp-1 group-hover:text-[#3C2A21] transition-colors">
+                  {item.value || "—"}
+                </div>
+                <span className="text-[8px] text-[#6E5D53]/60 italic font-light line-clamp-1">{item.desc || "—"}</span>
               </div>
             ))}
           </div>
@@ -376,11 +453,11 @@ const PaymentPage = () => {
 
         {/* Planetary Positions Grid */}
         {getAstroData().planetary_positions && Object.keys(getAstroData().planetary_positions).length > 0 && (
-          <div>
-            <h2 className="font-serif text-lg text-[#3C2A21] mb-4 border-l-2 border-[#8E6B23] pl-3 uppercase tracking-wider text-xs font-semibold">
+          <div className="space-y-4">
+            <h2 className="font-serif text-[#3C2A21] border-l-2 border-[#8E6B23] pl-3 uppercase tracking-widest text-[10px] font-bold">
               Planetary Positions (Graha Sthiti)
             </h2>
-            <div className="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-9 gap-3">
+            <div className="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-9 gap-3.5">
               {[
                 { planet: "Sun", symbol: "☉", sanskrit: "Surya" },
                 { planet: "Moon", symbol: "☽", sanskrit: "Chandra" },
@@ -394,11 +471,19 @@ const PaymentPage = () => {
               ].map((item, idx) => (
                 <div
                   key={idx}
-                  className="bg-white/55 border border-white/70 shadow-sm hover:shadow-[0_8px_25px_rgba(142,107,35,0.12)] hover:border-[#8E6B23]/40 transition-all duration-300 rounded-xl p-4 flex flex-col justify-between text-center"
+                  className="group relative overflow-hidden bg-white/60 backdrop-blur-md border border-white/70 shadow-sm hover:shadow-[0_12px_30px_rgba(142,107,35,0.15)] hover:border-[#8E6B23]/50 hover:-translate-y-1 transition-all duration-300 rounded-2xl p-4 flex flex-col items-center justify-between text-center min-h-[145px]"
                 >
+                  {/* Micro glow overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-[#8E6B23]/2 to-[#8E6B23]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                  
                   <span className="text-[8px] uppercase tracking-widest text-[#6E5D53] font-bold">{item.planet}</span>
-                  <div className="my-1 text-xl select-none">{item.symbol}</div>
-                  <div className="text-[#8E6B23] font-serif font-bold text-sm truncate">
+                  
+                  {/* Glyphs wrapper */}
+                  <div className="w-9 h-9 rounded-full bg-[#8E6B23]/10 border border-[#8E6B23]/20 flex items-center justify-center my-1.5 text-[#8E6B23] text-lg select-none group-hover:scale-110 group-hover:bg-[#8E6B23]/15 transition-all duration-300 shadow-inner">
+                    {item.symbol}
+                  </div>
+                  
+                  <div className="text-[#8E6B23] font-serif font-bold text-sm tracking-wide line-clamp-1 group-hover:text-[#3C2A21] transition-colors">
                     {getAstroData().planetary_positions[item.planet] || "—"}
                   </div>
                   <span className="text-[8px] text-[#6E5D53]/70 italic font-light mt-0.5">{item.sanskrit}</span>
@@ -409,27 +494,30 @@ const PaymentPage = () => {
         )}
 
         {/* Main Columns: Predictions vs Detailed Life Report */}
-        <div className="grid lg:grid-cols-12 gap-8">
+        <div className="grid lg:grid-cols-12 gap-8 items-start">
           
           {/* LEFT: Predictions, Summaries, and checkout Card */}
           <div className="lg:col-span-5 space-y-6">
             
             {/* BILLING CARD if report is not paid */}
             {!isPaid && (
-              <div className="bg-gradient-to-b from-[#FFFDF9]/95 to-[#FFF9ED]/95 border border-[#B38B36]/30 shadow-[0_20px_50px_rgba(179,139,54,0.12)] rounded-2xl p-6 relative overflow-hidden backdrop-blur-xl">
-                <div className="text-center mb-6">
-                  <div className="w-12 h-12 rounded-full bg-[#B38B36]/10 border border-[#B38B36]/35 flex items-center justify-center mx-auto mb-3 text-[#B38B36] shadow-sm">
+              <div className="relative bg-gradient-to-b from-[#FFFDF9]/95 to-[#FFF9ED]/95 border border-[#B38B36]/30 shadow-[0_20px_50px_rgba(179,139,54,0.12)] rounded-3xl p-6 overflow-hidden backdrop-blur-xl">
+                {/* Double border gold accent frame inside */}
+                <div className="absolute inset-2 border border-[#B38B36]/15 rounded-2xl pointer-events-none" />
+                
+                <div className="text-center mb-6 relative z-10">
+                  <div className="w-12 h-12 rounded-full bg-[#B38B36]/10 border border-[#B38B36]/35 flex items-center justify-center mx-auto mb-3 text-[#B38B36] shadow-sm relative">
                     <CreditCard className="w-5 h-5 text-[#B38B36]" />
                   </div>
-                  <h2 className="font-serif text-2xl font-medium">Unlock Premium Access</h2>
-                  <p className="text-xs text-[#6E5D53] mt-2 font-light">Complete the authorization via Razorpay to instantly decrypt all destiny sections.</p>
+                  <h2 className="font-serif text-2xl font-semibold text-[#3C2A21]">Unlock Premium Access</h2>
+                  <p className="text-[10px] text-[#6E5D53] mt-2 font-light max-w-xs mx-auto">Complete the authorization via Razorpay to instantly decrypt all destiny sections.</p>
                 </div>
 
                 {/* Price block */}
-                <div className="border border-[#B38B36]/15 bg-white/70 shadow-inner rounded-xl p-4 flex items-center justify-between text-sm mb-6">
+                <div className="relative z-10 border border-[#B38B36]/15 bg-white/70 shadow-inner rounded-xl p-4 flex items-center justify-between text-sm mb-6">
                   <div>
-                    <span className="font-serif font-bold block">Personalized Destiny Report</span>
-                    <span className="text-[9px] text-[#6E5D53] uppercase tracking-wider font-light">Complete PDF + Lifetime Dashboard</span>
+                    <span className="font-serif font-bold text-[#3C2A21]">Personalized Destiny Report</span>
+                    <span className="text-[8px] text-[#6E5D53] uppercase tracking-wider font-light">Complete PDF + Lifetime Dashboard</span>
                   </div>
                   <div className="text-right">
                     <span className="text-[#8E6B23] font-serif text-2xl font-bold">₹499</span>
@@ -439,17 +527,17 @@ const PaymentPage = () => {
                 <button
                   onClick={handlePayment}
                   disabled={processingPayment}
-                  className="w-full py-4 bg-gradient-to-r from-[#B38B36] to-[#8E6B23] hover:from-[#8E6B23] hover:to-[#3C2A21] text-white font-bold text-xs uppercase tracking-widest rounded-xl transition-all duration-500 shadow-md hover:shadow-lg flex items-center justify-center gap-2 cursor-pointer"
+                  className="relative z-10 w-full py-4 bg-gradient-to-r from-[#BF953F] via-[#FCF6BA] to-[#B38728] hover:brightness-[1.12] text-[#1E110A] font-sans font-bold text-xs uppercase tracking-widest rounded-xl transition-all duration-500 shadow-[0_4px_15px_rgba(179,139,54,0.35)] hover:scale-[1.01] flex items-center justify-center gap-2 cursor-pointer border border-[#FCF6BA]/40"
                 >
                   {processingPayment ? (
-                    <Loader2 className="w-4 h-4 animate-spin text-white" />
+                    <Loader2 className="w-4 h-4 animate-spin text-[#1E110A]" />
                   ) : (
-                    <Unlock className="w-4 h-4 text-white" />
+                    <Unlock className="w-4 h-4 text-[#1E110A] stroke-[2.5px]" />
                   )}
                   <span>Pay Securely with Razorpay</span>
                 </button>
 
-                <div className="text-[10px] text-[#6E5D53]/85 text-center leading-relaxed mt-4 flex items-center justify-center gap-1.5 border-t border-[#B38B36]/10 pt-4">
+                <div className="relative z-10 text-[9px] text-[#6E5D53]/85 text-center leading-relaxed mt-4 flex items-center justify-center gap-1.5 border-t border-[#B38B36]/10 pt-4">
                   <AlertCircle className="w-3.5 h-3.5 text-[#B38B36] shrink-0" />
                   <span>Secured by Razorpay. High-grade signature authorization.</span>
                 </div>
@@ -457,38 +545,38 @@ const PaymentPage = () => {
             )}
 
             {/* TODAY'S PREDICTION */}
-            <div className="bg-white/50 border border-white/60 shadow-sm rounded-2xl p-6 relative overflow-hidden backdrop-blur-md">
-              <div className="flex items-center justify-between mb-4 border-b border-[#B38B36]/15 pb-3">
+            <div className="bg-white/65 border border-[#B38B36]/15 hover:border-[#B38B36]/35 shadow-[0_8px_30px_rgba(0,0,0,0.02)] hover:shadow-[0_12px_35px_rgba(179,139,54,0.08)] transition-all duration-300 rounded-3xl p-6 relative overflow-hidden backdrop-blur-md group">
+              <div className="flex items-center justify-between mb-4 border-b border-[#B38B36]/10 pb-3">
                 <h4 className="font-serif text-lg text-[#3C2A21] font-medium flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-[#B38B36]" /> Today's Horoscope
+                  <Sparkles className="w-4 h-4 text-[#B38B36] group-hover:animate-pulse" /> Today's Horoscope
                 </h4>
-                <span className="text-[9px] uppercase tracking-widest font-black text-[#8E6B23]">Aligned</span>
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-green-500/10 text-[8px] uppercase tracking-widest font-black text-green-600 border border-green-200">Aligned</span>
               </div>
               <div className="space-y-4 text-xs leading-relaxed">
-                <div className="p-3 bg-white/70 border border-white/80 rounded-lg border-l-2 border-[#B38B36] shadow-sm">
+                <div className="p-3.5 bg-white/70 border border-white/80 rounded-xl border-l-2 border-[#B38B36] shadow-sm">
                   <strong className="text-[#8E6B23] uppercase text-[9px] tracking-widest block mb-1">Overall Guidance</strong>
                   <p className="text-[#3C2A21] italic">"{today.overall}"</p>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
-                  <div className="p-3 bg-white/30 border border-white/50 rounded-lg">
+                  <div className="p-3 bg-white/40 border border-white/60 rounded-xl">
                     <span className="text-[#8E6B23] uppercase text-[9px] tracking-widest font-bold flex items-center gap-1.5 mb-1">
                       <Briefcase className="w-3 h-3 text-[#B38B36]" /> Career
                     </span>
                     <p className="text-[#5C4D43] font-light">{today.career}</p>
                   </div>
-                  <div className="p-3 bg-white/30 border border-white/50 rounded-lg">
+                  <div className="p-3 bg-white/40 border border-white/60 rounded-xl">
                     <span className="text-[#8E6B23] uppercase text-[9px] tracking-widest font-bold flex items-center gap-1.5 mb-1">
                       <TrendingUp className="w-3 h-3 text-[#B38B36]" /> Wealth
                     </span>
                     <p className="text-[#5C4D43] font-light">{today.finance}</p>
                   </div>
-                  <div className="p-3 bg-white/30 border border-white/50 rounded-lg">
+                  <div className="p-3 bg-white/40 border border-white/60 rounded-xl">
                     <span className="text-[#8E6B23] uppercase text-[9px] tracking-widest font-bold flex items-center gap-1.5 mb-1">
                       <Heart className="w-3 h-3 text-[#B38B36]" /> Relations
                     </span>
                     <p className="text-[#5C4D43] font-light">{today.relationship}</p>
                   </div>
-                  <div className="p-3 bg-white/30 border border-white/50 rounded-lg">
+                  <div className="p-3 bg-white/40 border border-white/60 rounded-xl">
                     <span className="text-[#8E6B23] uppercase text-[9px] tracking-widest font-bold flex items-center gap-1.5 mb-1">
                       <Activity className="w-3 h-3 text-[#B38B36]" /> Health
                     </span>
@@ -499,38 +587,38 @@ const PaymentPage = () => {
             </div>
 
             {/* TOMORROW'S PREDICTION */}
-            <div className="bg-white/50 border border-white/60 shadow-sm rounded-2xl p-6 relative overflow-hidden backdrop-blur-md">
-              <div className="flex items-center justify-between mb-4 border-b border-[#B38B36]/15 pb-3">
+            <div className="bg-white/65 border border-[#B38B36]/15 hover:border-[#B38B36]/35 shadow-[0_8px_30px_rgba(0,0,0,0.02)] hover:shadow-[0_12px_35px_rgba(179,139,54,0.08)] transition-all duration-300 rounded-3xl p-6 relative overflow-hidden backdrop-blur-md group">
+              <div className="flex items-center justify-between mb-4 border-b border-[#B38B36]/10 pb-3">
                 <h4 className="font-serif text-lg text-[#3C2A21] font-medium flex items-center gap-2">
-                  <Moon className="w-4 h-4 text-[#B38B36]" /> Tomorrow's Forecast
+                  <Moon className="w-4 h-4 text-[#B38B36] group-hover:animate-pulse" /> Tomorrow's Forecast
                 </h4>
                 <span className="text-[8px] uppercase tracking-widest font-bold text-[#6E5D53]">Preview</span>
               </div>
               <div className="space-y-4 text-xs leading-relaxed">
-                <div className="p-3 bg-white/70 border border-white/80 rounded-lg border-l-2 border-[#8E6B23] shadow-sm">
+                <div className="p-3.5 bg-white/70 border border-white/80 rounded-xl border-l-2 border-[#8E6B23] shadow-sm">
                   <strong className="text-[#8E6B23] uppercase text-[9px] tracking-widest block mb-1">Tomorrow's Energy</strong>
                   <p className="text-[#3C2A21] italic">"{tomorrow.energy}"</p>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
-                  <div className="p-3 bg-white/30 border border-white/50 rounded-lg">
+                  <div className="p-3 bg-white/40 border border-white/60 rounded-xl">
                     <span className="text-[#8E6B23] uppercase text-[9px] tracking-widest font-bold flex items-center gap-1.5 mb-1">
                       <Briefcase className="w-3 h-3 text-[#B38B36]" /> Work
                     </span>
                     <p className="text-[#5C4D43] font-light">{tomorrow.career}</p>
                   </div>
-                  <div className="p-3 bg-white/30 border border-white/50 rounded-lg">
+                  <div className="p-3 bg-white/40 border border-white/60 rounded-xl">
                     <span className="text-[#8E6B23] uppercase text-[9px] tracking-widest font-bold flex items-center gap-1.5 mb-1">
                       <TrendingUp className="w-3 h-3 text-[#B38B36]" /> Finance
                     </span>
                     <p className="text-[#5C4D43] font-light">{tomorrow.finance}</p>
                   </div>
-                  <div className="p-3 bg-white/30 border border-white/50 rounded-lg">
+                  <div className="p-3 bg-white/40 border border-white/60 rounded-xl">
                     <span className="text-[#8E6B23] uppercase text-[9px] tracking-widest font-bold flex items-center gap-1.5 mb-1">
                       <Heart className="w-3 h-3 text-[#B38B36]" /> Love
                     </span>
                     <p className="text-[#5C4D43] font-light">{tomorrow.relationship}</p>
                   </div>
-                  <div className="p-3 bg-white/30 border border-white/50 rounded-lg">
+                  <div className="p-3 bg-white/40 border border-white/60 rounded-xl">
                     <span className="text-[#8E6B23] uppercase text-[9px] tracking-widest font-bold flex items-center gap-1.5 mb-1">
                       <Activity className="w-3 h-3 text-[#B38B36]" /> Wellness
                     </span>
@@ -541,14 +629,14 @@ const PaymentPage = () => {
             </div>
 
             {/* WEEKLY FORECAST (Premium) */}
-            <div className="bg-white/50 border border-white/60 shadow-sm rounded-2xl p-6 relative overflow-hidden backdrop-blur-md">
-              <div className="flex items-center justify-between mb-4 border-b border-[#B38B36]/15 pb-3">
+            <div className="bg-white/65 border border-[#B38B36]/15 hover:border-[#B38B36]/35 shadow-[0_8px_30px_rgba(0,0,0,0.02)] hover:shadow-[0_12px_35px_rgba(179,139,54,0.08)] transition-all duration-300 rounded-3xl p-6 relative overflow-hidden backdrop-blur-md group">
+              <div className="flex items-center justify-between mb-4 border-b border-[#B38B36]/10 pb-3">
                 <h4 className="font-serif text-lg text-[#3C2A21] font-medium flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-[#B38B36]" /> Weekly Forecast
+                  <Sparkles className="w-4 h-4 text-[#B38B36] group-hover:animate-pulse" /> Weekly Forecast
                 </h4>
                 {!isPaid ? (
-                  <span className="text-[8px] uppercase tracking-widest font-bold text-[#8E6B23] flex items-center gap-1">
-                    <Lock className="w-2.5 h-2.5 text-[#B38B36]" /> Premium
+                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 border border-[#B38B36]/35 rounded-full bg-[#B38B36]/10 text-[8px] uppercase tracking-wider font-bold text-[#8E6B23]">
+                    <Lock className="w-2.5 h-2.5 text-[#8E6B23]" /> Premium
                   </span>
                 ) : (
                   <span className="text-[8px] uppercase tracking-widest font-bold text-green-600">Unlocked</span>
@@ -556,31 +644,31 @@ const PaymentPage = () => {
               </div>
               
               <div className="relative">
-                <div className={`space-y-4 text-xs leading-relaxed transition-all duration-700 ${!isPaid ? 'blur-sm select-none pointer-events-none' : ''}`}>
-                  <div className="p-3 bg-white/70 border border-white/80 rounded-lg border-l-2 border-[#B38B36] shadow-sm">
+                <div className={`space-y-4 text-xs leading-relaxed transition-all duration-700 ${!isPaid ? 'blur-[5px] select-none pointer-events-none opacity-40' : ''}`}>
+                  <div className="p-3 bg-white/70 border border-white/80 rounded-xl border-l-2 border-[#B38B36] shadow-sm">
                     <strong className="text-[#8E6B23] uppercase text-[9px] tracking-widest block mb-1">Weekly Focus</strong>
                     <p className="text-[#3C2A21] italic">"{weekly.overall}"</p>
                   </div>
                   <div className="grid grid-cols-2 gap-3">
-                    <div className="p-3 bg-white/30 border border-white/50 rounded-lg">
+                    <div className="p-3 bg-white/40 border border-white/60 rounded-xl">
                       <span className="text-[#8E6B23] uppercase text-[9px] tracking-widest font-bold flex items-center gap-1.5 mb-1">
                         <Briefcase className="w-3 h-3 text-[#B38B36]" /> Career
                       </span>
                       <p className="text-[#5C4D43] font-light">{weekly.career}</p>
                     </div>
-                    <div className="p-3 bg-white/30 border border-white/50 rounded-lg">
+                    <div className="p-3 bg-white/40 border border-white/60 rounded-xl">
                       <span className="text-[#8E6B23] uppercase text-[9px] tracking-widest font-bold flex items-center gap-1.5 mb-1">
                         <TrendingUp className="w-3 h-3 text-[#B38B36]" /> Wealth
                       </span>
                       <p className="text-[#5C4D43] font-light">{weekly.finance}</p>
                     </div>
-                    <div className="p-3 bg-white/30 border border-white/50 rounded-lg">
+                    <div className="p-3 bg-white/40 border border-white/60 rounded-xl">
                       <span className="text-[#8E6B23] uppercase text-[9px] tracking-widest font-bold flex items-center gap-1.5 mb-1">
                         <Heart className="w-3 h-3 text-[#B38B36]" /> Relations
                       </span>
                       <p className="text-[#5C4D43] font-light">{weekly.relationship}</p>
                     </div>
-                    <div className="p-3 bg-white/30 border border-white/50 rounded-lg">
+                    <div className="p-3 bg-white/40 border border-white/60 rounded-xl">
                       <span className="text-[#8E6B23] uppercase text-[9px] tracking-widest font-bold flex items-center gap-1.5 mb-1">
                         <Activity className="w-3 h-3 text-[#B38B36]" /> Health
                       </span>
@@ -590,23 +678,25 @@ const PaymentPage = () => {
                 </div>
 
                 {!isPaid && (
-                  <div className="absolute inset-0 bg-transparent flex flex-col items-center justify-center text-center cursor-pointer p-4" onClick={handlePayment}>
-                    <Lock className="w-6 h-6 text-[#B38B36] mb-1 animate-pulse" />
-                    <span className="text-[10px] text-[#8E6B23] uppercase tracking-wider font-bold">Unlock Weekly Forecast</span>
+                  <div className="absolute inset-0 bg-transparent flex flex-col items-center justify-center text-center cursor-pointer p-4 z-10" onClick={handlePayment}>
+                    <div className="w-9 h-9 rounded-full bg-white border border-[#B38B36]/20 flex items-center justify-center shadow-md mb-2 group-hover:scale-110 transition-transform duration-300">
+                      <Lock className="w-3.5 h-3.5 text-[#B38B36] animate-pulse" />
+                    </div>
+                    <span className="text-[9px] text-[#8E6B23] uppercase tracking-widest font-bold">Unlock Weekly Forecast</span>
                   </div>
                 )}
               </div>
             </div>
 
             {/* MONTHLY FORECAST (Premium) */}
-            <div className="bg-white/50 border border-white/60 shadow-sm rounded-2xl p-6 relative overflow-hidden backdrop-blur-md">
-              <div className="flex items-center justify-between mb-4 border-b border-[#B38B36]/15 pb-3">
+            <div className="bg-white/65 border border-[#B38B36]/15 hover:border-[#B38B36]/35 shadow-[0_8px_30px_rgba(0,0,0,0.02)] hover:shadow-[0_12px_35px_rgba(179,139,54,0.08)] transition-all duration-300 rounded-3xl p-6 relative overflow-hidden backdrop-blur-md group">
+              <div className="flex items-center justify-between mb-4 border-b border-[#B38B36]/10 pb-3">
                 <h4 className="font-serif text-lg text-[#3C2A21] font-medium flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-[#B38B36]" /> Monthly Forecast
+                  <Sparkles className="w-4 h-4 text-[#B38B36] group-hover:animate-pulse" /> Monthly Forecast
                 </h4>
                 {!isPaid ? (
-                  <span className="text-[8px] uppercase tracking-widest font-bold text-[#8E6B23] flex items-center gap-1">
-                    <Lock className="w-2.5 h-2.5 text-[#B38B36]" /> Premium
+                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 border border-[#B38B36]/35 rounded-full bg-[#B38B36]/10 text-[8px] uppercase tracking-wider font-bold text-[#8E6B23]">
+                    <Lock className="w-2.5 h-2.5 text-[#8E6B23]" /> Premium
                   </span>
                 ) : (
                   <span className="text-[8px] uppercase tracking-widest font-bold text-green-600">Unlocked</span>
@@ -614,31 +704,31 @@ const PaymentPage = () => {
               </div>
               
               <div className="relative">
-                <div className={`space-y-4 text-xs leading-relaxed transition-all duration-700 ${!isPaid ? 'blur-sm select-none pointer-events-none' : ''}`}>
-                  <div className="p-3 bg-white/70 border border-white/80 rounded-lg border-l-2 border-[#B38B36] shadow-sm">
+                <div className={`space-y-4 text-xs leading-relaxed transition-all duration-700 ${!isPaid ? 'blur-[5px] select-none pointer-events-none opacity-40' : ''}`}>
+                  <div className="p-3 bg-white/70 border border-white/80 rounded-xl border-l-2 border-[#B38B36] shadow-sm">
                     <strong className="text-[#8E6B23] uppercase text-[9px] tracking-widest block mb-1">Monthly Focus</strong>
                     <p className="text-[#3C2A21] italic">"{monthly.overall}"</p>
                   </div>
                   <div className="grid grid-cols-2 gap-3">
-                    <div className="p-3 bg-white/30 border border-white/50 rounded-lg">
+                    <div className="p-3 bg-white/40 border border-white/60 rounded-xl">
                       <span className="text-[#8E6B23] uppercase text-[9px] tracking-widest font-bold flex items-center gap-1.5 mb-1">
                         <Briefcase className="w-3 h-3 text-[#B38B36]" /> Career
                       </span>
                       <p className="text-[#5C4D43] font-light">{monthly.career}</p>
                     </div>
-                    <div className="p-3 bg-white/30 border border-white/50 rounded-lg">
+                    <div className="p-3 bg-white/40 border border-white/60 rounded-xl">
                       <span className="text-[#8E6B23] uppercase text-[9px] tracking-widest font-bold flex items-center gap-1.5 mb-1">
-                        <TrendingUp className="w-3 h-3 text-[#B38B36]" /> Wealth
+                        <TrendingUp className="w-3 h-3 text-[#B38B36]" /> Finance
                       </span>
                       <p className="text-[#5C4D43] font-light">{monthly.finance}</p>
                     </div>
-                    <div className="p-3 bg-white/30 border border-white/50 rounded-lg">
+                    <div className="p-3 bg-white/40 border border-white/60 rounded-xl">
                       <span className="text-[#8E6B23] uppercase text-[9px] tracking-widest font-bold flex items-center gap-1.5 mb-1">
                         <Heart className="w-3 h-3 text-[#B38B36]" /> Relations
                       </span>
                       <p className="text-[#5C4D43] font-light">{monthly.relationship}</p>
                     </div>
-                    <div className="p-3 bg-white/30 border border-white/50 rounded-lg">
+                    <div className="p-3 bg-white/40 border border-white/60 rounded-xl">
                       <span className="text-[#8E6B23] uppercase text-[9px] tracking-widest font-bold flex items-center gap-1.5 mb-1">
                         <Activity className="w-3 h-3 text-[#B38B36]" /> Health
                       </span>
@@ -648,9 +738,11 @@ const PaymentPage = () => {
                 </div>
 
                 {!isPaid && (
-                  <div className="absolute inset-0 bg-transparent flex flex-col items-center justify-center text-center cursor-pointer p-4" onClick={handlePayment}>
-                    <Lock className="w-6 h-6 text-[#B38B36] mb-1 animate-pulse" />
-                    <span className="text-[10px] text-[#8E6B23] uppercase tracking-wider font-bold">Unlock Monthly Forecast</span>
+                  <div className="absolute inset-0 bg-transparent flex flex-col items-center justify-center text-center cursor-pointer p-4 z-10" onClick={handlePayment}>
+                    <div className="w-9 h-9 rounded-full bg-white border border-[#B38B36]/20 flex items-center justify-center shadow-md mb-2 group-hover:scale-110 transition-transform duration-300">
+                      <Lock className="w-3.5 h-3.5 text-[#B38B36] animate-pulse" />
+                    </div>
+                    <span className="text-[9px] text-[#8E6B23] uppercase tracking-widest font-bold">Unlock Monthly Forecast</span>
                   </div>
                 )}
               </div>
@@ -661,20 +753,25 @@ const PaymentPage = () => {
           {/* RIGHT: Detailed Life Report Panels */}
           <div className="lg:col-span-7 space-y-6">
             
-            <div className="bg-white/55 border border-white/70 shadow-md rounded-2xl p-6 md:p-8 relative overflow-hidden backdrop-blur-xl">
-              <h4 className="font-serif text-2xl text-[#3C2A21] mb-6 border-b border-[#B38B36]/15 pb-4 flex items-center gap-2">
+            <div className="relative bg-white/70 border border-[#B38B36]/20 shadow-[0_15px_45px_rgba(179,139,54,0.06)] rounded-3xl p-6 md:p-8 backdrop-blur-xl overflow-hidden min-h-[500px]">
+              
+              <h4 className="font-serif text-2xl text-[#3C2A21] mb-8 border-b border-[#B38B36]/15 pb-4 flex items-center gap-2">
                 <FileText className="w-5 h-5 text-[#B38B36]" /> Detailed Destiny Analysis
               </h4>
 
-              <div className="space-y-8">
+              <div className="space-y-8 pb-10">
                 {/* 1. Personality Analysis */}
                 <div className="space-y-3">
-                  <div className="flex items-center gap-2 text-sm font-serif font-bold text-[#3C2A21] uppercase tracking-wider">
-                    <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                    <span>Personality Analysis</span>
-                    <span className="text-[8px] uppercase px-1.5 py-0.5 border border-green-200 text-green-600 bg-green-50/50 rounded tracking-widest font-semibold ml-2">Free Reveal</span>
+                  <div className="flex items-center justify-between text-xs font-sans font-bold text-[#3C2A21] uppercase tracking-wider">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-5 h-5 rounded-full bg-green-500/10 text-green-600 flex items-center justify-center shadow-inner">
+                        <CheckCircle2 className="w-3 h-3" />
+                      </div>
+                      <span className="font-serif text-sm tracking-wide normal-case text-[#3C2A21] font-bold">Personality & Inner Essence</span>
+                    </div>
+                    <span className="text-[8px] uppercase px-2 py-0.5 border border-green-200 text-green-600 bg-green-50/50 rounded-full tracking-widest font-bold">Free Access</span>
                   </div>
-                  <div className="text-xs text-[#3C2A21] space-y-3 pl-4 border-l border-[#B38B36]/20 leading-relaxed font-light">
+                  <div className="text-xs text-[#3C2A21] space-y-3 pl-7 border-l border-[#B38B36]/20 leading-relaxed font-light">
                     <p><strong>Core Strengths:</strong> {lifeReport.personality?.strengths}</p>
                     <p><strong>Undercurrent Weaknesses:</strong> {lifeReport.personality?.weaknesses}</p>
                     <p><strong>Latent Talents:</strong> {lifeReport.personality?.hidden_talents}</p>
@@ -684,14 +781,20 @@ const PaymentPage = () => {
 
                 {/* 2. Career Analysis */}
                 <div className="space-y-3 relative">
-                  <div className="flex items-center justify-between text-sm font-serif font-bold text-[#3C2A21] uppercase tracking-wider">
-                    <div className="flex items-center gap-2">
-                      <span className={`w-2 h-2 rounded-full ${isPaid ? 'bg-green-500' : 'bg-[#B38B36]/60'}`} />
-                      <span>Career Forecast</span>
+                  <div className="flex items-center justify-between text-xs font-sans font-bold text-[#3C2A21] uppercase tracking-wider">
+                    <div className="flex items-center gap-2.5">
+                      <div className={`w-5 h-5 rounded-full ${isPaid ? 'bg-green-500/10 text-green-600' : 'bg-[#B38B36]/10 text-[#8E6B23]'} flex items-center justify-center shadow-inner`}>
+                        {isPaid ? <CheckCircle2 className="w-3 h-3" /> : <Lock className="w-2.5 h-2.5" />}
+                      </div>
+                      <span className="font-serif text-sm tracking-wide normal-case text-[#3C2A21] font-bold">Career Roadmap & Growth</span>
                     </div>
-                    {!isPaid && <Lock className="w-3.5 h-3.5 text-[#B38B36]" />}
+                    {!isPaid && (
+                      <span className="text-[8px] uppercase tracking-widest font-bold text-[#8E6B23] px-2 py-0.5 border border-[#B38B36]/20 bg-[#B38B36]/5 rounded-full flex items-center gap-1">
+                        <Lock className="w-2 h-2" /> Premium
+                      </span>
+                    )}
                   </div>
-                  <div className={`text-xs text-[#5C4D43] space-y-3 pl-4 border-l border-[#B38B36]/20 leading-relaxed font-light transition-all duration-700 ${!isPaid ? 'blur-sm select-none pointer-events-none' : ''}`}>
+                  <div className={`text-xs text-[#5C4D43] space-y-3 pl-7 border-l border-[#B38B36]/20 leading-relaxed font-light transition-all duration-700 ${!isPaid ? 'blur-sm select-none pointer-events-none opacity-40' : ''}`}>
                     <p><strong>Growth Timeline:</strong> {lifeReport.career?.growth}</p>
                     <p><strong>Business Potential:</strong> {lifeReport.career?.business}</p>
                     <p><strong>Leadership Styles:</strong> {lifeReport.career?.leadership}</p>
@@ -700,14 +803,20 @@ const PaymentPage = () => {
 
                 {/* 3. Relationship Analysis */}
                 <div className="space-y-3 relative">
-                  <div className="flex items-center justify-between text-sm font-serif font-bold text-[#3C2A21] uppercase tracking-wider">
-                    <div className="flex items-center gap-2">
-                      <span className={`w-2 h-2 rounded-full ${isPaid ? 'bg-green-500' : 'bg-[#B38B36]/60'}`} />
-                      <span>Marriage & Compatibility</span>
+                  <div className="flex items-center justify-between text-xs font-sans font-bold text-[#3C2A21] uppercase tracking-wider">
+                    <div className="flex items-center gap-2.5">
+                      <div className={`w-5 h-5 rounded-full ${isPaid ? 'bg-green-500/10 text-green-600' : 'bg-[#B38B36]/10 text-[#8E6B23]'} flex items-center justify-center shadow-inner`}>
+                        {isPaid ? <CheckCircle2 className="w-3 h-3" /> : <Lock className="w-2.5 h-2.5" />}
+                      </div>
+                      <span className="font-serif text-sm tracking-wide normal-case text-[#3C2A21] font-bold">Marriage & Compatibility</span>
                     </div>
-                    {!isPaid && <Lock className="w-3.5 h-3.5 text-[#B38B36]" />}
+                    {!isPaid && (
+                      <span className="text-[8px] uppercase tracking-widest font-bold text-[#8E6B23] px-2 py-0.5 border border-[#B38B36]/20 bg-[#B38B36]/5 rounded-full flex items-center gap-1">
+                        <Lock className="w-2 h-2" /> Premium
+                      </span>
+                    )}
                   </div>
-                  <div className={`text-xs text-[#5C4D43] space-y-3 pl-4 border-l border-[#B38B36]/20 leading-relaxed font-light transition-all duration-700 ${!isPaid ? 'blur-sm select-none pointer-events-none' : ''}`}>
+                  <div className={`text-xs text-[#5C4D43] space-y-3 pl-7 border-l border-[#B38B36]/20 leading-relaxed font-light transition-all duration-700 ${!isPaid ? 'blur-sm select-none pointer-events-none opacity-40' : ''}`}>
                     <p><strong>Marriage Outlook:</strong> {lifeReport.relationship?.marriage}</p>
                     <p><strong>Vedic Compatibility:</strong> {lifeReport.relationship?.compatibility}</p>
                     <p><strong>Domestic Alignment:</strong> {lifeReport.relationship?.family}</p>
@@ -716,14 +825,20 @@ const PaymentPage = () => {
 
                 {/* 4. Financial Analysis */}
                 <div className="space-y-3 relative">
-                  <div className="flex items-center justify-between text-sm font-serif font-bold text-[#3C2A21] uppercase tracking-wider">
-                    <div className="flex items-center gap-2">
-                      <span className={`w-2 h-2 rounded-full ${isPaid ? 'bg-green-500' : 'bg-[#B38B36]/60'}`} />
-                      <span>Wealth & Resource Forecast</span>
+                  <div className="flex items-center justify-between text-xs font-sans font-bold text-[#3C2A21] uppercase tracking-wider">
+                    <div className="flex items-center gap-2.5">
+                      <div className={`w-5 h-5 rounded-full ${isPaid ? 'bg-green-500/10 text-green-600' : 'bg-[#B38B36]/10 text-[#8E6B23]'} flex items-center justify-center shadow-inner`}>
+                        {isPaid ? <CheckCircle2 className="w-3 h-3" /> : <Lock className="w-2.5 h-2.5" />}
+                      </div>
+                      <span className="font-serif text-sm tracking-wide normal-case text-[#3C2A21] font-bold">Wealth & Resource Forecast</span>
                     </div>
-                    {!isPaid && <Lock className="w-3.5 h-3.5 text-[#B38B36]" />}
+                    {!isPaid && (
+                      <span className="text-[8px] uppercase tracking-widest font-bold text-[#8E6B23] px-2 py-0.5 border border-[#B38B36]/20 bg-[#B38B36]/5 rounded-full flex items-center gap-1">
+                        <Lock className="w-2 h-2" /> Premium
+                      </span>
+                    )}
                   </div>
-                  <div className={`text-xs text-[#5C4D43] space-y-3 pl-4 border-l border-[#B38B36]/20 leading-relaxed font-light transition-all duration-700 ${!isPaid ? 'blur-sm select-none pointer-events-none' : ''}`}>
+                  <div className={`text-xs text-[#5C4D43] space-y-3 pl-7 border-l border-[#B38B36]/20 leading-relaxed font-light transition-all duration-700 ${!isPaid ? 'blur-sm select-none pointer-events-none opacity-40' : ''}`}>
                     <p><strong>Wealth Potential:</strong> {lifeReport.financial?.wealth}</p>
                     <p><strong>Habits & Security:</strong> {lifeReport.financial?.habits}</p>
                     <p><strong>Abundance Windows:</strong> {lifeReport.financial?.opportunities}</p>
@@ -732,14 +847,20 @@ const PaymentPage = () => {
 
                 {/* 5. Health Analysis */}
                 <div className="space-y-3 relative">
-                  <div className="flex items-center justify-between text-sm font-serif font-bold text-[#3C2A21] uppercase tracking-wider">
-                    <div className="flex items-center gap-2">
-                      <span className={`w-2 h-2 rounded-full ${isPaid ? 'bg-green-500' : 'bg-[#B38B36]/60'}`} />
-                      <span>Health & Vitality Guide</span>
+                  <div className="flex items-center justify-between text-xs font-sans font-bold text-[#3C2A21] uppercase tracking-wider">
+                    <div className="flex items-center gap-2.5">
+                      <div className={`w-5 h-5 rounded-full ${isPaid ? 'bg-green-500/10 text-green-600' : 'bg-[#B38B36]/10 text-[#8E6B23]'} flex items-center justify-center shadow-inner`}>
+                        {isPaid ? <CheckCircle2 className="w-3 h-3" /> : <Lock className="w-2.5 h-2.5" />}
+                      </div>
+                      <span className="font-serif text-sm tracking-wide normal-case text-[#3C2A21] font-bold">Health & Vitality Guide</span>
                     </div>
-                    {!isPaid && <Lock className="w-3.5 h-3.5 text-[#B38B36]" />}
+                    {!isPaid && (
+                      <span className="text-[8px] uppercase tracking-widest font-bold text-[#8E6B23] px-2 py-0.5 border border-[#B38B36]/20 bg-[#B38B36]/5 rounded-full flex items-center gap-1">
+                        <Lock className="w-2 h-2" /> Premium
+                      </span>
+                    )}
                   </div>
-                  <div className={`text-xs text-[#5C4D43] space-y-3 pl-4 border-l border-[#B38B36]/20 leading-relaxed font-light transition-all duration-700 ${!isPaid ? 'blur-sm select-none pointer-events-none' : ''}`}>
+                  <div className={`text-xs text-[#5C4D43] space-y-3 pl-7 border-l border-[#B38B36]/20 leading-relaxed font-light transition-all duration-700 ${!isPaid ? 'blur-sm select-none pointer-events-none opacity-40' : ''}`}>
                     <p><strong>Physical Constitution:</strong> {lifeReport.health?.physical}</p>
                     <p><strong>Mental Harmony:</strong> {lifeReport.health?.mental}</p>
                     <p><strong>Lifestyle Roadmap:</strong> {lifeReport.health?.lifestyle}</p>
@@ -748,14 +869,20 @@ const PaymentPage = () => {
 
                 {/* 6. Spiritual Analysis */}
                 <div className="space-y-3 relative">
-                  <div className="flex items-center justify-between text-sm font-serif font-bold text-[#3C2A21] uppercase tracking-wider">
-                    <div className="flex items-center gap-2">
-                      <span className={`w-2 h-2 rounded-full ${isPaid ? 'bg-green-500' : 'bg-[#B38B36]/60'}`} />
-                      <span>Karma & Soul Purpose</span>
+                  <div className="flex items-center justify-between text-xs font-sans font-bold text-[#3C2A21] uppercase tracking-wider">
+                    <div className="flex items-center gap-2.5">
+                      <div className={`w-5 h-5 rounded-full ${isPaid ? 'bg-green-500/10 text-green-600' : 'bg-[#B38B36]/10 text-[#8E6B23]'} flex items-center justify-center shadow-inner`}>
+                        {isPaid ? <CheckCircle2 className="w-3 h-3" /> : <Lock className="w-2.5 h-2.5" />}
+                      </div>
+                      <span className="font-serif text-sm tracking-wide normal-case text-[#3C2A21] font-bold">Karma & Soul Purpose</span>
                     </div>
-                    {!isPaid && <Lock className="w-3.5 h-3.5 text-[#B38B36]" />}
+                    {!isPaid && (
+                      <span className="text-[8px] uppercase tracking-widest font-bold text-[#8E6B23] px-2 py-0.5 border border-[#B38B36]/20 bg-[#B38B36]/5 rounded-full flex items-center gap-1">
+                        <Lock className="w-2 h-2" /> Premium
+                      </span>
+                    )}
                   </div>
-                  <div className={`text-xs text-[#5C4D43] space-y-3 pl-4 border-l border-[#B38B36]/20 leading-relaxed font-light transition-all duration-700 ${!isPaid ? 'blur-sm select-none pointer-events-none' : ''}`}>
+                  <div className={`text-xs text-[#5C4D43] space-y-3 pl-7 border-l border-[#B38B36]/20 leading-relaxed font-light transition-all duration-700 ${!isPaid ? 'blur-sm select-none pointer-events-none opacity-40' : ''}`}>
                     <p><strong>Karmic Debt (Saturn):</strong> {lifeReport.spiritual?.karma}</p>
                     <p><strong>Soul Lessons:</strong> {lifeReport.spiritual?.lessons}</p>
                     <p><strong>Divine Mission:</strong> {lifeReport.spiritual?.purpose}</p>
@@ -765,22 +892,27 @@ const PaymentPage = () => {
 
               {/* PREMIUM LOCK CONVERSION COVER */}
               {!isPaid && (
-                <div className="absolute inset-x-0 bottom-0 top-[22%] bg-gradient-to-t from-[#FFFDF9] via-[#FFFDF9]/95 to-transparent flex flex-col justify-end p-6 md:p-8 text-center backdrop-blur-[2px]">
-                  <div className="bg-white/90 border border-white rounded-2xl p-6 md:p-8 max-w-md mx-auto shadow-[0_20px_45px_rgba(179,139,54,0.15)] relative z-10">
-                    <div className="w-12 h-12 rounded-full bg-[#B38B36]/10 border border-[#B38B36]/35 flex items-center justify-center mx-auto mb-4 text-[#B38B36]">
-                      <Lock className="w-5 h-5 animate-pulse" />
+                <div className="absolute inset-x-0 bottom-0 top-[22%] bg-gradient-to-t from-[#FFFDF9] via-[#FFFDF9]/90 to-transparent flex flex-col justify-end p-6 md:p-8 text-center backdrop-blur-[6px] z-20">
+                  <div className="bg-white/80 border border-[#B38B36]/25 rounded-3xl p-6 md:p-8 max-w-md mx-auto shadow-[0_20px_50px_rgba(179,139,54,0.2)] relative z-10 backdrop-blur-md">
+                    {/* Double border gold accent frame inside */}
+                    <div className="absolute inset-2 border border-[#B38B36]/15 rounded-2xl pointer-events-none" />
+                    
+                    <div className="w-12 h-12 rounded-full bg-[#B38B36]/10 border border-[#B38B36]/35 flex items-center justify-center mx-auto mb-4 text-[#B38B36] shadow-sm relative">
+                      <div className="w-12 h-12 rounded-full bg-[#B38B36]/5 absolute animate-ping" />
+                      <Lock className="w-4 h-4 text-[#8E6B23] relative z-10 animate-pulse" />
                     </div>
-                    <h5 className="font-serif text-lg text-[#3C2A21] mb-2 font-bold">Your Complete Destiny Report Is Ready</h5>
-                    <p className="text-[11px] text-[#6E5D53] leading-relaxed mb-6 font-light">
-                      Get immediate access to your full personalized life analysis, career roadmap, wealth outlook, marriage details, and monthly forecasts.
+                    
+                    <h5 className="font-serif text-xl text-[#3C2A21] mb-2 font-bold tracking-wide">Your Destiny Blueprint Awaits</h5>
+                    <p className="text-[11px] text-[#6E5D53] leading-relaxed mb-6 font-light max-w-xs mx-auto">
+                      Reveal the planetary transits mapping your Career milestones, Marriage timelines, Financial windows, and Spiritual Karma.
                     </p>
                     <button
                       onClick={handlePayment}
                       disabled={processingPayment}
-                      className="w-full py-3.5 bg-gradient-to-r from-[#B38B36] to-[#8E6B23] hover:from-[#8E6B23] hover:to-[#3C2A21] text-white font-bold text-xs uppercase tracking-widest rounded-xl transition-all duration-500 shadow-md hover:shadow-lg flex items-center justify-center gap-2 cursor-pointer"
+                      className="w-full py-4 bg-gradient-to-r from-[#BF953F] via-[#FCF6BA] to-[#B38728] hover:brightness-[1.08] text-[#1E110A] font-sans font-bold text-xs uppercase tracking-widest rounded-xl transition-all duration-500 shadow-[0_4px_15px_rgba(179,139,54,0.35)] hover:scale-[1.02] flex items-center justify-center gap-2 cursor-pointer border border-[#FCF6BA]/30"
                     >
-                      <Unlock className="w-3.5 h-3.5 text-white" />
-                      <span>Unlock Premium Report</span>
+                      <Unlock className="w-3.5 h-3.5 stroke-[2.5px]" />
+                      <span>Unlock Destiny Report</span>
                     </button>
                   </div>
                 </div>
