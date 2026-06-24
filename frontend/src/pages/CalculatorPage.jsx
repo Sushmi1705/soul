@@ -721,19 +721,21 @@ const CalculatorPage = () => {
         <div className="absolute -top-12 -left-12 w-64 h-64 rounded-full border border-[#B38B36]/10 border-dashed animate-[spinSlow_160s_linear_infinite] pointer-events-none z-0" />
         <div className="absolute -bottom-16 -right-16 w-80 h-80 rounded-full border border-[#B38B36]/10 border-dotted animate-[spinSlow_100s_linear_infinite_reverse] pointer-events-none z-0" />
 
-        <div className="relative z-20 max-w-4xl mx-auto px-6 w-full text-center space-y-2 pt-2">
-          {/* Breadcrumb Navigation */}
-          <button 
-            onClick={handleGoBack} 
-            className="inline-flex items-center gap-1.5 text-stone-500 hover:text-[#B38B36] transition-colors text-[9px] font-bold tracking-widest uppercase cursor-pointer"
-          >
-            <ArrowLeft className="w-3 h-3" />
-            Back to Calculators
-          </button>
+        <div className="relative z-20 max-w-4xl mx-auto px-6 w-full text-center space-y-1.5 pt-2">
+          {/* Aligned Heading & Back Button Row */}
+          <div className="flex items-center justify-center gap-3 md:gap-4 flex-wrap">
+            <button 
+              onClick={handleGoBack} 
+              className="inline-flex items-center gap-1 text-[#6E5D53] hover:text-[#B38B36] border border-stone-300/80 hover:border-[#B38B36] bg-white/70 hover:bg-[#B38B36]/5 px-3 py-1.5 rounded-full transition-all duration-300 text-[9px] uppercase font-bold tracking-wider cursor-pointer shadow-sm shrink-0"
+            >
+              <ArrowLeft className="w-3 h-3" /> Back
+            </button>
+            
+            <h1 className="font-serif text-2xl md:text-3.5xl text-[#3C2A21] font-bold tracking-wide leading-tight">
+              {calc.title}
+            </h1>
+          </div>
           
-          <h1 className="font-serif text-2xl md:text-3.5xl text-[#3C2A21] font-bold tracking-wide leading-tight">
-            {calc.title}
-          </h1>
           <p className="text-[#725D46] max-w-xl mx-auto text-[11px] md:text-xs font-light leading-normal">
             {calc.desc}
           </p>
@@ -1279,7 +1281,7 @@ const CalculatorPage = () => {
                         </thead>
                         <tbody>
                           {result.gunaResult.breakdown.map((kuta, idx) => (
-                            <tr key={idx} className="border-b border-[#B38B36]/5 hover:bg-white/50 transition-colors">
+                            <tr key={idx} className="border-b border-[#B38B36]/5 hover:bg-white/50 transition-colors odd:bg-[#FFFDF9]/40 even:bg-white/20">
                               <td className="py-1.5 px-3 font-serif text-[#3C2A21] font-semibold">{kuta.name}</td>
                               <td className="py-1.5 px-3 text-right font-bold text-[#8E6B23]">{kuta.score}</td>
                               <td className="py-1.5 px-3 text-right text-[#6E5D53]">{kuta.max}</td>
@@ -1320,32 +1322,50 @@ const CalculatorPage = () => {
               {/* ==================== 3. SINGLE-PERSON CALCULATORS RESULTS VIEW ==================== */}
               {result.isSingle && (
                 <div className="space-y-6">
-                  {/* Calculated Value Highlight */}
-                  <h4 className="font-serif text-xl md:text-2xl text-[#8E6B23] font-black tracking-wide border-b border-[#B38B36]/15 pb-2 px-6 inline-block">
-                    {result.calculatedValue}
-                  </h4>
+                  {/* Calculated Value Glowing Badge */}
+                  <div className="inline-block bg-gradient-to-b from-[#FFFDF9] to-[#FAF5EB] border border-[#B38B36]/30 px-6 py-2.5 rounded-2xl shadow-[0_4px_12px_rgba(179,139,54,0.08)]">
+                    <span className="text-[9px] uppercase tracking-[0.25em] text-[#8E6B23] font-bold block mb-1">Result Placements</span>
+                    <span className="font-serif text-lg md:text-xl text-[#3C2A21] font-bold">{result.calculatedValue}</span>
+                  </div>
                   
-                  {/* Detailed Description Prose */}
-                  <div className="bg-[#FFFDF9]/60 border border-[#B38B36]/15 rounded-2xl p-4 md:p-5 text-left text-xs md:text-sm text-[#5C4D43] leading-relaxed space-y-3 max-w-2xl mx-auto shadow-inner relative">
-                    <div className="absolute inset-1.5 border border-[#B38B36]/5 rounded-xl pointer-events-none" />
-                    <p className="first-letter:text-3xl first-letter:font-serif first-letter:text-[#8E6B23] first-letter:mr-1 first-letter:float-left leading-normal font-light">
+                  {/* Detailed Description Prose (Manuscript style) */}
+                  <div className="bg-gradient-to-b from-[#FFFDF9] to-[#FAF6EE]/80 border border-[#B38B36]/20 rounded-2xl p-5 md:p-6 text-left text-xs md:text-sm text-stone-700 leading-relaxed max-w-2xl mx-auto shadow-[0_8px_30px_rgba(179,139,54,0.03),inset_0_1px_2px_rgba(255,255,255,0.9)] relative">
+                    <div className="absolute inset-1 border border-[#B38B36]/10 rounded-xl pointer-events-none" />
+                    <p className="first-letter:text-4xl first-letter:font-serif first-letter:font-bold first-letter:text-[#8E6B23] first-letter:mr-2.5 first-letter:float-left first-letter:leading-[0.8] first-letter:pt-1 font-light text-stone-600">
                       {result.description}
                     </p>
                   </div>
 
-                  {/* Astro Coordinates Badges */}
+                  {/* Astro Coordinates Badges with custom icons */}
                   <div className="grid grid-cols-3 gap-2.5 md:gap-3.5 max-w-2xl mx-auto">
-                    <div className="bg-[#FFFDF9]/40 border border-[#B38B36]/15 hover:border-[#B38B36]/40 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 rounded-xl p-3 text-left">
-                      <span className="text-[8px] uppercase tracking-widest text-[#8E6B23] block mb-1 font-bold">Moon Sign</span>
-                      <span className="text-xs text-[#3C2A21] font-serif font-bold">{result.rasi?.split(" ")[0]}</span>
+                    <div className="bg-[#FFFDF9]/40 border border-[#B38B36]/15 hover:border-[#B38B36]/40 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 rounded-xl p-3 text-left flex items-center gap-2 md:gap-3">
+                      <div className="p-1.5 bg-[#B38B36]/10 rounded-lg text-[#8E6B23] shrink-0">
+                        <Moon className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <span className="text-[8px] uppercase tracking-widest text-[#8E6B23] block mb-0.5 font-bold">Moon Sign</span>
+                        <span className="text-xs text-[#3C2A21] font-serif font-bold">{result.rasi?.split(" ")[0]}</span>
+                      </div>
                     </div>
-                    <div className="bg-[#FFFDF9]/40 border border-[#B38B36]/15 hover:border-[#B38B36]/40 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 rounded-xl p-3 text-left">
-                      <span className="text-[8px] uppercase tracking-widest text-[#8E6B23] block mb-1 font-bold">Nakshatra</span>
-                      <span className="text-xs text-[#3C2A21] font-serif font-bold">{result.nakshatra}</span>
+                    
+                    <div className="bg-[#FFFDF9]/40 border border-[#B38B36]/15 hover:border-[#B38B36]/40 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 rounded-xl p-3 text-left flex items-center gap-2 md:gap-3">
+                      <div className="p-1.5 bg-[#B38B36]/10 rounded-lg text-[#8E6B23] shrink-0">
+                        <Sparkles className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <span className="text-[8px] uppercase tracking-widest text-[#8E6B23] block mb-0.5 font-bold">Nakshatra</span>
+                        <span className="text-xs text-[#3C2A21] font-serif font-bold">{result.nakshatra}</span>
+                      </div>
                     </div>
-                    <div className="bg-[#FFFDF9]/40 border border-[#B38B36]/15 hover:border-[#B38B36]/40 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 rounded-xl p-3 text-left">
-                      <span className="text-[8px] uppercase tracking-widest text-[#8E6B23] block mb-1 font-bold">Rising Sign</span>
-                      <span className="text-xs text-[#3C2A21] font-serif font-bold">{result.lagna?.split(" ")[0]}</span>
+                    
+                    <div className="bg-[#FFFDF9]/40 border border-[#B38B36]/15 hover:border-[#B38B36]/40 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 rounded-xl p-3 text-left flex items-center gap-2 md:gap-3">
+                      <div className="p-1.5 bg-[#B38B36]/10 rounded-lg text-[#8E6B23] shrink-0">
+                        <TrendingUp className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <span className="text-[8px] uppercase tracking-widest text-[#8E6B23] block mb-0.5 font-bold">Rising Sign</span>
+                        <span className="text-xs text-[#3C2A21] font-serif font-bold">{result.lagna?.split(" ")[0]}</span>
+                      </div>
                     </div>
                   </div>
 
