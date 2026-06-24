@@ -1246,12 +1246,34 @@ const CalculatorPage = () => {
                   </div>
 
                   {/* Compatibility Score Display */}
-                  <div className="border border-[#B38B36]/20 bg-[#FFFDF9]/90 shadow-inner rounded-2xl p-4 max-w-xl mx-auto space-y-1.5">
-                    <span className="text-[9px] text-[#6E5D53] uppercase tracking-wider font-semibold block">Vedic Guna Milan Score</span>
-                    <div className="text-[#8E6B23] font-serif text-2xl md:text-3xl font-black">
-                      {result.gunaResult.total} <span className="text-sm text-stone-400 font-light">/ 36 Gunas</span>
+                  <div className="relative border border-[#B38B36]/25 bg-gradient-to-b from-[#FFFDF9] to-[#FAF6EE] shadow-[0_10px_35px_rgba(179,139,54,0.04),inset_0_1px_3px_rgba(255,255,255,0.9)] rounded-3xl p-5 max-w-md mx-auto text-center space-y-2 overflow-hidden">
+                    {/* Corner decorative circles */}
+                    <div className="absolute -top-6 -left-6 w-12 h-12 rounded-full border border-[#B38B36]/10" />
+                    <div className="absolute -bottom-6 -right-6 w-12 h-12 rounded-full border border-[#B38B36]/10" />
+                    
+                    <span className="text-[9px] text-[#8E6B23] uppercase tracking-[0.25em] font-black block">Vedic Guna Milan Score</span>
+                    
+                    <div className="relative inline-flex items-center justify-center">
+                      <svg className="w-20 h-20 transform -rotate-90">
+                        <circle cx="40" cy="40" r="34" className="stroke-[#B38B36]/10 fill-none" strokeWidth="3" />
+                        <circle 
+                          cx="40" 
+                          cy="40" 
+                          r="34" 
+                          className="stroke-[#B38728] fill-none animate-[goldPulse_3s_infinite_ease-in-out]" 
+                          strokeWidth="3.5" 
+                          strokeDasharray="213.6" 
+                          strokeDashoffset={213.6 - (213.6 * (result.gunaResult.total || 0)) / 36}
+                          strokeLinecap="round"
+                        />
+                      </svg>
+                      <div className="absolute font-serif text-2xl font-black text-[#3C2A21] mt-0.5">
+                        {result.gunaResult.total}
+                      </div>
                     </div>
-                    <div className="text-xs font-serif italic text-[#3C2A21] mt-1.5 font-medium">
+                    
+                    <div className="text-[10px] text-stone-400 font-semibold tracking-wider uppercase mt-1">out of 36 Gunas</div>
+                    <div className="text-xs font-serif italic text-[#3C2A21] mt-2 font-medium px-4">
                       {result.gunaResult.total >= 25 ? (
                         <span className="text-green-700">🌟 Excellent Compatibility! An exceptionally auspicious and harmonious union.</span>
                       ) : result.gunaResult.total >= 18 ? (
@@ -1262,33 +1284,33 @@ const CalculatorPage = () => {
                     </div>
                   </div>
 
-                  {/* 8 Kutas Table Breakdown */}
-                  <div className="max-w-2xl mx-auto space-y-2 text-left">
+                  {/* 8 Kutas Progress Bars Breakdown */}
+                  <div className="max-w-2xl mx-auto space-y-3 text-left">
                     <h5 className="font-serif text-[#8E6B23] text-[10px] uppercase tracking-widest text-center font-bold flex items-center justify-center gap-3">
                       <span className="w-6 h-[1px] bg-[#B38B36]/30"></span>
                       Detailed 8 Kuta Breakdown
                       <span className="w-6 h-[1px] bg-[#B38B36]/30"></span>
                     </h5>
                     
-                    <div className="bg-[#FFFDF9]/40 border border-[#B38B36]/10 rounded-2xl p-2 md:p-3 overflow-x-auto shadow-sm">
-                      <table className="w-full text-xs">
-                        <thead>
-                          <tr className="border-b border-[#B38B36]/15 text-[9px] uppercase tracking-widest text-[#8E6B23]">
-                            <th className="py-1.5 px-3 text-left">Kuta (Vedic Coordinate)</th>
-                            <th className="py-1.5 px-3 text-right">Matched Score</th>
-                            <th className="py-1.5 px-3 text-right">Max Gunas</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {result.gunaResult.breakdown.map((kuta, idx) => (
-                            <tr key={idx} className="border-b border-[#B38B36]/5 hover:bg-white/50 transition-colors odd:bg-[#FFFDF9]/40 even:bg-white/20">
-                              <td className="py-1.5 px-3 font-serif text-[#3C2A21] font-semibold">{kuta.name}</td>
-                              <td className="py-1.5 px-3 text-right font-bold text-[#8E6B23]">{kuta.score}</td>
-                              <td className="py-1.5 px-3 text-right text-[#6E5D53]">{kuta.max}</td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
+                    <div className="space-y-2.5 max-w-2xl mx-auto">
+                      {result.gunaResult.breakdown.map((kuta, idx) => (
+                        <div key={idx} className="bg-white/50 backdrop-blur-sm border border-[#B38B36]/15 hover:border-[#B38B36]/35 rounded-xl p-3 flex flex-col md:flex-row md:items-center justify-between gap-2.5 transition-all shadow-[0_4px_12px_rgba(179,139,54,0.02)]">
+                          <div className="flex-1 text-left">
+                            <span className="font-serif text-xs text-[#3C2A21] font-bold block">{kuta.name}</span>
+                            <div className="w-full bg-[#B38B36]/5 rounded-full h-1.5 mt-1.5 border border-[#B38B36]/5 overflow-hidden">
+                              <div 
+                                className="bg-gradient-to-r from-[#BF953F] to-[#B38728] h-full rounded-full" 
+                                style={{ width: `${(kuta.score / kuta.max) * 100}%` }}
+                              />
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-1.5 shrink-0 justify-end">
+                            <span className="text-xs font-bold text-[#8E6B23]">{kuta.score}</span>
+                            <span className="text-[10px] text-stone-400">/</span>
+                            <span className="text-[10px] text-[#6E5D53]">{kuta.max} Gunas</span>
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </div>
@@ -1305,14 +1327,15 @@ const CalculatorPage = () => {
                   </div>
 
                   {/* FLAMES Badge */}
-                  <div className="relative border border-[#B38B36]/25 bg-gradient-to-tr from-[#FFFDF9] to-[#FFF9ED] shadow-inner rounded-2xl p-4 md:p-6 overflow-hidden">
-                    <div className="absolute inset-1.5 border border-[#B38B36]/10 rounded-[1.1rem] pointer-events-none" />
+                  <div className="relative border border-[#B38B36]/25 bg-gradient-to-tr from-[#FFFDF9] to-[#FFF9ED] shadow-[0_15px_40px_rgba(179,139,54,0.06),inset_0_1px_3px_rgba(255,255,255,0.9)] rounded-3xl p-5 md:p-7 overflow-hidden">
+                    <div className="absolute inset-1.5 border border-[#B38B36]/10 rounded-[1.25rem] pointer-events-none" />
+                    <div className="absolute -top-10 -right-10 w-24 h-24 bg-[#B38B36]/5 rounded-full blur-xl pointer-events-none" />
                     
-                    <span className="text-[9px] uppercase tracking-widest text-[#8E6B23] block mb-1 font-bold">Calculated FLAMES Status</span>
-                    <div className="font-serif text-2xl md:text-3xl text-[#8E6B23] font-black tracking-wide">
+                    <span className="text-[9px] uppercase tracking-[0.25em] text-[#8E6B23] block mb-1.5 font-bold">Calculated FLAMES Status</span>
+                    <div className="font-serif text-2xl md:text-3.5xl text-[#8E6B23] font-black tracking-wide drop-shadow-sm animate-[goldPulse_4s_infinite_ease-in-out]">
                       {result.calculatedValue}
                     </div>
-                    <div className="text-xs text-[#5C4D43] leading-relaxed mt-2.5 font-light italic px-4">
+                    <div className="text-xs text-stone-600 leading-relaxed mt-3.5 font-light italic px-4">
                       "{result.description}"
                     </div>
                   </div>
@@ -1327,9 +1350,16 @@ const CalculatorPage = () => {
                     <span className="text-[9px] uppercase tracking-[0.25em] text-[#8E6B23] font-bold block mb-1">Result Placements</span>
                     <span className="font-serif text-lg md:text-xl text-[#3C2A21] font-bold">{result.calculatedValue}</span>
                   </div>
+
+                  {/* Decorative separator */}
+                  <div className="flex items-center justify-center gap-2 my-1">
+                    <span className="h-[1px] w-12 bg-gradient-to-r from-transparent to-[#B38B36]/30"></span>
+                    <span className="text-[#B38B36]/60 text-[8px] animate-pulse">✦</span>
+                    <span className="h-[1px] w-12 bg-gradient-to-l from-transparent to-[#B38B36]/30"></span>
+                  </div>
                   
                   {/* Detailed Description Prose (Manuscript style) */}
-                  <div className="bg-gradient-to-b from-[#FFFDF9] to-[#FAF6EE]/80 border border-[#B38B36]/20 rounded-2xl p-5 md:p-6 text-left text-xs md:text-sm text-stone-700 leading-relaxed max-w-2xl mx-auto shadow-[0_8px_30px_rgba(179,139,54,0.03),inset_0_1px_2px_rgba(255,255,255,0.9)] relative">
+                  <div className="bg-gradient-to-b from-[#FFFDF9] to-[#FAF6EE]/85 border border-[#B38B36]/20 rounded-2xl p-5 md:p-6 text-left text-xs md:text-sm text-stone-700 leading-relaxed max-w-2xl mx-auto shadow-[0_8px_30px_rgba(179,139,54,0.03),inset_0_1px_2px_rgba(255,255,255,0.9)] relative">
                     <div className="absolute inset-1 border border-[#B38B36]/10 rounded-xl pointer-events-none" />
                     <p className="first-letter:text-4xl first-letter:font-serif first-letter:font-bold first-letter:text-[#8E6B23] first-letter:mr-2.5 first-letter:float-left first-letter:leading-[0.8] first-letter:pt-1 font-light text-stone-600">
                       {result.description}
@@ -1338,8 +1368,8 @@ const CalculatorPage = () => {
 
                   {/* Astro Coordinates Badges with custom icons */}
                   <div className="grid grid-cols-3 gap-2.5 md:gap-3.5 max-w-2xl mx-auto">
-                    <div className="bg-[#FFFDF9]/40 border border-[#B38B36]/15 hover:border-[#B38B36]/40 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 rounded-xl p-3 text-left flex items-center gap-2 md:gap-3">
-                      <div className="p-1.5 bg-[#B38B36]/10 rounded-lg text-[#8E6B23] shrink-0">
+                    <div className="bg-white/50 backdrop-blur-sm border border-[#B38B36]/20 hover:border-[#B38B36]/50 hover:shadow-[0_8px_25px_rgba(179,139,54,0.08)] hover:-translate-y-0.5 transition-all duration-300 rounded-xl p-3 text-left flex items-center gap-2 md:gap-3">
+                      <div className="p-1.5 bg-[#B38B36]/10 rounded-lg text-[#8E6B23] shrink-0 border border-[#B38B36]/10">
                         <Moon className="w-4 h-4" />
                       </div>
                       <div>
@@ -1348,8 +1378,8 @@ const CalculatorPage = () => {
                       </div>
                     </div>
                     
-                    <div className="bg-[#FFFDF9]/40 border border-[#B38B36]/15 hover:border-[#B38B36]/40 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 rounded-xl p-3 text-left flex items-center gap-2 md:gap-3">
-                      <div className="p-1.5 bg-[#B38B36]/10 rounded-lg text-[#8E6B23] shrink-0">
+                    <div className="bg-white/50 backdrop-blur-sm border border-[#B38B36]/20 hover:border-[#B38B36]/50 hover:shadow-[0_8px_25px_rgba(179,139,54,0.08)] hover:-translate-y-0.5 transition-all duration-300 rounded-xl p-3 text-left flex items-center gap-2 md:gap-3">
+                      <div className="p-1.5 bg-[#B38B36]/10 rounded-lg text-[#8E6B23] shrink-0 border border-[#B38B36]/10">
                         <Sparkles className="w-4 h-4" />
                       </div>
                       <div>
@@ -1358,8 +1388,8 @@ const CalculatorPage = () => {
                       </div>
                     </div>
                     
-                    <div className="bg-[#FFFDF9]/40 border border-[#B38B36]/15 hover:border-[#B38B36]/40 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 rounded-xl p-3 text-left flex items-center gap-2 md:gap-3">
-                      <div className="p-1.5 bg-[#B38B36]/10 rounded-lg text-[#8E6B23] shrink-0">
+                    <div className="bg-white/50 backdrop-blur-sm border border-[#B38B36]/20 hover:border-[#B38B36]/50 hover:shadow-[0_8px_25px_rgba(179,139,54,0.08)] hover:-translate-y-0.5 transition-all duration-300 rounded-xl p-3 text-left flex items-center gap-2 md:gap-3">
+                      <div className="p-1.5 bg-[#B38B36]/10 rounded-lg text-[#8E6B23] shrink-0 border border-[#B38B36]/10">
                         <TrendingUp className="w-4 h-4" />
                       </div>
                       <div>
@@ -1371,17 +1401,17 @@ const CalculatorPage = () => {
 
                   {/* Graha Sthiti (Planetary Readouts) */}
                   {result.planetaryPositions && (
-                    <div className="max-w-2xl mx-auto space-y-2 text-left">
+                    <div className="max-w-2xl mx-auto space-y-3 text-left">
                       <h5 className="font-serif text-[#8E6B23] text-[10px] uppercase tracking-widest text-center font-bold flex items-center justify-center gap-3">
                         <span className="w-6 h-[1px] bg-[#B38B36]/30"></span>
                         Planetary Positions (Graha Sthiti)
                         <span className="w-6 h-[1px] bg-[#B38B36]/30"></span>
                       </h5>
-                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 bg-[#FFFDF9]/40 p-3 md:p-4 rounded-2xl border border-[#B38B36]/10 shadow-sm">
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 md:gap-3">
                         {Object.entries(result.planetaryPositions).map(([planet, sign]) => (
-                          <div key={planet} className="flex justify-between items-center px-2 py-1.5 border-b border-[#B38B36]/10 text-xs">
-                            <span className="text-[#6E5D53] font-medium">{planet}</span>
-                            <span className="text-[#3C2A21] font-serif font-bold">{sign}</span>
+                          <div key={planet} className="bg-white/40 border border-[#B38B36]/15 hover:border-[#B38B36]/35 rounded-xl p-2 md:p-2.5 flex items-center justify-between text-xs transition-all hover:bg-white/60 shadow-[0_2px_8px_rgba(179,139,54,0.01)]">
+                            <span className="text-[#8E6B23] font-serif font-semibold">{planet}</span>
+                            <span className="text-[#3C2A21] font-light bg-[#B38B36]/5 border border-[#B38B36]/10 px-2 py-0.5 rounded-lg text-[11px]">{sign}</span>
                           </div>
                         ))}
                       </div>
