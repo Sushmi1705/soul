@@ -374,6 +374,25 @@ const getCalculatorInsights = (data, calcId) => {
   }
 };
 
+// 15 Sparkling glitter stars scattered across the canvas
+const GLITTER_STARS_DATA = [
+  { top: "5%", left: "8%", size: "14px", delay: "0s", dur: "4s" },
+  { top: "12%", left: "86%", size: "10px", delay: "1.2s", dur: "3.5s" },
+  { top: "28%", left: "93%", size: "16px", delay: "0.4s", dur: "5s" },
+  { top: "54%", left: "6%", size: "11px", delay: "2.1s", dur: "4.2s" },
+  { top: "82%", left: "5%", size: "15px", delay: "0.8s", dur: "3.8s" },
+  { top: "78%", left: "90%", size: "12px", delay: "2.5s", dur: "4.5s" },
+  { top: "22%", left: "72%", size: "9px", delay: "1.5s", dur: "3s" },
+  { top: "42%", left: "12%", size: "13px", delay: "1.7s", dur: "4.8s" },
+  { top: "66%", left: "84%", size: "15px", delay: "0.2s", dur: "3.2s" },
+  { top: "88%", left: "48%", size: "8px", delay: "2s", dur: "5.2s" },
+  { top: "3%", left: "52%", size: "11px", delay: "0.6s", dur: "4.6s" },
+  { top: "35%", left: "4%", size: "12px", delay: "1.9s", dur: "3.9s" },
+  { top: "95%", left: "85%", size: "14px", delay: "2.8s", dur: "4s" },
+  { top: "48%", left: "80%", size: "10px", delay: "0.9s", dur: "3.6s" },
+  { top: "72%", left: "18%", size: "13px", delay: "1.1s", dur: "4.4s" }
+];
+
 const CalculatorPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -551,7 +570,6 @@ const CalculatorPage = () => {
 
     try {
       if (id === "kundli-matching") {
-        // Fetch calculations for both partners in parallel
         const [res1, res2] = await Promise.all([
           fetch(`${apiUrl}/api/horoscope/generate`, {
             method: "POST",
@@ -588,7 +606,7 @@ const CalculatorPage = () => {
 
         setResult({
           isKundli: true,
-          reportId: data1.id, // For premium redirection CTA
+          reportId: data1.id,
           partner1Name: formData.name.trim() || "Groom",
           partner2Name: formData.partnerName.trim() || "Bride",
           details1: data1.astrology_details,
@@ -596,7 +614,6 @@ const CalculatorPage = () => {
           gunaResult: gunaResult
         });
       } else {
-        // Single person calculator
         const response = await fetch(`${apiUrl}/api/horoscope/generate`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -640,7 +657,7 @@ const CalculatorPage = () => {
   };
 
   return (
-    <div className="pt-24 pb-24 relative z-10 bg-[#FDFBF7] min-h-screen overflow-hidden text-[#3C2A21] font-[Outfit,sans-serif]">
+    <div className="pt-24 pb-24 relative z-10 bg-[#FFFDF9] min-h-screen overflow-hidden text-[#3C2A21] font-[Outfit,sans-serif]">
       
       <style>{`
         @keyframes spinSlow {
@@ -652,70 +669,103 @@ const CalculatorPage = () => {
           50% { opacity: 0.8; transform: scale(1.15); }
         }
         @keyframes pulseGlow {
-          0%, 100% { opacity: 0.25; transform: scale(0.95); }
-          50% { opacity: 0.55; transform: scale(1.05); }
+          0%, 100% { opacity: 0.3; transform: scale(0.95); }
+          50% { opacity: 0.7; transform: scale(1.05); }
+        }
+        @keyframes glitter {
+          0%, 100% {
+            opacity: 0.15;
+            transform: scale(0.7) rotate(0deg);
+            color: #B38B36;
+          }
+          50% {
+            opacity: 0.95;
+            transform: scale(1.2) rotate(180deg);
+            color: #BF953F;
+            filter: drop-shadow(0 0 8px rgba(179,139,54,0.7));
+          }
+        }
+        @keyframes shimmer {
+          0% { background-position: -200% 0; }
+          100% { background-position: 200% 0; }
         }
       `}</style>
 
-      {/* Premium Dark Celestial Banner Section */}
+      {/* Glittering Star Particles Scattered on Background */}
+      <div className="absolute inset-0 pointer-events-none select-none z-0">
+        {GLITTER_STARS_DATA.map((star, idx) => (
+          <div
+            key={idx}
+            className="absolute select-none pointer-events-none"
+            style={{
+              top: star.top,
+              left: star.left,
+              fontSize: star.size,
+              animation: `glitter ${star.dur} infinite ease-in-out`,
+              animationDelay: star.delay
+            }}
+          >
+            ✦
+          </div>
+        ))}
+      </div>
+
+      {/* Light Premium Celestial Header (Removed Solid Dark Brown Background Block) */}
       <motion.div 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1 }}
-        className="relative w-full h-[220px] md:h-[260px] bg-[#3C2A21] flex items-center overflow-hidden border-b border-[#B38B36]/20 shadow-md"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+        className="relative w-full py-10 md:py-14 bg-gradient-to-b from-[#FAF5EB] to-[#FFFDF9] flex items-center overflow-hidden border-b border-[#B38B36]/15"
       >
-        <div className="absolute inset-0 bg-black/40 z-10" />
-        
-        {/* Twinkling star watermark backgrounds */}
-        <div className="absolute top-8 left-12 text-[#B38B36]/30 text-xs animate-[twinkle_5s_infinite_linear] z-10">✦</div>
-        <div className="absolute bottom-10 right-20 text-[#B38B36]/20 text-[10px] animate-[twinkle_3s_infinite_linear] z-10" style={{ animationDelay: "1.5s" }}>✦</div>
-        <div className="absolute top-1/2 right-1/4 text-[#B38B36]/15 text-sm animate-[twinkle_6s_infinite_linear] z-10" style={{ animationDelay: "0.8s" }}>✦</div>
+        {/* Subtle decorative orbits in gold */}
+        <div className="absolute -top-12 -left-12 w-64 h-64 rounded-full border border-[#B38B36]/10 border-dashed animate-[spinSlow_160s_linear_infinite] pointer-events-none z-0" />
+        <div className="absolute -bottom-16 -right-16 w-80 h-80 rounded-full border border-[#B38B36]/10 border-dotted animate-[spinSlow_100s_linear_infinite_reverse] pointer-events-none z-0" />
 
-        {/* Decorative background orbits */}
-        <div className="absolute -top-16 -left-16 w-72 h-72 rounded-full border border-[#B38B36]/15 border-dashed animate-spin pointer-events-none z-0" style={{ animationDuration: '120s' }} />
-        <div className="absolute -bottom-16 -right-16 w-80 h-80 rounded-full border border-[#B38B36]/10 border-dotted animate-spin pointer-events-none z-0" style={{ animationDuration: '90s', animationDirection: 'reverse' }} />
-
-        <div className="relative z-20 max-w-4xl mx-auto px-6 w-full text-center space-y-3 pt-6">
-          {/* Elegant Breadcrumb Back Button */}
+        <div className="relative z-20 max-w-4xl mx-auto px-6 w-full text-center space-y-4 pt-4">
+          {/* Breadcrumb Navigation */}
           <button 
             onClick={handleGoBack} 
-            className="inline-flex items-center gap-1.5 text-stone-300 hover:text-[#B38B36] transition-colors text-[10px] font-bold tracking-widest uppercase cursor-pointer"
+            className="inline-flex items-center gap-1.5 text-stone-500 hover:text-[#B38B36] transition-colors text-[10px] font-bold tracking-widest uppercase cursor-pointer"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             Back to Calculators
           </button>
           
-          <h1 className="font-serif text-3xl md:text-5xl text-white font-bold tracking-wide">{calc.title}</h1>
-          <p className="text-[#E5E1D8]/80 max-w-xl mx-auto text-xs md:text-sm font-light leading-relaxed">{calc.desc}</p>
+          <h1 className="font-serif text-3.5xl md:text-5xl text-[#3C2A21] font-bold tracking-wide leading-tight">
+            {calc.title}
+          </h1>
+          <p className="text-[#725D46] max-w-xl mx-auto text-xs md:text-sm font-light leading-relaxed">
+            {calc.desc}
+          </p>
         </div>
       </motion.div>
 
-      {/* Decorative ambient orbs in body background (Increased visibility, mixed warm gold and violet tones) */}
+      {/* Glowing atmospheric circles behind elements */}
       <div className="absolute top-[260px] left-[-15%] w-[600px] h-[600px] rounded-full bg-[#E8D9FC]/25 blur-[120px] pointer-events-none z-0 animate-[pulseGlow_12s_infinite_ease-in-out]" />
       <div className="absolute bottom-5 right-[-15%] w-[700px] h-[700px] rounded-full bg-[#FDE7BA]/30 blur-[130px] pointer-events-none z-0 animate-[pulseGlow_16s_infinite_ease-in-out_reverse]" />
 
-      {/* Main Form/Result Container */}
+      {/* Main Form/Result Container (Smooth Spring Transition) */}
       <div className="max-w-4xl mx-auto px-6 relative z-10 mt-12">
         
         {!result ? (
           <motion.form 
-            initial={{ opacity: 0, y: 25 }}
+            initial={{ opacity: 0, y: 35 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={{ type: "spring", stiffness: 45, damping: 14 }}
             onSubmit={handleSubmit}
-            className="bg-white/40 backdrop-blur-2xl p-6 md:p-12 rounded-[2.5rem] shadow-[0_30px_70px_rgba(179,139,54,0.08),0_1px_3px_rgba(0,0,0,0.02)] border border-[#B38B36]/25 relative overflow-hidden"
+            className="bg-white/45 backdrop-blur-3xl p-6 md:p-12 rounded-[2.5rem] shadow-[0_30px_70px_rgba(179,139,54,0.06),0_1px_3px_rgba(0,0,0,0.02)] border border-white/80 relative overflow-hidden"
           >
-            {/* Elegant inner gold rim */}
+            {/* Double Border Frame accent */}
             <div className="absolute inset-4 border border-[#B38B36]/15 rounded-[2rem] pointer-events-none z-0" />
             <div className="absolute inset-5.5 border border-[#B38B36]/5 rounded-[1.85rem] pointer-events-none z-0" />
             
-            {/* Corner Decorative Star Glyphs */}
-            <div className="absolute top-6 left-6 text-[#B38B36]/35 text-xs pointer-events-none select-none">✦</div>
-            <div className="absolute top-6 right-6 text-[#B38B36]/35 text-xs pointer-events-none select-none">✦</div>
-            <div className="absolute bottom-6 left-6 text-[#B38B36]/35 text-xs pointer-events-none select-none">✦</div>
-            <div className="absolute bottom-6 right-6 text-[#B38B36]/35 text-xs pointer-events-none select-none">✦</div>
+            {/* Corner Decorative Stars (Glittering) */}
+            <div className="absolute top-6 left-6 text-[#B38B36]/40 text-xs pointer-events-none select-none animate-[twinkle_3s_infinite_ease-in-out]">✦</div>
+            <div className="absolute top-6 right-6 text-[#B38B36]/40 text-xs pointer-events-none select-none animate-[twinkle_4s_infinite_ease-in-out]" style={{ animationDelay: "1s" }}>✦</div>
+            <div className="absolute bottom-6 left-6 text-[#B38B36]/40 text-xs pointer-events-none select-none animate-[twinkle_3.5s_infinite_ease-in-out]" style={{ animationDelay: "1.5s" }}>✦</div>
+            <div className="absolute bottom-6 right-6 text-[#B38B36]/40 text-xs pointer-events-none select-none animate-[twinkle_4.5s_infinite_ease-in-out]" style={{ animationDelay: "0.5s" }}>✦</div>
 
-            {/* Constellation background drawing in form card */}
+            {/* Constellation background drawing */}
             <svg viewBox="0 0 200 200" className="absolute inset-0 w-full h-full text-[#B38B36] opacity-[0.06] pointer-events-none select-none z-0">
               <circle cx="40" cy="50" r="1.5" className="fill-current" />
               <circle cx="80" cy="30" r="1.5" className="fill-current" />
@@ -739,7 +789,7 @@ const CalculatorPage = () => {
                   <span className="inline-flex items-center gap-1 px-3 py-1 border border-[#B38B36]/25 rounded-full bg-[#B38B36]/5 text-[9px] tracking-widest text-[#8E6B23] uppercase font-bold mb-3">
                     ❤ Compatibility Game
                   </span>
-                  <h3 className="font-serif text-xl font-medium">Name Compatibility Analysis</h3>
+                  <h3 className="font-serif text-xl font-medium text-[#3C2A21]">Name Compatibility Analysis</h3>
                   <p className="text-stone-500 text-xs mt-1 font-light max-w-md mx-auto">
                     Type in your name and your partner's name below to reveal the cosmic alignment between you two.
                   </p>
@@ -754,7 +804,7 @@ const CalculatorPage = () => {
                     <input 
                       required
                       type="text" 
-                      className="w-full bg-[#FDFBF7]/50 backdrop-blur-md border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-4 py-3.5 outline-none focus:ring-1 focus:ring-[#B38B36]/30 transition-all text-sm text-[#3C2A21] shadow-inner" 
+                      className="w-full bg-[#FFFDF9]/65 backdrop-blur-md border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-4 py-3.5 outline-none focus:ring-1 focus:ring-[#B38B36]/30 transition-all text-sm text-[#3C2A21] shadow-sm font-light hover:bg-[#FFFDF9]/90 duration-300" 
                       placeholder="Enter your name" 
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -769,7 +819,7 @@ const CalculatorPage = () => {
                     <input 
                       required
                       type="text" 
-                      className="w-full bg-[#FDFBF7]/50 backdrop-blur-md border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-4 py-3.5 outline-none focus:ring-1 focus:ring-[#B38B36]/30 transition-all text-sm text-[#3C2A21] shadow-inner" 
+                      className="w-full bg-[#FFFDF9]/65 backdrop-blur-md border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-4 py-3.5 outline-none focus:ring-1 focus:ring-[#B38B36]/30 transition-all text-sm text-[#3C2A21] shadow-sm font-light hover:bg-[#FFFDF9]/90 duration-300" 
                       placeholder="Enter partner's name" 
                       value={formData.partnerName}
                       onChange={(e) => setFormData({ ...formData, partnerName: e.target.value })}
@@ -784,7 +834,7 @@ const CalculatorPage = () => {
                   <span className="inline-flex items-center gap-1 px-3 py-1 border border-[#B38B36]/25 rounded-full bg-[#B38B36]/5 text-[9px] tracking-widest text-[#8E6B23] uppercase font-bold mb-3">
                     💫 Astrological Union
                   </span>
-                  <h3 className="font-serif text-xl font-medium">Partner Compatibility Profiles</h3>
+                  <h3 className="font-serif text-xl font-medium text-[#3C2A21]">Partner Compatibility Profiles</h3>
                   <p className="text-stone-500 text-xs mt-1 font-light max-w-md mx-auto">
                     Provide the birth coordinates of both partners. Guna Milan will calculate the 36-point compatibility grid.
                   </p>
@@ -793,7 +843,7 @@ const CalculatorPage = () => {
                 <div className="grid md:grid-cols-2 gap-8 text-left items-start">
                   
                   {/* PARTNER 1 DETAILS CARD */}
-                  <div className="bg-[#FFFDF9]/40 backdrop-blur-xl border border-[#B38B36]/15 rounded-2xl p-5 md:p-6 space-y-4 shadow-sm hover:border-[#B38B36]/30 transition-all duration-300">
+                  <div className="bg-[#FFFDF9]/50 backdrop-blur-xl border border-[#B38B36]/15 rounded-2xl p-5 md:p-6 space-y-4 shadow-sm hover:border-[#B38B36]/30 transition-all duration-300">
                     <h4 className="font-serif text-base text-[#8E6B23] font-medium flex items-center gap-2 border-b border-[#B38B36]/15 pb-2">
                       <span className="w-5 h-5 rounded-full bg-[#B38B36]/10 text-xs text-[#8E6B23] flex items-center justify-center font-bold">1</span>
                       👦 Groom's Details
@@ -806,7 +856,7 @@ const CalculatorPage = () => {
                       </label>
                       <input 
                         type="text" 
-                        className="w-full bg-[#FDFBF7]/50 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-3 py-2.5 outline-none transition-all text-xs text-[#3C2A21] shadow-inner" 
+                        className="w-full bg-[#FFFDF9]/65 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-3 py-2.5 outline-none transition-all text-xs text-[#3C2A21] shadow-sm hover:bg-[#FFFDF9]/90 duration-300" 
                         placeholder="Name (optional)" 
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -822,7 +872,7 @@ const CalculatorPage = () => {
                         <input 
                           required 
                           type="date" 
-                          className="w-full bg-[#FDFBF7]/50 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-2 py-2.5 outline-none transition-all text-[11px] text-[#3C2A21] cursor-pointer" 
+                          className="w-full bg-[#FFFDF9]/65 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-2 py-2.5 outline-none transition-all text-[11px] text-[#3C2A21] cursor-pointer shadow-sm hover:bg-[#FFFDF9]/90 duration-300" 
                           value={formData.dob}
                           onChange={(e) => setFormData({ ...formData, dob: e.target.value })}
                         />
@@ -834,7 +884,7 @@ const CalculatorPage = () => {
                         <input 
                           required 
                           type="time" 
-                          className="w-full bg-[#FDFBF7]/50 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-2 py-2.5 outline-none transition-all text-[11px] text-[#3C2A21] cursor-pointer" 
+                          className="w-full bg-[#FFFDF9]/65 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-2 py-2.5 outline-none transition-all text-[11px] text-[#3C2A21] cursor-pointer shadow-sm hover:bg-[#FFFDF9]/90 duration-300" 
                           value={formData.tob}
                           onChange={(e) => setFormData({ ...formData, tob: e.target.value })}
                         />
@@ -852,7 +902,7 @@ const CalculatorPage = () => {
                         required
                         value={selectedCountry}
                         onChange={handleCountryChange}
-                        className="w-full bg-white/80 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-3 py-2.5 outline-none text-[11px] text-[#3C2A21] cursor-pointer"
+                        className="w-full bg-white/80 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-3 py-2.5 outline-none text-[11px] text-[#3C2A21] cursor-pointer shadow-sm hover:bg-white duration-300"
                       >
                         <option value="">Select Country</option>
                         {countries.map((c) => (
@@ -866,7 +916,7 @@ const CalculatorPage = () => {
                           required
                           value={selectedState}
                           onChange={handleStateChange}
-                          className="w-full bg-white/80 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-3 py-2.5 outline-none text-[11px] text-[#3C2A21] cursor-pointer"
+                          className="w-full bg-white/80 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-3 py-2.5 outline-none text-[11px] text-[#3C2A21] cursor-pointer shadow-sm hover:bg-white duration-300"
                         >
                           <option value="">Select State</option>
                           {states.map((s) => (
@@ -881,7 +931,7 @@ const CalculatorPage = () => {
                         disabled={!selectedCountry || (states.length > 0 && !selectedState)}
                         value={selectedCity}
                         onChange={handleCityChange}
-                        className="w-full bg-white/80 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-3 py-2.5 outline-none text-[11px] text-[#3C2A21] cursor-pointer disabled:opacity-50"
+                        className="w-full bg-white/80 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-3 py-2.5 outline-none text-[11px] text-[#3C2A21] cursor-pointer disabled:opacity-50 shadow-sm hover:bg-white duration-300"
                       >
                         <option value="">Select City</option>
                         {cities.map((city, idx) => (
@@ -892,7 +942,7 @@ const CalculatorPage = () => {
                   </div>
 
                   {/* PARTNER 2 DETAILS CARD */}
-                  <div className="bg-[#FFFDF9]/40 backdrop-blur-xl border border-[#B38B36]/15 rounded-2xl p-5 md:p-6 space-y-4 shadow-sm hover:border-[#B38B36]/30 transition-all duration-300">
+                  <div className="bg-[#FFFDF9]/50 backdrop-blur-xl border border-[#B38B36]/15 rounded-2xl p-5 md:p-6 space-y-4 shadow-sm hover:border-[#B38B36]/30 transition-all duration-300">
                     <h4 className="font-serif text-base text-[#8E6B23] font-medium flex items-center gap-2 border-b border-[#B38B36]/15 pb-2">
                       <span className="w-5 h-5 rounded-full bg-[#B38B36]/10 text-xs text-[#8E6B23] flex items-center justify-center font-bold">2</span>
                       👧 Bride's Details
@@ -905,7 +955,7 @@ const CalculatorPage = () => {
                       </label>
                       <input 
                         type="text" 
-                        className="w-full bg-[#FDFBF7]/50 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-3 py-2.5 outline-none transition-all text-xs text-[#3C2A21] shadow-inner" 
+                        className="w-full bg-[#FFFDF9]/65 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-3 py-2.5 outline-none transition-all text-xs text-[#3C2A21] shadow-sm hover:bg-[#FFFDF9]/90 duration-300" 
                         placeholder="Name (optional)" 
                         value={formData.partnerName}
                         onChange={(e) => setFormData({ ...formData, partnerName: e.target.value })}
@@ -921,7 +971,7 @@ const CalculatorPage = () => {
                         <input 
                           required 
                           type="date" 
-                          className="w-full bg-[#FDFBF7]/50 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-2 py-2.5 outline-none transition-all text-[11px] text-[#3C2A21] cursor-pointer" 
+                          className="w-full bg-[#FFFDF9]/65 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-2 py-2.5 outline-none transition-all text-[11px] text-[#3C2A21] cursor-pointer shadow-sm hover:bg-[#FFFDF9]/90 duration-300" 
                           value={formData.partnerDob}
                           onChange={(e) => setFormData({ ...formData, partnerDob: e.target.value })}
                         />
@@ -933,7 +983,7 @@ const CalculatorPage = () => {
                         <input 
                           required 
                           type="time" 
-                          className="w-full bg-[#FDFBF7]/50 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-2 py-2.5 outline-none transition-all text-[11px] text-[#3C2A21] cursor-pointer" 
+                          className="w-full bg-[#FFFDF9]/65 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-2 py-2.5 outline-none transition-all text-[11px] text-[#3C2A21] cursor-pointer shadow-sm hover:bg-[#FFFDF9]/90 duration-300" 
                           value={formData.partnerTob}
                           onChange={(e) => setFormData({ ...formData, partnerTob: e.target.value })}
                         />
@@ -951,7 +1001,7 @@ const CalculatorPage = () => {
                         required
                         value={selectedCountryPartner}
                         onChange={handleCountryChangePartner}
-                        className="w-full bg-white/80 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-3 py-2.5 outline-none text-[11px] text-[#3C2A21] cursor-pointer"
+                        className="w-full bg-white/80 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-3 py-2.5 outline-none text-[11px] text-[#3C2A21] cursor-pointer shadow-sm hover:bg-white duration-300"
                       >
                         <option value="">Select Country</option>
                         {countriesPartner.map((c) => (
@@ -965,7 +1015,7 @@ const CalculatorPage = () => {
                           required
                           value={selectedStatePartner}
                           onChange={handleStateChangePartner}
-                          className="w-full bg-white/80 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-3 py-2.5 outline-none text-[11px] text-[#3C2A21] cursor-pointer"
+                          className="w-full bg-white/80 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-3 py-2.5 outline-none text-[11px] text-[#3C2A21] cursor-pointer shadow-sm hover:bg-white duration-300"
                         >
                           <option value="">Select State</option>
                           {statesPartner.map((s) => (
@@ -980,7 +1030,7 @@ const CalculatorPage = () => {
                         disabled={!selectedCountryPartner || (statesPartner.length > 0 && !selectedStatePartner)}
                         value={selectedCityPartner}
                         onChange={handleCityChangePartner}
-                        className="w-full bg-white/80 border border-[#E5E1D8] rounded-xl px-3 py-2.5 outline-none text-[11px] text-[#3C2A21] cursor-pointer disabled:opacity-50"
+                        className="w-full bg-white/80 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-3 py-2.5 outline-none text-[11px] text-[#3C2A21] cursor-pointer disabled:opacity-50 shadow-sm hover:bg-white duration-300"
                       >
                         <option value="">Select City</option>
                         {citiesPartner.map((city, idx) => (
@@ -1003,7 +1053,7 @@ const CalculatorPage = () => {
                   </label>
                   <input 
                     type="text" 
-                    className="w-full bg-[#FDFBF7]/50 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-4 py-3.5 outline-none focus:ring-1 focus:ring-[#B38B36]/30 transition-all text-sm text-[#3C2A21] shadow-inner" 
+                    className="w-full bg-[#FFFDF9]/65 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-4 py-3.5 outline-none focus:ring-1 focus:ring-[#B38B36]/30 transition-all text-sm text-[#3C2A21] shadow-sm hover:bg-[#FFFDF9]/90 duration-300 font-light" 
                     placeholder="Enter your name (optional)" 
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -1019,7 +1069,7 @@ const CalculatorPage = () => {
                     <input 
                       required 
                       type="date" 
-                      className="w-full bg-[#FDFBF7]/50 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-4 py-3.5 outline-none focus:ring-1 focus:ring-[#B38B36]/30 transition-all text-sm text-[#3C2A21] cursor-pointer shadow-inner" 
+                      className="w-full bg-[#FFFDF9]/65 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-4 py-3.5 outline-none focus:ring-1 focus:ring-[#B38B36]/30 transition-all text-sm text-[#3C2A21] cursor-pointer shadow-sm hover:bg-[#FFFDF9]/90 duration-300" 
                       value={formData.dob}
                       onChange={(e) => setFormData({ ...formData, dob: e.target.value })}
                     />
@@ -1031,7 +1081,7 @@ const CalculatorPage = () => {
                     <input 
                       required 
                       type="time" 
-                      className="w-full bg-[#FDFBF7]/50 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-4 py-3.5 outline-none focus:ring-1 focus:ring-[#B38B36]/30 transition-all text-sm text-[#3C2A21] cursor-pointer shadow-inner" 
+                      className="w-full bg-[#FFFDF9]/65 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-4 py-3.5 outline-none focus:ring-1 focus:ring-[#B38B36]/30 transition-all text-sm text-[#3C2A21] cursor-pointer shadow-sm hover:bg-[#FFFDF9]/90 duration-300" 
                       value={formData.tob}
                       onChange={(e) => setFormData({ ...formData, tob: e.target.value })}
                     />
@@ -1039,7 +1089,7 @@ const CalculatorPage = () => {
                 </div>
 
                 {/* Cascading Place of Birth Dropdowns Grouped Container */}
-                <div className="space-y-3 text-left bg-[#FFFDF9]/40 border border-[#B38B36]/15 rounded-2xl p-5 md:p-6 shadow-sm">
+                <div className="space-y-3 text-left bg-[#FFFDF9]/40 border border-[#B38B36]/15 rounded-2xl p-5 md:p-6 shadow-sm hover:border-[#B38B36]/35 transition-all duration-300">
                   <label className="text-xs font-bold uppercase tracking-widest text-[#3C2A21] flex items-center gap-2 mb-1">
                     <MapPin className="w-4.5 h-4.5 text-[#B38B36]" /> Place of Birth
                   </label>
@@ -1050,7 +1100,7 @@ const CalculatorPage = () => {
                         required
                         value={selectedCountry}
                         onChange={handleCountryChange}
-                        className="w-full bg-white/80 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-4 py-3.5 outline-none text-sm text-[#3C2A21] cursor-pointer appearance-none animate-none"
+                        className="w-full bg-white/80 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-4 py-3.5 outline-none text-sm text-[#3C2A21] cursor-pointer shadow-sm hover:bg-white duration-300"
                       >
                         <option value="">Select Country</option>
                         {countries.map((c) => (
@@ -1071,7 +1121,7 @@ const CalculatorPage = () => {
                           required
                           value={selectedState}
                           onChange={handleStateChange}
-                          className="w-full bg-white/80 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-4 py-3.5 outline-none text-sm text-[#3C2A21] cursor-pointer appearance-none animate-none"
+                          className="w-full bg-white/80 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-4 py-3.5 outline-none text-sm text-[#3C2A21] cursor-pointer shadow-sm hover:bg-white duration-300"
                         >
                           <option value="">Select State</option>
                           {states.map((s) => (
@@ -1095,7 +1145,7 @@ const CalculatorPage = () => {
                         disabled={!selectedCountry || (states.length > 0 && !selectedState)}
                         value={selectedCity}
                         onChange={handleCityChange}
-                        className="w-full bg-white/80 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-4 py-3.5 outline-none text-sm text-[#3C2A21] cursor-pointer disabled:opacity-50 appearance-none animate-none"
+                        className="w-full bg-white/80 border border-[#E5E1D8] focus:border-[#B38B36] rounded-xl px-4 py-3.5 outline-none text-sm text-[#3C2A21] cursor-pointer disabled:opacity-50 shadow-sm hover:bg-white duration-300"
                       >
                         <option value="">Select City</option>
                         {cities.map((city, idx) => (
@@ -1113,10 +1163,13 @@ const CalculatorPage = () => {
               </div>
             )}
 
-            <button 
+            {/* Glowing gold shimmer button with spring hover properties */}
+            <motion.button 
               type="submit" 
               disabled={loading}
-              className="w-full mt-10 bg-gradient-to-r from-[#BF953F] via-[#FCF6BA] to-[#B38728] hover:brightness-[1.15] text-[#1E110A] rounded-full py-4.5 font-serif font-bold tracking-[0.2em] uppercase text-xs flex items-center justify-center gap-2.5 transition-all duration-500 disabled:opacity-70 shadow-[0_4px_15px_rgba(179,139,54,0.35)] hover:scale-[1.02] transform cursor-pointer border border-[#FCF6BA]/40 relative z-10"
+              whileHover={{ scale: 1.02, y: -2 }}
+              whileTap={{ scale: 0.98 }}
+              className="w-full mt-10 bg-gradient-to-r from-[#BF953F] via-[#FCF6BA] to-[#B38728] hover:brightness-[1.12] text-[#1E110A] rounded-full py-4.5 font-serif font-bold tracking-[0.2em] uppercase text-xs flex items-center justify-center gap-2.5 transition-all duration-300 disabled:opacity-70 shadow-[0_6px_20px_rgba(179,139,54,0.35)] cursor-pointer border border-[#FCF6BA]/40 relative z-10"
             >
               {loading ? (
                 <>
@@ -1129,14 +1182,15 @@ const CalculatorPage = () => {
                   <span>Reveal Insights</span>
                 </>
               )}
-            </button>
+            </motion.button>
           </motion.form>
         ) : (
           // ==================== RESULTS CARD DISPLAY ====================
           <motion.div 
             initial={{ opacity: 0, scale: 0.97 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-white/70 backdrop-blur-2xl p-6 md:p-12 rounded-[2.5rem] shadow-[0_30px_60px_rgba(60,42,33,0.06)] border border-[#B38B36]/30 text-center relative overflow-hidden"
+            transition={{ type: "spring", stiffness: 45, damping: 14 }}
+            className="bg-white/45 backdrop-blur-3xl p-6 md:p-12 rounded-[2.5rem] shadow-[0_30px_70px_rgba(179,139,54,0.06),0_1px_3px_rgba(0,0,0,0.02)] border border-white/80 text-center relative overflow-hidden"
           >
             {/* Elegant double-line golden frames */}
             <div className="absolute inset-4 border border-[#B38B36]/20 rounded-[2rem] pointer-events-none z-0" />
@@ -1320,23 +1374,27 @@ const CalculatorPage = () => {
               <div className="flex flex-col sm:flex-row justify-center items-center gap-4 max-w-xl mx-auto pt-6 border-t border-[#B38B36]/15">
                 
                 {/* Recalculate Option */}
-                <button 
+                <motion.button 
                   onClick={() => setResult(null)}
-                  className="w-full sm:w-auto text-[10px] uppercase tracking-widest font-bold text-[#6E5D53] hover:text-[#3C2A21] border border-stone-300 hover:border-stone-500 px-8 py-3.5 rounded-full transition-all duration-300 transform cursor-pointer flex items-center justify-center gap-1.5"
+                  whileHover={{ scale: 1.02, y: -1 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="w-full sm:w-auto text-[10px] uppercase tracking-widest font-bold text-[#6E5D53] hover:text-[#3C2A21] border border-stone-300 hover:border-stone-500 px-8 py-3.5 rounded-full transition-all duration-300 transform cursor-pointer flex items-center justify-center gap-1.5 bg-white shadow-sm"
                 >
                   <Sparkles className="w-3.5 h-3.5" />
                   Recalculate
-                </button>
+                </motion.button>
 
                 {/* Redirect to checkout flow for complete destiny analysis */}
                 {result.reportId && (
-                  <button 
+                  <motion.button 
                     onClick={() => navigate(`/payment?reportId=${result.reportId}`)}
-                    className="w-full sm:w-auto text-[10px] uppercase tracking-widest font-serif font-bold text-[#1E110A] bg-gradient-to-r from-[#BF953F] via-[#FCF6BA] to-[#B38728] hover:brightness-[1.12] px-8 py-3.5 rounded-full transition-all duration-500 shadow-[0_4px_12px_rgba(179,139,54,0.3)] hover:scale-[1.01] transform cursor-pointer flex items-center justify-center gap-1.5 border border-[#FCF6BA]/40"
+                    whileHover={{ scale: 1.02, y: -1 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="w-full sm:w-auto text-[10px] uppercase tracking-widest font-serif font-bold text-[#1E110A] bg-gradient-to-r from-[#BF953F] via-[#FCF6BA] to-[#B38728] hover:brightness-[1.12] px-8 py-3.5 rounded-full transition-all duration-500 shadow-[0_4px_12px_rgba(179,139,54,0.3)] transform cursor-pointer flex items-center justify-center gap-1.5 border border-[#FCF6BA]/40"
                   >
                     <Unlock className="w-3.5 h-3.5 stroke-[2.5px]" />
                     <span>Unlock Full Report</span>
-                  </button>
+                  </motion.button>
                 )}
               </div>
 
