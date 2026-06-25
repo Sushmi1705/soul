@@ -160,10 +160,10 @@ const CelestialOracleHero = () => {
   }, [selectedCountry, selectedState, selectedCity]);
 
   const videoIds = {
-    design1: "L4DNW-GrYjw",
-    design2: "93v-vPDtOt0",
-    design3: "8Ao55eltH0Y",
-    design4: "q-FPfggk8zk"
+    design1: "csfFVRy_2nM",
+    design2: "csfFVRy_2nM",
+    design3: "csfFVRy_2nM",
+    design4: "csfFVRy_2nM"
   };
 
   const currentVideoId = videoIds[bgDesign] || videoIds.design1;
