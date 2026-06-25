@@ -20,7 +20,6 @@ import CartDrawer from "@/components/CartDrawer";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import AboutUs from "@/pages/AboutUs";
 import { DesignProvider } from "@/context/DesignContext";
-import DesignSwitcher from "@/components/DesignSwitcher";
 import AstroSolutionPage from "@/pages/AstroSolutionPage";
 import ServicePage from "@/pages/ServicePage";
 import CoursePage from "@/pages/CoursePage";
@@ -64,7 +63,6 @@ const Layout = ({ children }) => {
 
   return (
     <div className="bg-[#FDFBF7] text-[#3C2A21] min-h-screen font-[Outfit,sans-serif] antialiased pb-24 lg:pb-0">
-      <DesignSwitcher />
       <Header />
       <main>
         {children}
