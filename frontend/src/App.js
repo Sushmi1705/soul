@@ -29,6 +29,7 @@ import CalculatorPage from "@/pages/CalculatorPage";
 import AdminLogin from "@/pages/AdminLogin";
 import AdminDashboard from "@/pages/AdminDashboard";
 import PaymentPage from "@/pages/PaymentPage";
+import AccessibilityControl from "@/components/AccessibilityControl";
 
 const Layout = ({ children }) => {
   const { pathname } = useLocation();
@@ -56,6 +57,7 @@ const Layout = ({ children }) => {
   if (isAdminRoute) {
     return (
       <div className="bg-[#0d0905] min-h-screen font-[Outfit,sans-serif] antialiased">
+        <AccessibilityControl />
         {children}
       </div>
     );
@@ -64,6 +66,7 @@ const Layout = ({ children }) => {
   return (
     <div className="bg-[#FDFBF7] text-[#3C2A21] min-h-screen font-[Outfit,sans-serif] antialiased pb-24 lg:pb-0">
       <Header />
+      <AccessibilityControl />
       <main>
         {children}
       </main>
