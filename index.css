@@ -1,0 +1,101 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  margin: 0;
+  font-family: "Outfit", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+}
+
+@layer base {
+  :root {
+    --background: 40 25% 98%;
+    --foreground: 25 40% 15%;
+    --card: 0 0% 100%;
+    --card-foreground: 25 40% 15%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 25 40% 15%;
+    --primary: 36 54% 46%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 40 18% 93%;
+    --secondary-foreground: 0 0% 15%;
+    --muted: 40 18% 93%;
+    --muted-foreground: 30 6% 40%;
+    --accent: 36 54% 46%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 38 18% 87%;
+    --input: 38 18% 87%;
+    --ring: 36 54% 46%;
+    --radius: 0.75rem;
+  }
+  .dark {
+    --background: 25 30% 8%;
+    --foreground: 40 25% 95%;
+    --card: 25 30% 12%;
+    --card-foreground: 40 25% 95%;
+    --popover: 25 30% 12%;
+    --popover-foreground: 40 25% 95%;
+    --primary: 36 54% 60%;
+    --primary-foreground: 25 30% 8%;
+    --secondary: 25 30% 15%;
+    --secondary-foreground: 40 25% 95%;
+    --muted: 25 30% 15%;
+    --muted-foreground: 30 6% 65%;
+    --accent: 36 54% 60%;
+    --accent-foreground: 25 30% 8%;
+    --destructive: 0 60% 40%;
+    --destructive-foreground: 40 25% 95%;
+    --border: 25 30% 18%;
+    --input: 25 30% 18%;
+    --ring: 36 54% 60%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer base {
+  [data-debug-wrapper="true"] {
+    display: contents !important;
+  }
+}
+
+@layer base {
+  html {
+    transition: font-size 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  html.font-size-1 {
+    font-size: 14px !important;
+  }
+  
+  html.font-size-2 {
+    font-size: 16px !important;
+  }
+  
+  html.font-size-3 {
+    font-size: 18px !important;
+  }
+  
+  html.font-size-4 {
+    font-size: 20px !important;
+  }
+  
+  html.font-size-5 {
+    font-size: 22px !important;
+  }
+}
