@@ -271,10 +271,10 @@ const CelestialOracleHero = () => {
         </div>
 
         {/* Video Background (Subtle & Ethereal Astrology Loop) */}
-        <div className="absolute inset-0 z-0 opacity-[0.25]">
+        <div className="hidden md:block absolute inset-0 z-0 opacity-[0.25] overflow-hidden">
           <iframe
             key={currentVideoId}
-            className="absolute top-1/2 left-1/2 w-[110vw] h-[62vw] min-h-[110vh] min-w-[195vh] -translate-x-1/2 -translate-y-1/2 scale-110 grayscale contrast-[1.1] brightness-[1.0]"
+            className="absolute top-1/2 left-1/2 w-[110vw] h-[62vw] min-h-[110vh] min-w-[195vh] -translate-x-1/2 -translate-y-1/2 scale-110 grayscale contrast-[1.1] brightness-[1.0] max-w-none"
             src={`https://www.youtube.com/embed/${currentVideoId}?autoplay=1&mute=1&loop=1&playlist=${currentVideoId}&controls=0&showinfo=0&autohide=1&modestbranding=1&rel=0&hd=1`}
             frameBorder="0"
             allow="autoplay; encrypted-media"
