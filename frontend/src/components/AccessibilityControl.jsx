@@ -49,7 +49,7 @@ const AccessibilityControl = () => {
     <div 
       ref={containerRef}
       className="fixed z-[9999] font-[Outfit,sans-serif]
-                 bottom-24 right-4 md:bottom-6 md:right-6"
+                 bottom-24 right-4 md:bottom-auto md:top-[120px] md:left-6 md:right-auto"
     >
       {/* Trigger Button */}
       <button
@@ -67,7 +67,8 @@ const AccessibilityControl = () => {
       {isOpen && (
         <div 
           className="absolute z-[10000] w-56 max-h-[300px] bg-[#FAF9F6]/98 dark:bg-[#1E1711]/98 backdrop-blur-lg border border-[#D4AF37]/35 rounded-xl shadow-2xl p-3 transition-all duration-300
-                     right-0 bottom-full mb-2.5 origin-bottom-right"
+                     right-0 bottom-full mb-2.5 origin-bottom-right
+                     md:right-auto md:left-0 md:bottom-auto md:top-full md:mt-2.5 md:origin-top-left"
         >
           {/* Section 1: Font Family */}
           <div className="py-1 px-1 text-[9px] text-[#4A0E1B]/50 dark:text-[#D4AF37]/50 font-bold uppercase tracking-[0.12em] border-b border-[#D4AF37]/10 mb-2 select-none">
