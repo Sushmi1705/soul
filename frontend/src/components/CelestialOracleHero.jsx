@@ -292,35 +292,48 @@ const CelestialOracleHero = () => {
         <div className="relative z-20 max-w-7xl xl:max-w-[1360px] 2xl:max-w-[1480px] mx-auto px-6 lg:px-12 w-full grid lg:grid-cols-12 gap-12 items-center py-20 lg:py-0">
           
           {/* Left Column: Heading and Marketing Copy */}
-          <div className="lg:col-span-7 text-left">
-            <div className="flex items-center gap-4 mb-8 animate-reveal opacity-0" style={{ animationDelay: '0.2s' }}>
-              <span className="inline-flex items-center gap-1.5 px-4 py-1.5 border border-[#B38B36]/30 rounded-full bg-[#B38B36]/10 text-[10px] tracking-[0.2em] uppercase text-[#B38B36] font-bold">
-                ✨ AI Personalized Horoscope
-              </span>
+          <div className="lg:col-span-7 text-left relative py-8 px-6 md:py-0 md:px-0 rounded-2xl overflow-hidden z-10">
+            {/* Mobile-Only Video Background container */}
+            <div className="block md:hidden absolute inset-0 z-0 opacity-[0.22] pointer-events-none overflow-hidden rounded-2xl">
+              <iframe
+                key={`${currentVideoId}-mobile`}
+                className="absolute top-1/2 left-1/2 w-[280vw] h-[158vw] min-h-full min-w-full -translate-x-1/2 -translate-y-1/2 scale-110 grayscale contrast-[1.15] brightness-[1.0] max-w-none"
+                src={`https://www.youtube.com/embed/${currentVideoId}?autoplay=1&mute=1&loop=1&playlist=${currentVideoId}&controls=0&showinfo=0&autohide=1&modestbranding=1&rel=0&hd=1&playsinline=1`}
+                frameBorder="0"
+                allow="autoplay; encrypted-media"
+              ></iframe>
             </div>
 
-            <h1 className="font-serif text-[#3C2A21] text-4xl md:text-6xl lg:text-[4.8rem] leading-[1.1] tracking-tight mb-8 animate-reveal opacity-0" style={{ animationDelay: '0.4s' }}>
-              Do You Know How Your Day Will <span className="italic font-light text-[#8E6B23] block sm:inline">Unfold Today?</span>
-            </h1>
+            <div className="relative z-10">
+              <div className="flex items-center gap-4 mb-8 animate-reveal opacity-0" style={{ animationDelay: '0.2s' }}>
+                <span className="inline-flex items-center gap-1.5 px-4 py-1.5 border border-[#B38B36]/30 rounded-full bg-[#B38B36]/10 text-[10px] tracking-[0.2em] uppercase text-[#B38B36] font-bold">
+                  ✨ AI Personalized Horoscope
+                </span>
+              </div>
 
-            <div className="max-w-lg space-y-8 animate-reveal opacity-0" style={{ animationDelay: '0.6s' }}>
-              <p className="text-lg text-stone-500 leading-relaxed font-light">
-                Discover what the stars have planned for you. Reveal today's cosmic guidance, planetary movements, and see what destiny has planned in seconds.
-              </p>
-              <div className="flex flex-row items-center gap-4">
-                <button 
-                  onClick={handleHeroButtonClick}
-                  className="px-6 py-3.5 bg-[#B38B36] hover:bg-[#8E6B23] text-white text-[9px] tracking-[0.2em] uppercase font-bold rounded-full transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5 transform cursor-pointer flex items-center justify-center gap-2 whitespace-nowrap"
-                >
-                  <Sparkles className="w-3.5 h-3.5" />
-                  Check My Horoscope
-                </button>
-                <button 
-                  onClick={handleHeroButtonClick}
-                  className="px-6 py-3.5 border border-[#B38B36]/40 hover:bg-[#B38B36] text-[#8E6B23] hover:text-white text-[9px] tracking-[0.2em] uppercase font-bold rounded-full transition-all duration-300 cursor-pointer flex items-center justify-center gap-2 whitespace-nowrap"
-                >
-                  Reveal Future
-                </button>
+              <h1 className="font-serif text-[#3C2A21] text-4xl md:text-6xl lg:text-[4.8rem] leading-[1.1] tracking-tight mb-8 animate-reveal opacity-0" style={{ animationDelay: '0.4s' }}>
+                Do You Know How Your Day Will <span className="italic font-light text-[#8E6B23] block sm:inline">Unfold Today?</span>
+              </h1>
+
+              <div className="max-w-lg space-y-8 animate-reveal opacity-0" style={{ animationDelay: '0.6s' }}>
+                <p className="text-lg text-stone-500 leading-relaxed font-light">
+                  Discover what the stars have planned for you. Reveal today's cosmic guidance, planetary movements, and see what destiny has planned in seconds.
+                </p>
+                <div className="flex flex-row items-center gap-4">
+                  <button 
+                    onClick={handleHeroButtonClick}
+                    className="px-6 py-3.5 bg-[#B38B36] hover:bg-[#8E6B23] text-white text-[9px] tracking-[0.2em] uppercase font-bold rounded-full transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5 transform cursor-pointer flex items-center justify-center gap-2 whitespace-nowrap"
+                  >
+                    <Sparkles className="w-3.5 h-3.5" />
+                    Check My Horoscope
+                  </button>
+                  <button 
+                    onClick={handleHeroButtonClick}
+                    className="px-6 py-3.5 border border-[#B38B36]/40 hover:bg-[#B38B36] text-[#8E6B23] hover:text-white text-[9px] tracking-[0.2em] uppercase font-bold rounded-full transition-all duration-300 cursor-pointer flex items-center justify-center gap-2 whitespace-nowrap"
+                  >
+                    Reveal Future
+                  </button>
+                </div>
               </div>
             </div>
           </div>
