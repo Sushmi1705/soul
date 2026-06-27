@@ -112,23 +112,22 @@ const AccessibilityControl = () => {
           </div>
           <div className="flex gap-1.5 justify-between">
             {[
-              { id: "normal", label: "A", desc: "Default" },
-              { id: "medium", label: "A+", desc: "Medium" },
-              { id: "large", label: "A++", desc: "Large" },
+              { id: "normal", label: "Default" },
+              { id: "medium", label: "Medium" },
+              { id: "large", label: "Large" },
             ].map((s) => {
               const isActive = size === s.id;
               return (
                 <button
                   key={s.id}
                   onClick={() => setSize(s.id)}
-                  className={`flex-1 py-1.5 px-1 rounded-lg text-center cursor-pointer transition-all duration-200 border ${
+                  className={`flex-1 py-2 px-1 rounded-lg text-center cursor-pointer transition-all duration-200 border text-[11px] font-medium ${
                     isActive
                       ? "bg-gradient-to-r from-[#D4AF37]/10 to-[#BF953F]/15 border-[#D4AF37] text-[#B38B36] font-bold"
                       : "bg-[#FAF9F6]/50 dark:bg-[#1E1711]/50 border-stone-200 dark:border-stone-800 text-[#3C2A21]/80 dark:text-[#FAF9F6]/80 hover:border-[#D4AF37]/50 hover:text-[#D4AF37]"
                   }`}
                 >
-                  <div className="text-sm font-semibold">{s.label}</div>
-                  <div className="text-[9px] opacity-70 font-light mt-0.5">{s.desc}</div>
+                  {s.label}
                 </button>
               );
             })}
