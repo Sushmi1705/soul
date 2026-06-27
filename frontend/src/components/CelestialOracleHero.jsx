@@ -262,7 +262,7 @@ const CelestialOracleHero = () => {
     <>
       <section
         id="home"
-        className="relative min-h-[110vh] flex items-center overflow-hidden bg-[#FDFBF7]"
+        className="relative min-h-screen flex items-center overflow-hidden bg-[#FDFBF7] pt-24 pb-12 md:pt-32 lg:pt-36 lg:pb-16"
       >
         {/* Light Refraction & Prism Effects */}
         <div className="absolute inset-0 z-10 pointer-events-none">
@@ -289,7 +289,7 @@ const CelestialOracleHero = () => {
         </div>
 
         {/* Main Content (Asymmetric Layout) */}
-        <div className="relative z-20 max-w-7xl xl:max-w-[1360px] 2xl:max-w-[1480px] mx-auto px-6 lg:px-12 w-full grid lg:grid-cols-12 gap-12 items-center py-20 lg:py-0">
+        <div className="relative z-20 max-w-7xl xl:max-w-[1360px] 2xl:max-w-[1480px] mx-auto px-6 lg:px-12 w-full grid lg:grid-cols-12 gap-12 items-center">
           
           {/* Left Column: Heading and Marketing Copy */}
           <div className="lg:col-span-7 text-left relative py-8 px-6 md:py-0 md:px-0 rounded-2xl overflow-hidden z-10">
