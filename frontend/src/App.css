@@ -175,3 +175,27 @@ section[id] {
 #emergent-badge {
   display: none !important;
 }
+
+/* Google Translate visual overrides */
+.goog-te-banner-frame, .goog-te-banner {
+  display: none !important;
+}
+body {
+  top: 0 !important;
+}
+.goog-logo-link {
+  display: none !important;
+}
+.goog-te-gadget {
+  font-size: 0 !important;
+}
+.skiptranslate {
+  display: none !important;
+}
+.goog-te-combo {
+  background-color: transparent !important;
+  border: 1px solid #D4AF37 !important;
+  color: #3C2A21 !important;
+  border-radius: 4px !important;
+  padding: 2px !important;
+}

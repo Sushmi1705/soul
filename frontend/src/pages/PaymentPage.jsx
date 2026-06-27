@@ -782,7 +782,7 @@ const PaymentPage = () => {
                     </div>
                     <span className="text-[8px] uppercase px-2 py-0.5 border border-green-200 text-green-600 bg-green-50/50 rounded-full tracking-widest font-bold">Free Access</span>
                   </div>
-                  <div className="text-xs text-[#3C2A21] space-y-3 pl-7 border-l border-[#B38B36]/20 leading-relaxed font-light">
+                  <div className="text-sm sm:text-base text-[#3C2A21] space-y-4 pl-7 border-l border-[#B38B36]/20 leading-relaxed font-normal">
                     <p><strong>Core Strengths:</strong> {lifeReport.personality?.strengths}</p>
                     <p><strong>Undercurrent Weaknesses:</strong> {lifeReport.personality?.weaknesses}</p>
                     <p><strong>Latent Talents:</strong> {lifeReport.personality?.hidden_talents}</p>
@@ -805,7 +805,7 @@ const PaymentPage = () => {
                       </span>
                     )}
                   </div>
-                  <div className={`text-xs text-[#5C4D43] space-y-3 pl-7 border-l border-[#B38B36]/20 leading-relaxed font-light transition-all duration-700 ${!isPaid ? 'blur-sm select-none pointer-events-none opacity-40' : ''}`}>
+                  <div className={`text-sm sm:text-base text-[#5C4D43] space-y-4 pl-7 border-l border-[#B38B36]/20 leading-relaxed font-normal transition-all duration-700 ${!isPaid ? 'blur-sm select-none pointer-events-none opacity-40' : ''}`}>
                     <p><strong>Growth Timeline:</strong> {lifeReport.career?.growth}</p>
                     <p><strong>Business Potential:</strong> {lifeReport.career?.business}</p>
                     <p><strong>Leadership Styles:</strong> {lifeReport.career?.leadership}</p>
@@ -827,7 +827,7 @@ const PaymentPage = () => {
                       </span>
                     )}
                   </div>
-                  <div className={`text-xs text-[#5C4D43] space-y-3 pl-7 border-l border-[#B38B36]/20 leading-relaxed font-light transition-all duration-700 ${!isPaid ? 'blur-sm select-none pointer-events-none opacity-40' : ''}`}>
+                  <div className={`text-sm sm:text-base text-[#5C4D43] space-y-4 pl-7 border-l border-[#B38B36]/20 leading-relaxed font-normal transition-all duration-700 ${!isPaid ? 'blur-sm select-none pointer-events-none opacity-40' : ''}`}>
                     <p><strong>Marriage Outlook:</strong> {lifeReport.relationship?.marriage}</p>
                     <p><strong>Vedic Compatibility:</strong> {lifeReport.relationship?.compatibility}</p>
                     <p><strong>Domestic Alignment:</strong> {lifeReport.relationship?.family}</p>
@@ -849,7 +849,7 @@ const PaymentPage = () => {
                       </span>
                     )}
                   </div>
-                  <div className={`text-xs text-[#5C4D43] space-y-3 pl-7 border-l border-[#B38B36]/20 leading-relaxed font-light transition-all duration-700 ${!isPaid ? 'blur-sm select-none pointer-events-none opacity-40' : ''}`}>
+                  <div className={`text-sm sm:text-base text-[#5C4D43] space-y-4 pl-7 border-l border-[#B38B36]/20 leading-relaxed font-normal transition-all duration-700 ${!isPaid ? 'blur-sm select-none pointer-events-none opacity-40' : ''}`}>
                     <p><strong>Wealth Potential:</strong> {lifeReport.financial?.wealth}</p>
                     <p><strong>Habits & Security:</strong> {lifeReport.financial?.habits}</p>
                     <p><strong>Abundance Windows:</strong> {lifeReport.financial?.opportunities}</p>
@@ -871,7 +871,7 @@ const PaymentPage = () => {
                       </span>
                     )}
                   </div>
-                  <div className={`text-xs text-[#5C4D43] space-y-3 pl-7 border-l border-[#B38B36]/20 leading-relaxed font-light transition-all duration-700 ${!isPaid ? 'blur-sm select-none pointer-events-none opacity-40' : ''}`}>
+                  <div className={`text-sm sm:text-base text-[#5C4D43] space-y-4 pl-7 border-l border-[#B38B36]/20 leading-relaxed font-normal transition-all duration-700 ${!isPaid ? 'blur-sm select-none pointer-events-none opacity-40' : ''}`}>
                     <p><strong>Physical Constitution:</strong> {lifeReport.health?.physical}</p>
                     <p><strong>Mental Harmony:</strong> {lifeReport.health?.mental}</p>
                     <p><strong>Lifestyle Roadmap:</strong> {lifeReport.health?.lifestyle}</p>
@@ -893,7 +893,7 @@ const PaymentPage = () => {
                       </span>
                     )}
                   </div>
-                  <div className={`text-xs text-[#5C4D43] space-y-3 pl-7 border-l border-[#B38B36]/20 leading-relaxed font-light transition-all duration-700 ${!isPaid ? 'blur-sm select-none pointer-events-none opacity-40' : ''}`}>
+                  <div className={`text-sm sm:text-base text-[#5C4D43] space-y-4 pl-7 border-l border-[#B38B36]/20 leading-relaxed font-normal transition-all duration-700 ${!isPaid ? 'blur-sm select-none pointer-events-none opacity-40' : ''}`}>
                     <p><strong>Karmic Debt (Saturn):</strong> {lifeReport.spiritual?.karma}</p>
                     <p><strong>Soul Lessons:</strong> {lifeReport.spiritual?.lessons}</p>
                     <p><strong>Divine Mission:</strong> {lifeReport.spiritual?.purpose}</p>
