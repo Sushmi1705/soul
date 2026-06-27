@@ -17,11 +17,11 @@ const Header = () => {
         
         {/* Left: Logo */}
         <div className="flex-none flex justify-start shrink-0 min-w-[240px] md:min-w-[320px]">
-          <Link to="/" className="flex items-center h-16 md:h-20 group -ml-2 shrink-0">
+          <Link to="/" className="flex items-center h-20 md:h-24 group -ml-2 shrink-0">
               <img 
                 src="/astropower-logo.png" 
                 alt="AstroPower 24" 
-                className="h-full w-auto object-contain transition-transform duration-500 origin-left transform scale-[2.2] md:scale-[2.7] group-hover:scale-[2.25] md:group-hover:scale-[2.75]" 
+                className="h-full w-auto object-contain transition-transform duration-300 origin-left group-hover:scale-[1.03]" 
               />
           </Link>
         </div>
