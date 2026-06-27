@@ -23,16 +23,54 @@
   animation: float 4s ease-in-out infinite;
 }
 
+:root {
+  --font-sans: "Outfit", sans-serif;
+  --font-serif: "Cormorant Garamond", serif;
+}
+
+/* Accessibility Font Family Option overrides */
+html.font-family-1 {
+  --font-sans: "Outfit", sans-serif;
+  --font-serif: "Cormorant Garamond", serif;
+}
+
+html.font-family-2 {
+  --font-sans: Arial, Helvetica, sans-serif;
+  --font-serif: Arial, Helvetica, sans-serif;
+}
+
+html.font-family-3 {
+  --font-sans: Georgia, serif;
+  --font-serif: Georgia, serif;
+}
+
+html.font-family-4 {
+  --font-sans: Verdana, Geneva, sans-serif;
+  --font-serif: Verdana, Geneva, sans-serif;
+}
+
+html.font-family-5 {
+  --font-sans: "Courier New", Courier, monospace;
+  --font-serif: "Courier New", Courier, monospace;
+}
+
+body, button, input, select, textarea {
+  font-family: var(--font-sans);
+}
+
 body {
-  font-family: "Outfit", sans-serif;
   background: #fafafa;
   color: #1a1a1a;
   overflow-x: hidden;
 }
 
 .font-serif {
-  font-family: "Cormorant Garamond", serif !important;
+  font-family: var(--font-serif) !important;
   font-weight: 500;
+}
+
+.font-sans {
+  font-family: var(--font-sans) !important;
 }
 
 ::selection {

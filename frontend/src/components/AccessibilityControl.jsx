@@ -2,25 +2,29 @@ import React, { useState, useEffect } from "react";
 import { Type } from "lucide-react";
 
 const AccessibilityControl = () => {
-  const [level, setLevel] = useState(() => {
-    const saved = localStorage.getItem("font-size-level");
-    return saved ? parseInt(saved, 10) : 2; // Level 2 (16px) is default
+  const [family, setFamily] = useState(() => {
+    const saved = localStorage.getItem("font-family-option");
+    return saved ? parseInt(saved, 10) : 1; // Option 1 (Default Astro) is default
   });
 
-  // Update HTML class and persist state when level changes
+  // Update HTML class and persist state when family changes
   useEffect(() => {
-    localStorage.setItem("font-size-level", level);
+    localStorage.setItem("font-family-option", family);
     const html = document.documentElement;
+    // Clean up old classes
     html.classList.remove("font-size-1", "font-size-2", "font-size-3", "font-size-4", "font-size-5");
-    html.classList.add(`font-size-${level}`);
-  }, [level]);
+    html.classList.remove("font-family-1", "font-family-2", "font-family-3", "font-family-4", "font-family-5");
+    
+    // Add current class
+    html.classList.add(`font-family-${family}`);
+  }, [family]);
 
-  const levels = [
-    { value: 1, label: "1", name: "Smallest" },
-    { value: 2, label: "2", name: "Default" },
-    { value: 3, label: "3", name: "Medium" },
-    { value: 4, label: "4", name: "Large" },
-    { value: 5, label: "5", name: "Largest" },
+  const options = [
+    { value: 1, label: "T", name: "Default (Astro)", fontFamily: "Outfit, sans-serif" },
+    { value: 2, label: "A", name: "Arial", fontFamily: "Arial, Helvetica, sans-serif" },
+    { value: 3, label: "G", name: "Georgia", fontFamily: "Georgia, serif" },
+    { value: 4, label: "V", name: "Verdana", fontFamily: "Verdana, Geneva, sans-serif" },
+    { value: 5, label: "C", name: "Courier", fontFamily: "'Courier New', Courier, monospace" },
   ];
 
   return (
@@ -38,13 +42,13 @@ const AccessibilityControl = () => {
 
       {/* Buttons */}
       <div className="flex flex-row md:flex-col items-center gap-1 md:gap-1.5">
-        {levels.map((item) => {
-          const isActive = level === item.value;
+        {options.map((item) => {
+          const isActive = family === item.value;
           return (
             <button
               key={item.value}
-              onClick={() => setLevel(item.value)}
-              title={`${item.name} Text Size`}
+              onClick={() => setFamily(item.value)}
+              title={`${item.name} Font Family`}
               className={`rounded-full flex items-center justify-center font-bold text-xs transition-all duration-300 relative group
                          w-7 h-7
                          md:w-8 md:h-8 ${
@@ -53,12 +57,12 @@ const AccessibilityControl = () => {
                   : "text-[#3C2A21]/75 dark:text-[#FAF9F6]/75 hover:bg-[#D4AF37]/15 hover:text-[#D4AF37] dark:hover:text-[#D4AF37]"
               }`}
             >
-              <span>{item.label}</span>
+              <span className="font-bold" style={{ fontFamily: item.fontFamily }}>{item.label}</span>
               
               {/* Tooltip (above on mobile, to the left on desktop) */}
               <span className="absolute px-2.5 py-1 bg-[#3C2A21] dark:bg-[#FAF9F6] text-[#FAF9F6] dark:text-[#3C2A21] text-[9px] uppercase tracking-[0.15em] font-bold rounded shadow-lg pointer-events-none opacity-0 group-hover:opacity-100 transition-all duration-200 whitespace-nowrap z-[10000] border border-[#D4AF37]/20
                                bottom-full mb-2.5 left-1/2 -translate-x-1/2 translate-y-1 group-hover:translate-y-0
-                               md:bottom-auto md:top-1/2 md:-translate-y-1/2 md:right-full md:left-auto md:mr-3 md:mb-0 md:translate-x-2 md:group-hover:translate-x-0"
+                               md:bottom-auto md:top-1/2 md:-translate-y-1/2 md:right-full md:left-auto md:mr-3 md:mb-0 md:translate-x-2 md:group-hover:translate-x-0 font-[Outfit,sans-serif]"
               >
                 {item.name}
               </span>
