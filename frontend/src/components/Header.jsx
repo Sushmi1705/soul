@@ -16,12 +16,12 @@ const Header = () => {
       <div className="max-w-[1600px] mx-auto px-5 lg:px-10 flex items-center justify-between h-20 md:h-24 relative">
         
         {/* Left: Logo */}
-        <div className="flex-none flex justify-start shrink-0 min-w-[220px] md:min-w-[290px]">
-          <Link to="/" className="flex items-center h-14 md:h-18 group -ml-2 shrink-0">
+        <div className="flex-none flex justify-start shrink-0 min-w-[240px] md:min-w-[320px]">
+          <Link to="/" className="flex items-center h-16 md:h-20 group -ml-2 shrink-0">
               <img 
                 src="/astropower-logo.png" 
                 alt="AstroPower 24" 
-                className="h-full w-auto object-contain transition-transform duration-500 origin-left transform scale-[1.7] md:scale-[2.05] group-hover:scale-[1.75] md:group-hover:scale-[2.1]" 
+                className="h-full w-auto object-contain transition-transform duration-500 origin-left transform scale-[2.2] md:scale-[2.7] group-hover:scale-[2.25] md:group-hover:scale-[2.75]" 
               />
           </Link>
         </div>
