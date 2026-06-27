@@ -16,8 +16,8 @@ const Header = () => {
       <div className="max-w-[1600px] mx-auto px-5 lg:px-10 flex items-center justify-between h-20 md:h-24 relative">
         
         {/* Left: Logo */}
-        <div className="flex-1 flex justify-start">
-          <Link to="/" className="flex items-center h-12 md:h-16 group -ml-2">
+        <div className="flex-none flex justify-start shrink-0 min-w-[200px] md:min-w-[260px]">
+          <Link to="/" className="flex items-center h-12 md:h-16 group -ml-2 shrink-0">
               <img 
                 src="/astropower-logo.png" 
                 alt="AstroPower 24" 
@@ -28,12 +28,12 @@ const Header = () => {
 
         {/* Center: Desktop Navigation */}
         <div className="flex-none hidden lg:flex justify-center h-full">
-          <nav className="flex items-center gap-8 xl:gap-12 h-full">
+          <nav className="flex items-center gap-4 xl:gap-6 h-full">
             {NAV_LINKS.map((link) => (
               <div key={link.label} className="relative group h-full flex items-center">
                 <Link
                   to={link.href}
-                  className="relative flex items-center gap-1.5 text-[11px] xl:text-xs tracking-[0.2em] uppercase transition-all duration-500 font-bold text-[#3C2A21] hover:text-[#D4AF37] after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-full after:h-[2px] after:bg-[#D4AF37] after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-500 after:origin-center"
+                  className="relative flex items-center gap-1.5 text-[11px] xl:text-xs tracking-[0.1em] uppercase transition-all duration-500 font-bold text-[#3C2A21] hover:text-[#D4AF37] after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-full after:h-[2px] after:bg-[#D4AF37] after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-500 after:origin-center"
                 >
                   {link.label}
                   {link.subLinks && <ChevronDown className="w-3.5 h-3.5 text-[#D4AF37]/80 group-hover:text-[#D4AF37] transition-transform duration-500 group-hover:-rotate-180" />}
@@ -85,7 +85,7 @@ const Header = () => {
         </div>
 
         {/* Right: Actions */}
-        <div className="flex-1 flex items-center justify-end gap-6">
+        <div className="flex-1 flex items-center justify-end gap-3 xl:gap-5">
           {/* Cart Icon */}
           <button
             onClick={() => setIsOpen(true)}
@@ -102,12 +102,12 @@ const Header = () => {
           {/* Connect Now Button */}
           <Link
             to="/contact"
-            className="hidden md:flex items-center justify-center px-8 py-2.5 bg-gradient-to-r from-[#4A0E1B] to-[#6A1E2F] text-[#D4AF37] border border-[#D4AF37]/50 text-[10px] xl:text-[11px] tracking-[0.25em] uppercase font-bold hover:shadow-[0_0_20px_rgba(212,175,55,0.3)] hover:border-[#D4AF37] transition-all duration-500 relative overflow-hidden group/btn"
+            className="hidden md:flex items-center justify-center px-4 xl:px-6 py-2 bg-gradient-to-r from-[#4A0E1B] to-[#6A1E2F] text-[#D4AF37] border border-[#D4AF37]/50 text-[10px] xl:text-[11px] tracking-[0.12em] uppercase font-bold hover:shadow-[0_0_20px_rgba(212,175,55,0.3)] hover:border-[#D4AF37] transition-all duration-500 relative overflow-hidden group/btn"
           >
             <span className="relative z-10 flex items-center gap-2 whitespace-nowrap">
-              <span className="w-6 h-[1px] bg-[#D4AF37]/50 group-hover/btn:w-3 transition-all duration-500"></span>
+              <span className="w-4 h-[1px] bg-[#D4AF37]/50 group-hover/btn:w-2 transition-all duration-500"></span>
               Connect Now
-              <span className="w-6 h-[1px] bg-[#D4AF37]/50 group-hover/btn:w-3 transition-all duration-500"></span>
+              <span className="w-4 h-[1px] bg-[#D4AF37]/50 group-hover/btn:w-2 transition-all duration-500"></span>
             </span>
             <div className="absolute inset-0 bg-gradient-to-r from-[#6A1E2F] to-[#4A0E1B] opacity-0 group-hover/btn:opacity-100 transition-opacity duration-500"></div>
           </Link>

@@ -387,11 +387,11 @@ const CelestialOracleHero = () => {
 
                         <form onSubmit={handleFormSubmit} className="space-y-5 text-left">
                           {/* Name */}
-                          <div className="grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-4 items-start md:items-center">
-                            <label className="col-span-1 md:col-span-4 text-left md:text-left text-[10px] uppercase tracking-[0.2em] text-brand-dark font-sans font-bold z-10 relative drop-shadow-[0_1px_1px_rgba(255,255,255,0.8)]">
+                          <div className="flex flex-col gap-1.5 text-left">
+                            <label className="text-[10px] uppercase tracking-[0.2em] text-brand-dark font-sans font-bold z-10 relative drop-shadow-[0_1px_1px_rgba(255,255,255,0.8)]">
                               Full Name
                             </label>
-                            <div className="col-span-1 md:col-span-8 relative group">
+                            <div className="relative group">
                               <User className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#B38B36] group-focus-within:text-[#E5C06A] group-focus-within:scale-110 transition-all duration-300 z-20" />
                               <Input
                                 id="name-input"
@@ -405,11 +405,11 @@ const CelestialOracleHero = () => {
                           </div>
 
                           {/* Date of Birth */}
-                          <div className="grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-4 items-start md:items-center">
-                            <label className="col-span-1 md:col-span-4 text-left md:text-left text-[10px] uppercase tracking-[0.2em] text-brand-dark font-sans font-bold z-10 relative drop-shadow-[0_1px_1px_rgba(255,255,255,0.8)]">
+                          <div className="flex flex-col gap-1.5 text-left">
+                            <label className="text-[10px] uppercase tracking-[0.2em] text-brand-dark font-sans font-bold z-10 relative drop-shadow-[0_1px_1px_rgba(255,255,255,0.8)]">
                               Date of Birth
                             </label>
-                            <div className="col-span-1 md:col-span-8 relative group">
+                            <div className="relative group">
                               <Calendar className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#B38B36] group-focus-within:text-[#E5C06A] group-focus-within:scale-110 transition-all duration-300 z-20" />
                               <Input
                                 name="dob"
@@ -423,11 +423,11 @@ const CelestialOracleHero = () => {
                           </div>
 
                           {/* Birth Time */}
-                          <div className="grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-4 items-start md:items-center">
-                            <label className="col-span-1 md:col-span-4 text-left md:text-left text-[10px] uppercase tracking-[0.2em] text-brand-dark font-sans font-bold z-10 relative drop-shadow-[0_1px_1px_rgba(255,255,255,0.8)]">
+                          <div className="flex flex-col gap-1.5 text-left">
+                            <label className="text-[10px] uppercase tracking-[0.2em] text-brand-dark font-sans font-bold z-10 relative drop-shadow-[0_1px_1px_rgba(255,255,255,0.8)]">
                               Time of Birth
                             </label>
-                            <div className="col-span-1 md:col-span-8 relative group">
+                            <div className="relative group">
                               <Clock className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#B38B36] group-focus-within:text-[#E5C06A] group-focus-within:scale-110 transition-all duration-300 z-20" />
                               <Input
                                 name="tob"
@@ -441,11 +441,11 @@ const CelestialOracleHero = () => {
                           </div>
 
                           {/* Birth Place (3 Dropdowns) */}
-                          <div className="grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-4 items-start">
-                            <label className="col-span-1 md:col-span-4 text-left md:text-left text-[10px] uppercase tracking-[0.2em] text-brand-dark font-sans font-bold z-10 relative pt-3 drop-shadow-[0_1px_1px_rgba(255,255,255,0.8)]">
+                          <div className="flex flex-col gap-1.5 text-left">
+                            <label className="text-[10px] uppercase tracking-[0.2em] text-brand-dark font-sans font-bold z-10 relative drop-shadow-[0_1px_1px_rgba(255,255,255,0.8)]">
                               Place of Birth
                             </label>
-                            <div className="col-span-1 md:col-span-8 flex flex-col gap-2.5 z-10 relative">
+                            <div className="flex flex-col gap-2.5 z-10 relative">
                               {/* Country Selector */}
                               <div className="relative">
                                 <select
