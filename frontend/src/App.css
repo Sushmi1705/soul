@@ -54,6 +54,11 @@ html.font-family-5 {
   --font-serif: Verdana, Geneva, sans-serif;
 }
 
+html.font-family-6 {
+  --font-sans: "Lora", Georgia, serif;
+  --font-serif: "Cinzel", serif;
+}
+
 body, button, input, select, textarea {
   font-family: var(--font-sans);
 }

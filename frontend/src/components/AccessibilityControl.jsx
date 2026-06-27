@@ -36,6 +36,7 @@ const AccessibilityControl = () => {
 
   const options = [
     { value: 1, name: "Astro Theme (Default)", fontFamily: "Outfit, sans-serif" },
+    { value: 6, name: "Celestial Classic (Cinzel)", fontFamily: "Cinzel, serif" },
     { value: 2, name: "Georgia (Elegant Serif)", fontFamily: "Georgia, serif" },
     { value: 3, name: "Garamond (Classic Serif)", fontFamily: "Garamond, Baskerville, serif" },
     { value: 4, name: "Arial (Clean Sans-Serif)", fontFamily: "Arial, Helvetica, sans-serif" },
