@@ -59,6 +59,11 @@ html.font-family-6 {
   --font-serif: "Cinzel", serif;
 }
 
+html.font-family-7 {
+  --font-sans: "Arial Nova", Arial, Helvetica, sans-serif;
+  --font-serif: "Arial Nova", Arial, Helvetica, sans-serif;
+}
+
 body, button, input, select, textarea {
   font-family: var(--font-sans);
 }

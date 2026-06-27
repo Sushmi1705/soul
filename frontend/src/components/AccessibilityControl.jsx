@@ -40,6 +40,7 @@ const AccessibilityControl = () => {
     { value: 2, name: "Georgia (Elegant Serif)", fontFamily: "Georgia, serif" },
     { value: 3, name: "Garamond (Classic Serif)", fontFamily: "Garamond, Baskerville, serif" },
     { value: 4, name: "Arial (Clean Sans-Serif)", fontFamily: "Arial, Helvetica, sans-serif" },
+    { value: 7, name: "Arial Nova (Modern Sans)", fontFamily: "'Arial Nova', Arial, sans-serif" },
     { value: 5, name: "Verdana (Highly Legible)", fontFamily: "Verdana, Geneva, sans-serif" },
   ];
 
