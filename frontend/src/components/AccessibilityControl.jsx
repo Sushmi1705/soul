@@ -1,11 +1,14 @@
-import React, { useState, useEffect } from "react";
-import { Type } from "lucide-react";
+import React, { useState, useEffect, useRef } from "react";
+import { Type, ChevronDown } from "lucide-react";
 
 const AccessibilityControl = () => {
   const [family, setFamily] = useState(() => {
     const saved = localStorage.getItem("font-family-option");
     return saved ? parseInt(saved, 10) : 1; // Option 1 (Default Astro) is default
   });
+  
+  const [isOpen, setIsOpen] = useState(false);
+  const containerRef = useRef(null);
 
   // Update HTML class and persist state when family changes
   useEffect(() => {
@@ -13,63 +16,99 @@ const AccessibilityControl = () => {
     const html = document.documentElement;
     // Clean up old classes
     html.classList.remove("font-size-1", "font-size-2", "font-size-3", "font-size-4", "font-size-5");
-    html.classList.remove("font-family-1", "font-family-2", "font-family-3", "font-family-4", "font-family-5");
+    html.classList.remove("font-family-1", "font-family-2", "font-family-3", "font-family-4", "font-family-5", "font-family-6", "font-family-7", "font-family-8", "font-family-9", "font-family-10");
     
     // Add current class
     html.classList.add(`font-family-${family}`);
   }, [family]);
 
+  // Click outside to close dropdown
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (containerRef.current && !containerRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   const options = [
-    { value: 1, label: "T", name: "Default (Astro)", fontFamily: "Outfit, sans-serif" },
-    { value: 2, label: "A", name: "Arial", fontFamily: "Arial, Helvetica, sans-serif" },
-    { value: 3, label: "G", name: "Georgia", fontFamily: "Georgia, serif" },
-    { value: 4, label: "V", name: "Verdana", fontFamily: "Verdana, Geneva, sans-serif" },
-    { value: 5, label: "C", name: "Courier", fontFamily: "'Courier New', Courier, monospace" },
+    { value: 1, name: "Astro Theme (Default)", fontFamily: "Outfit, sans-serif" },
+    { value: 2, name: "Arial (Sans-Serif)", fontFamily: "Arial, Helvetica, sans-serif" },
+    { value: 3, name: "Georgia (Serif)", fontFamily: "Georgia, serif" },
+    { value: 4, name: "Verdana (Clean)", fontFamily: "Verdana, Geneva, sans-serif" },
+    { value: 5, name: "Courier New (Mono)", fontFamily: "'Courier New', Courier, monospace" },
+    { value: 6, name: "Times New Roman", fontFamily: "'Times New Roman', Times, serif" },
+    { value: 7, name: "Trebuchet MS", fontFamily: "'Trebuchet MS', Helvetica, sans-serif" },
+    { value: 8, name: "Comic Sans (Readable)", fontFamily: "'Comic Sans MS', 'Comic Neue', cursive, sans-serif" },
+    { value: 9, name: "Garamond (Classic)", fontFamily: "Garamond, Baskerville, serif" },
+    { value: 10, name: "Impact (Bold Display)", fontFamily: "Impact, Charcoal, sans-serif" },
   ];
+
+  const activeOption = options.find((opt) => opt.value === family) || options[0];
 
   return (
     <div 
-      className="fixed z-[9999] flex items-center bg-[#FAF9F6]/95 dark:bg-[#1E1711]/95 backdrop-blur-md border border-[#D4AF37]/35 shadow-2xl hover:border-[#D4AF37]/65 transition-all duration-300 font-[Outfit,sans-serif]
-                 bottom-24 right-4 flex-row py-1 px-1.5 rounded-full
-                 md:bottom-auto md:top-[120px] md:right-6 md:flex-col md:py-3.5 md:px-2"
+      ref={containerRef}
+      className="fixed z-[9999] font-[Outfit,sans-serif]
+                 bottom-24 right-4 md:bottom-auto md:top-[120px] md:right-6"
     >
-      {/* Icon header (Desktop only) */}
-      <div className="hidden md:flex flex-col items-center text-[#4A0E1B] dark:text-[#D4AF37] select-none pb-0.5">
-        <Type className="w-4 h-4" />
-      </div>
+      {/* Trigger Button */}
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex items-center gap-2 bg-[#FAF9F6]/95 dark:bg-[#1E1711]/95 backdrop-blur-md border border-[#D4AF37]/35 py-2 px-3.5 rounded-full shadow-lg hover:border-[#D4AF37]/75 transition-all duration-300 text-xs text-[#3C2A21] dark:text-[#FAF9F6] cursor-pointer group"
+      >
+        <div className="flex items-center gap-1.5 text-[#4A0E1B] dark:text-[#D4AF37]">
+          <Type className="w-3.5 h-3.5 transition-transform group-hover:scale-110" />
+          <span className="font-bold tracking-wide">Aa</span>
+        </div>
+        <div className="w-[1px] h-3 bg-[#D4AF37]/25" />
+        <span className="font-medium truncate max-w-[110px]">{activeOption.name}</span>
+        <ChevronDown className={`w-3 h-3 text-[#D4AF37] transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} />
+      </button>
 
-      <div className="hidden md:block w-4 h-[1px] bg-[#D4AF37]/20 mb-0.5" />
-
-      {/* Buttons */}
-      <div className="flex flex-row md:flex-col items-center gap-1 md:gap-1.5">
-        {options.map((item) => {
-          const isActive = family === item.value;
-          return (
-            <button
-              key={item.value}
-              onClick={() => setFamily(item.value)}
-              title={`${item.name} Font Family`}
-              className={`rounded-full flex items-center justify-center font-bold text-xs transition-all duration-300 relative group
-                         w-7 h-7
-                         md:w-8 md:h-8 ${
-                isActive
-                  ? "bg-gradient-to-r from-[#D4AF37] to-[#BF953F] text-white shadow-md scale-105"
-                  : "text-[#3C2A21]/75 dark:text-[#FAF9F6]/75 hover:bg-[#D4AF37]/15 hover:text-[#D4AF37] dark:hover:text-[#D4AF37]"
-              }`}
-            >
-              <span className="font-bold" style={{ fontFamily: item.fontFamily }}>{item.label}</span>
-              
-              {/* Tooltip (above on mobile, to the left on desktop) */}
-              <span className="absolute px-2.5 py-1 bg-[#3C2A21] dark:bg-[#FAF9F6] text-[#FAF9F6] dark:text-[#3C2A21] text-[9px] uppercase tracking-[0.15em] font-bold rounded shadow-lg pointer-events-none opacity-0 group-hover:opacity-100 transition-all duration-200 whitespace-nowrap z-[10000] border border-[#D4AF37]/20
-                               bottom-full mb-2.5 left-1/2 -translate-x-1/2 translate-y-1 group-hover:translate-y-0
-                               md:bottom-auto md:top-1/2 md:-translate-y-1/2 md:right-full md:left-auto md:mr-3 md:mb-0 md:translate-x-2 md:group-hover:translate-x-0 font-[Outfit,sans-serif]"
-              >
-                {item.name}
-              </span>
-            </button>
-          );
-        })}
-      </div>
+      {/* Dropdown Menu */}
+      {isOpen && (
+        <div 
+          className="absolute z-[10000] w-60 max-h-[280px] overflow-y-auto bg-[#FAF9F6]/98 dark:bg-[#1E1711]/98 backdrop-blur-lg border border-[#D4AF37]/35 rounded-xl shadow-2xl p-1 transition-all duration-300
+                     scrollbar-thin scrollbar-thumb-[#D4AF37]/20 scrollbar-track-transparent
+                     right-0 bottom-full mb-2.5 origin-bottom-right
+                     md:bottom-auto md:top-full md:mt-2.5 md:origin-top-right"
+          style={{
+            scrollbarWidth: "thin",
+            scrollbarColor: "rgba(212,175,55,0.2) transparent"
+          }}
+        >
+          <div className="py-1 px-2 text-[9px] text-[#4A0E1B]/50 dark:text-[#D4AF37]/50 font-bold uppercase tracking-[0.12em] border-b border-[#D4AF37]/10 mb-1 select-none">
+            Choose Font Family
+          </div>
+          <div className="flex flex-col gap-0.5">
+            {options.map((item) => {
+              const isActive = family === item.value;
+              return (
+                <button
+                  key={item.value}
+                  onClick={() => {
+                    setFamily(item.value);
+                    setIsOpen(false);
+                  }}
+                  className={`w-full text-left px-3 py-2 rounded-lg text-xs transition-all duration-200 cursor-pointer flex items-center justify-between ${
+                    isActive
+                      ? "bg-gradient-to-r from-[#D4AF37]/10 to-[#BF953F]/15 text-[#B38B36] font-bold border-l-2 border-[#D4AF37]"
+                      : "text-[#3C2A21]/80 dark:text-[#FAF9F6]/80 hover:bg-[#D4AF37]/10 hover:text-[#D4AF37] dark:hover:text-[#D4AF37]"
+                  }`}
+                >
+                  <span style={{ fontFamily: item.fontFamily }}>{item.name}</span>
+                  {isActive && <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37]" />}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

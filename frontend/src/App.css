@@ -54,6 +54,31 @@ html.font-family-5 {
   --font-serif: "Courier New", Courier, monospace;
 }
 
+html.font-family-6 {
+  --font-sans: "Times New Roman", Times, serif;
+  --font-serif: "Times New Roman", Times, serif;
+}
+
+html.font-family-7 {
+  --font-sans: "Trebuchet MS", Helvetica, sans-serif;
+  --font-serif: "Trebuchet MS", Helvetica, sans-serif;
+}
+
+html.font-family-8 {
+  --font-sans: "Comic Sans MS", "Comic Neue", cursive, sans-serif;
+  --font-serif: "Comic Sans MS", "Comic Neue", cursive, sans-serif;
+}
+
+html.font-family-9 {
+  --font-sans: Garamond, Baskerville, "Baskerville Old Face", "Hoefler Text", "Times New Roman", serif;
+  --font-serif: Garamond, Baskerville, "Baskerville Old Face", "Hoefler Text", "Times New Roman", serif;
+}
+
+html.font-family-10 {
+  --font-sans: Impact, Charcoal, "Arial Black", sans-serif;
+  --font-serif: Impact, Charcoal, "Arial Black", sans-serif;
+}
+
 body, button, input, select, textarea {
   font-family: var(--font-sans);
 }
