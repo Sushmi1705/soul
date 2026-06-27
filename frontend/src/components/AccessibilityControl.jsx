@@ -68,7 +68,7 @@ const AccessibilityControl = () => {
       {/* Trigger Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-10 h-10 rounded-full bg-[#FAF9F6]/95 dark:bg-[#1E1711]/95 backdrop-blur-md border border-[#D4AF37]/35 flex items-center justify-center shadow-lg hover:border-[#D4AF37]/75 transition-all duration-300 text-[#4A0E1B] dark:text-[#D4AF37] cursor-pointer group"
+        className="w-10 h-10 rounded-full bg-[#FAF9F6] dark:bg-[#1E1711] border border-[#D4AF37]/35 flex items-center justify-center shadow-lg hover:border-[#D4AF37]/75 transition-all duration-300 text-[#4A0E1B] dark:text-[#D4AF37] cursor-pointer group"
         aria-label="Accessibility Settings"
         title="Accessibility Settings"
       >
@@ -78,12 +78,12 @@ const AccessibilityControl = () => {
       {/* Dropdown Menu */}
       {isOpen && (
         <div 
-          className="absolute z-[10000] w-56 max-h-[380px] bg-[#FAF9F6]/98 dark:bg-[#1E1711]/98 backdrop-blur-lg border border-[#D4AF37]/35 rounded-xl shadow-2xl p-3 transition-all duration-300
+          className="absolute z-[10000] w-56 max-h-[380px] bg-[#FAF9F6] dark:bg-[#1E1711] border border-[#D4AF37]/35 rounded-xl shadow-2xl p-3 transition-all duration-300
                      right-0 bottom-full mb-2.5 origin-bottom-right
                      md:right-auto md:left-0 md:bottom-auto md:top-full md:mt-2.5 md:origin-top-left"
         >
           {/* Section 1: Font Family */}
-          <div className="py-1 px-1 text-[9px] text-[#4A0E1B]/50 dark:text-[#D4AF37]/50 font-bold uppercase tracking-[0.12em] border-b border-[#D4AF37]/10 mb-2 select-none">
+          <div className="py-1 px-1 text-[9px] text-[#4A0E1B] dark:text-[#D4AF37] font-bold uppercase tracking-[0.12em] border-b border-[#D4AF37]/20 mb-2 select-none">
             Choose Font Family
           </div>
           <div className="flex flex-col gap-0.5 max-h-[160px] overflow-y-auto mb-3 scrollbar-thin">
@@ -107,7 +107,7 @@ const AccessibilityControl = () => {
           </div>
 
           {/* Section 2: Font Size */}
-          <div className="py-1 px-1 text-[9px] text-[#4A0E1B]/50 dark:text-[#D4AF37]/50 font-bold uppercase tracking-[0.12em] border-b border-[#D4AF37]/10 mb-2 select-none">
+          <div className="py-1 px-1 text-[9px] text-[#4A0E1B] dark:text-[#D4AF37] font-bold uppercase tracking-[0.12em] border-b border-[#D4AF37]/20 mb-2 select-none">
             Choose Font Size
           </div>
           <div className="flex gap-1.5 justify-between">
@@ -124,7 +124,7 @@ const AccessibilityControl = () => {
                   className={`flex-1 py-2 px-1 rounded-lg text-center cursor-pointer transition-all duration-200 border text-[11px] font-medium ${
                     isActive
                       ? "bg-gradient-to-r from-[#D4AF37]/10 to-[#BF953F]/15 border-[#D4AF37] text-[#B38B36] font-bold"
-                      : "bg-[#FAF9F6]/50 dark:bg-[#1E1711]/50 border-stone-200 dark:border-stone-800 text-[#3C2A21]/80 dark:text-[#FAF9F6]/80 hover:border-[#D4AF37]/50 hover:text-[#D4AF37]"
+                      : "bg-white dark:bg-stone-900 border-stone-200 dark:border-stone-800 text-[#3C2A21]/80 dark:text-[#FAF9F6]/80 hover:border-[#D4AF37]/50 hover:text-[#D4AF37]"
                   }`}
                 >
                   {s.label}
