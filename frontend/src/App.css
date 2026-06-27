@@ -35,48 +35,23 @@ html.font-family-1 {
 }
 
 html.font-family-2 {
-  --font-sans: Arial, Helvetica, sans-serif;
-  --font-serif: Arial, Helvetica, sans-serif;
-}
-
-html.font-family-3 {
   --font-sans: Georgia, serif;
   --font-serif: Georgia, serif;
 }
 
-html.font-family-4 {
-  --font-sans: Verdana, Geneva, sans-serif;
-  --font-serif: Verdana, Geneva, sans-serif;
-}
-
-html.font-family-5 {
-  --font-sans: "Courier New", Courier, monospace;
-  --font-serif: "Courier New", Courier, monospace;
-}
-
-html.font-family-6 {
-  --font-sans: "Times New Roman", Times, serif;
-  --font-serif: "Times New Roman", Times, serif;
-}
-
-html.font-family-7 {
-  --font-sans: "Trebuchet MS", Helvetica, sans-serif;
-  --font-serif: "Trebuchet MS", Helvetica, sans-serif;
-}
-
-html.font-family-8 {
-  --font-sans: "Comic Sans MS", "Comic Neue", cursive, sans-serif;
-  --font-serif: "Comic Sans MS", "Comic Neue", cursive, sans-serif;
-}
-
-html.font-family-9 {
+html.font-family-3 {
   --font-sans: Garamond, Baskerville, "Baskerville Old Face", "Hoefler Text", "Times New Roman", serif;
   --font-serif: Garamond, Baskerville, "Baskerville Old Face", "Hoefler Text", "Times New Roman", serif;
 }
 
-html.font-family-10 {
-  --font-sans: Impact, Charcoal, "Arial Black", sans-serif;
-  --font-serif: Impact, Charcoal, "Arial Black", sans-serif;
+html.font-family-4 {
+  --font-sans: Arial, Helvetica, sans-serif;
+  --font-serif: Arial, Helvetica, sans-serif;
+}
+
+html.font-family-5 {
+  --font-sans: Verdana, Geneva, sans-serif;
+  --font-serif: Verdana, Geneva, sans-serif;
 }
 
 body, button, input, select, textarea {
@@ -174,28 +149,4 @@ section[id] {
 /* Hide platform branding badge */
 #emergent-badge {
   display: none !important;
-}
-
-/* Google Translate visual overrides */
-.goog-te-banner-frame, .goog-te-banner {
-  display: none !important;
-}
-body {
-  top: 0 !important;
-}
-.goog-logo-link {
-  display: none !important;
-}
-.goog-te-gadget {
-  font-size: 0 !important;
-}
-.skiptranslate {
-  display: none !important;
-}
-.goog-te-combo {
-  background-color: transparent !important;
-  border: 1px solid #D4AF37 !important;
-  color: #3C2A21 !important;
-  border-radius: 4px !important;
-  padding: 2px !important;
 }
