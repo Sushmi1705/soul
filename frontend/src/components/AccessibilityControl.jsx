@@ -54,13 +54,11 @@ const AccessibilityControl = () => {
       {/* Trigger Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 bg-[#FAF9F6]/95 dark:bg-[#1E1711]/95 backdrop-blur-md border border-[#D4AF37]/35 py-2 px-3.5 rounded-full shadow-lg hover:border-[#D4AF37]/75 transition-all duration-300 text-xs text-[#3C2A21] dark:text-[#FAF9F6] cursor-pointer group"
+        className="w-10 h-10 rounded-full bg-[#FAF9F6]/95 dark:bg-[#1E1711]/95 backdrop-blur-md border border-[#D4AF37]/35 flex items-center justify-center shadow-lg hover:border-[#D4AF37]/75 transition-all duration-300 text-[#4A0E1B] dark:text-[#D4AF37] cursor-pointer group"
+        aria-label="Accessibility Settings"
+        title="Accessibility Settings"
       >
-        <div className="flex items-center gap-1.5 text-[#4A0E1B] dark:text-[#D4AF37]">
-          <Type className="w-3.5 h-3.5" />
-          <span className="font-medium max-w-[130px] truncate">{activeOption.name}</span>
-        </div>
-        <ChevronDown className={`w-3 h-3 text-[#D4AF37] transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} />
+        <Type className="w-4.5 h-4.5 transition-transform group-hover:scale-110" />
       </button>
 
       {/* Dropdown Menu */}
