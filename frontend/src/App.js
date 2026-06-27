@@ -56,7 +56,7 @@ const Layout = ({ children }) => {
 
   if (isAdminRoute) {
     return (
-      <div className="bg-[#0d0905] min-h-screen font-[Outfit,sans-serif] antialiased">
+      <div className="bg-[#0d0905] min-h-screen font-sans antialiased">
         <AccessibilityControl />
         {children}
       </div>
@@ -64,7 +64,7 @@ const Layout = ({ children }) => {
   }
 
   return (
-    <div className="bg-[#FDFBF7] text-[#3C2A21] min-h-screen font-[Outfit,sans-serif] antialiased pb-24 lg:pb-0">
+    <div className="bg-[#FDFBF7] text-[#3C2A21] min-h-screen font-sans antialiased pb-24 lg:pb-0">
       <Header />
       <AccessibilityControl />
       <main>

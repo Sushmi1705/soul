@@ -282,7 +282,7 @@ const PaymentPage = () => {
   }
 
   return (
-    <div id="payment-page-root" className="min-h-screen bg-[#FFFDF9] text-[#3C2A21] font-[Outfit,sans-serif] relative pb-20 pt-28 md:pt-36 overflow-hidden">
+    <div id="payment-page-root" className="min-h-screen bg-[#FFFDF9] text-[#3C2A21] font-sans relative pb-20 pt-28 md:pt-36 overflow-hidden">
       
       <style>{`
         body, html {
@@ -939,7 +939,7 @@ const PaymentPage = () => {
 
       {/* NESTED DIALOG: DEVELOPMENT MOCK AUTHORIZATION PANEL */}
       <Dialog open={showMockModal} onOpenChange={(v) => !v && setShowMockModal(false)}>
-        <DialogContent className="max-w-md p-6 bg-[#FFFDF9] border border-white/90 text-[#3C2A21] font-[Outfit,sans-serif] rounded-2xl shadow-2xl relative overflow-hidden">
+        <DialogContent className="max-w-md p-6 bg-[#FFFDF9] border border-white/90 text-[#3C2A21] font-sans rounded-2xl shadow-2xl relative overflow-hidden">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(229,192,106,0.1),transparent_70%)] pointer-events-none z-0" />
           
           <div className="relative z-10 space-y-6">

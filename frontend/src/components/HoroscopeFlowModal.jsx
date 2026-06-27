@@ -353,7 +353,7 @@ const HoroscopeFlowModal = ({ open, onClose }) => {
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
       <DialogContent
         data-testid="horoscope-modal"
-        className="!max-w-6xl p-0 bg-[#FFFDF9] border border-white/80 overflow-hidden rounded-none sm:rounded-2xl w-screen h-[100dvh] sm:h-auto sm:w-full max-h-[100dvh] sm:max-h-[90vh] text-[#3C2A21] font-[Outfit,sans-serif] shadow-[0_25px_60px_rgba(60,42,33,0.18)]"
+        className="!max-w-6xl p-0 bg-[#FFFDF9] border border-white/80 overflow-hidden rounded-none sm:rounded-2xl w-screen h-[100dvh] sm:h-auto sm:w-full max-h-[100dvh] sm:max-h-[90vh] text-[#3C2A21] font-sans shadow-[0_25px_60px_rgba(60,42,33,0.18)]"
       >
         <DialogTitle className="sr-only">Cosmic Horoscope Center</DialogTitle>
         <DialogDescription className="sr-only">
@@ -1176,7 +1176,7 @@ const HoroscopeFlowModal = ({ open, onClose }) => {
 
       {/* NESTED DIALOG: SIMULATED PAYMENT GATEWAY */}
       <Dialog open={showPaymentGateways} onOpenChange={(v) => !v && !processingPayment && setShowPaymentGateways(false)}>
-        <DialogContent className="max-w-md p-6 bg-[#FFFDF9] border border-white/90 text-[#3C2A21] font-[Outfit,sans-serif] rounded-2xl shadow-2xl relative overflow-hidden">
+        <DialogContent className="max-w-md p-6 bg-[#FFFDF9] border border-white/90 text-[#3C2A21] font-sans rounded-2xl shadow-2xl relative overflow-hidden">
           {/* Subtle celestial background */}
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(229,192,106,0.12),rgba(186,104,200,0.06),transparent_70%)] pointer-events-none z-0" />
           

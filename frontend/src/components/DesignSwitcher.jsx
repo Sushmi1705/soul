@@ -27,7 +27,7 @@ const DesignSwitcher = () => {
   };
 
   return (
-    <div className="fixed right-4 top-1/2 -translate-y-1/2 z-[9999] bg-[#FDFBF7]/90 dark:bg-stone-900/90 backdrop-blur-md border border-[#B38B36]/30 py-4 px-2 rounded-full shadow-2xl flex flex-col items-center gap-3 animate-fade-in font-[Outfit,sans-serif] hover:border-[#B38B36]/60 transition-all duration-300">
+    <div className="fixed right-4 top-1/2 -translate-y-1/2 z-[9999] bg-[#FDFBF7]/90 dark:bg-stone-900/90 backdrop-blur-md border border-[#B38B36]/30 py-4 px-2 rounded-full shadow-2xl flex flex-col items-center gap-3 animate-fade-in font-sans hover:border-[#B38B36]/60 transition-all duration-300">
       <span className="text-[8px] text-[#B38B36] font-bold tracking-wider uppercase select-none opacity-80">
         BG
       </span>

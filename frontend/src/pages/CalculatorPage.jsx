@@ -657,7 +657,7 @@ const CalculatorPage = () => {
   };
 
   return (
-    <div className="pt-20 md:pt-24 pb-6 md:pb-8 relative z-10 bg-[#FFFDF9] min-h-screen overflow-hidden text-[#3C2A21] font-[Outfit,sans-serif]">
+    <div className="pt-20 md:pt-24 pb-6 md:pb-8 relative z-10 bg-[#FFFDF9] min-h-screen overflow-hidden text-[#3C2A21] font-sans">
       
       <style>{`
         @keyframes spinSlow {
