@@ -51,8 +51,8 @@ const AccessibilityControl = () => {
 
   const options = [
     { value: 1, name: "Astro Theme (Default)", fontFamily: "Outfit, sans-serif" },
-    { value: 8, name: "Poppins (Modern Sans)", fontFamily: "'Poppins', sans-serif" },
-    { value: 9, name: "Montserrat (Clean Geometric)", fontFamily: "'Montserrat', sans-serif" },
+    { value: 8, name: "Poppins", fontFamily: "'Poppins', sans-serif" },
+    { value: 9, name: "Montserrat", fontFamily: "'Montserrat', sans-serif" },
     { value: 6, name: "Celestial Classic (Cinzel)", fontFamily: "Cinzel, serif" },
     { value: 2, name: "Georgia (Elegant Serif)", fontFamily: "Georgia, serif" },
     { value: 3, name: "Garamond (Classic Serif)", fontFamily: "Garamond, Baskerville, serif" },
