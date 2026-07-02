@@ -89,6 +89,10 @@ body, button, input, select, textarea {
   font-family: var(--font-sans);
 }
 
+.font-sans {
+  font-family: var(--font-sans) !important;
+}
+
 body {
   background: #fafafa;
   color: #1a1a1a;
