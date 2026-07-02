@@ -124,7 +124,7 @@ function App() {
               background: "#FDFBF7",
               color: "#3C2A21",
               border: "1px solid #B38B36",
-              fontFamily: "Outfit, sans-serif",
+              fontFamily: "var(--font-sans), sans-serif",
             },
           }}
         />

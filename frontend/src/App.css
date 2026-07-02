@@ -64,6 +64,16 @@ html.font-family-7 {
   --font-serif: "Arial Nova", Arial, Helvetica, sans-serif;
 }
 
+html.font-family-8 {
+  --font-sans: "Poppins", sans-serif;
+  --font-serif: "Cormorant Garamond", serif;
+}
+
+html.font-family-9 {
+  --font-sans: "Montserrat", sans-serif;
+  --font-serif: "Cormorant Garamond", serif;
+}
+
 /* Accessibility Font Size scales */
 html.font-size-normal {
   font-size: 16px !important;
@@ -130,7 +140,7 @@ section[id] {
   --rdp-accent-color: #b38b36;
   --rdp-background-color: #f3f1ec;
   --rdp-cell-size: 38px;
-  font-family: "Outfit", sans-serif;
+  font-family: var(--font-sans), sans-serif;
   margin: 0;
 }
 .rdp-caption_label {

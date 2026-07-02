@@ -828,7 +828,7 @@ const CelestialOracleHero = () => {
         }
         .glittery-form-card label {
           color: #3C2A21 !important;
-          font-family: Outfit, sans-serif !important;
+          font-family: var(--font-sans), sans-serif !important;
           font-size: 10px !important;
           font-weight: 700 !important;
           letter-spacing: 0.2em !important;

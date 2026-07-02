@@ -51,6 +51,8 @@ const AccessibilityControl = () => {
 
   const options = [
     { value: 1, name: "Astro Theme (Default)", fontFamily: "Outfit, sans-serif" },
+    { value: 8, name: "Poppins (Modern Sans)", fontFamily: "'Poppins', sans-serif" },
+    { value: 9, name: "Montserrat (Clean Geometric)", fontFamily: "'Montserrat', sans-serif" },
     { value: 6, name: "Celestial Classic (Cinzel)", fontFamily: "Cinzel, serif" },
     { value: 2, name: "Georgia (Elegant Serif)", fontFamily: "Georgia, serif" },
     { value: 3, name: "Garamond (Classic Serif)", fontFamily: "Garamond, Baskerville, serif" },
@@ -62,7 +64,7 @@ const AccessibilityControl = () => {
   return (
     <div 
       ref={containerRef}
-      className="fixed z-[9999] font-[Outfit,sans-serif]
+      className="fixed z-[9999] font-sans
                  bottom-24 right-4 md:bottom-auto md:top-[120px] md:left-6 md:right-auto"
     >
       {/* Trigger Button */}
