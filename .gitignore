@@ -88,3 +88,8 @@ credentials.json
 *.pem
 *.key
 .credentials
+
+# Temporary Git & Test directories
+git-temp/
+git-install.ps1
+test_result_html.txt
