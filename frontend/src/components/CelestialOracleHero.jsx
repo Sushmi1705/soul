@@ -304,7 +304,7 @@ const CelestialOracleHero = () => {
               ></iframe>
             </div>
 
-            <div className="relative z-10">
+            <div className="relative z-10 font-sans">
               <div className="flex items-center gap-4 mb-8 animate-reveal opacity-0" style={{ animationDelay: '0.2s' }}>
                 <span className="inline-flex items-center gap-1.5 px-4 py-1.5 border border-[#B38B36]/30 rounded-full bg-[#B38B36]/10 text-[10px] tracking-[0.2em] uppercase text-[#B38B36] font-bold">
                   ✨ AI Personalized Horoscope
