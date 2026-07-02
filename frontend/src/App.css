@@ -66,12 +66,12 @@ html.font-family-7 {
 
 html.font-family-8 {
   --font-sans: "Poppins", sans-serif;
-  --font-serif: "Cormorant Garamond", serif;
+  --font-serif: "Poppins", sans-serif;
 }
 
 html.font-family-9 {
   --font-sans: "Montserrat", sans-serif;
-  --font-serif: "Cormorant Garamond", serif;
+  --font-serif: "Montserrat", sans-serif;
 }
 
 /* Accessibility Font Size scales */
