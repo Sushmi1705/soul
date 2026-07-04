@@ -377,7 +377,7 @@ const CelestialOracleHero = () => {
               </h1>
 
               <div className="max-w-lg space-y-8 animate-reveal opacity-0" style={{ animationDelay: '0.6s' }}>
-                <p className="text-lg text-stone-500 leading-relaxed font-light">
+                <p className="text-lg text-stone-800 leading-relaxed font-medium">
                   Discover what the stars have planned for you. Reveal today's cosmic guidance, planetary movements, and see what destiny has planned in seconds.
                 </p>
                 <div className="flex flex-row items-center gap-4">
@@ -477,7 +477,7 @@ const CelestialOracleHero = () => {
                           <h3 className="font-serif text-2xl text-brand-dark font-semibold tracking-wide z-10 relative leading-normal">
                             {TABS.find(t => t.id === activeTab)?.title}
                           </h3>
-                          <p className="text-[10px] text-stone-500 font-light z-10 relative max-w-xs mx-auto leading-relaxed">
+                          <p className="text-[10px] text-stone-700 font-medium z-10 relative max-w-xs mx-auto leading-relaxed">
                             {TABS.find(t => t.id === activeTab)?.subtitle}
                           </p>
                           <div className="w-24 h-[1px] bg-gradient-to-r from-transparent via-[#B38B36]/30 to-transparent mx-auto mt-4" />
@@ -970,6 +970,12 @@ const CelestialOracleHero = () => {
           font-weight: 700 !important;
           letter-spacing: 0.2em !important;
           text-shadow: 0 1px 1px rgba(255, 255, 255, 0.8) !important;
+        }
+        .glittery-form-card input,
+        .glittery-form-card select,
+        .glittery-form-card select option,
+        .glittery-form-card input::placeholder {
+          font-family: var(--font-sans), sans-serif !important;
         }
 
         @keyframes twinkle {

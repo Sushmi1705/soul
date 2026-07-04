@@ -40,7 +40,7 @@ html.font-size-large {
 }
 
 body, button, input, select, textarea {
-  font-family: var(--font-sans);
+  font-family: var(--font-sans) !important;
 }
 
 .font-sans {
