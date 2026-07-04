@@ -104,7 +104,7 @@ export const SERVICES = [
     id: "vastu-consultation",
     title: "Vastu Consultation",
     desc: "Create a balanced environment for your home or workspace with insightful recommendations tailored to your specific needs.",
-    image: "https://gitikasharma.in/wp-content/uploads/2024/03/5-2.png",
+    image: "/vastu.jpg",
     duration: "90 min",
     price: 51000,
   },
@@ -112,7 +112,7 @@ export const SERVICES = [
     id: "soul-purpose",
     title: "Soul Purpose",
     desc: "Honor the whispers of your soul and embark on a quest to live a life of purpose, passion, and authenticity.",
-    image: "https://gitikasharma.in/wp-content/uploads/2024/03/6-4.png",
+    image: "/soul-purpose.jpg",
     duration: "60 min",
     price: 5100,
   },
@@ -353,7 +353,7 @@ export const SERVICES_PAGE_DATA = {
     title: "Soul Purpose",
     subtitle: "Soul Purpose",
     bannerImage: "https://gitikasharma.in/wp-content/uploads/2024/03/14.png",
-    mainImage: "https://gitikasharma.in/wp-content/uploads/2024/03/6-4.png",
+    mainImage: "/soul-purpose.jpg",
     paragraphs: [
       "Welcome to our Soul Purpose services, where the journey of self-discovery unfolds and the true essence of your being is revealed. Your soul's purpose is the guiding light that illuminates your path, ignites your passions, and empowers you to live a life of meaning and fulfillment. At our Soul Purpose services, we offer a transformative journey of exploration, introspection, and alignment with your deepest aspirations and desires. Through personalized sessions, workshops, and guided practices, we delve into the depths of your inner wisdom, helping you uncover the unique gifts, talents, and potentialities that lie within. Our experienced facilitators and coaches provide gentle guidance, profound insights, and practical tools to support you on your path of self-discovery and self-realization. Whether you're seeking clarity on your life's purpose, yearning for deeper connections with yourself and others, or striving to live authentically in alignment with your true essence, our Soul Purpose services offer a sacred space for growth, healing, and transformation. Embrace the journey of self-discovery, honor the whispers of your soul, and embark on a quest to live a life of purpose, passion, and authenticity with our Soul Purpose services."
     ]
@@ -393,7 +393,7 @@ export const SERVICES_PAGE_DATA = {
     title: "Vastu Consultation",
     subtitle: "Vastu Consultation",
     bannerImage: "https://gitikasharma.in/wp-content/uploads/2024/03/13.png",
-    mainImage: "https://gitikasharma.in/wp-content/uploads/2024/03/5-2.png",
+    mainImage: "/vastu.jpg",
     paragraphs: [
       "Welcome to our Vastu Consultation services, where ancient principles of harmonious living meet modern lifestyles. Vastu Shastra is the ancient Indian science of architecture and design, rooted in the belief that the spatial arrangement of our surroundings profoundly influences our well-being and prosperity.",
       "At our Vastu Consultation service, we offer personalized guidance and practical solutions to harmonize your living spaces, workplaces, factories and environments. Drawing upon the timeless wisdom of Vastu Shastra, Gitika Sharma analyze the energy flow, orientation, and layout of your space to optimize positive vibrations and enhance overall harmony.",
