@@ -4,7 +4,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { CheckCircle2, Clock, User, Mail, Phone } from "lucide-react";
-import { getAvailableSlots, formatINR } from "@/data/content";
+import { getAvailableSlots, formatINR, CONSULTATION_TYPES, VASTU_TYPES } from "@/data/content";
 
 const BookingModal = ({ service, open, onClose }) => {
   const [date, setDate] = useState(null);
@@ -12,16 +12,37 @@ const BookingModal = ({ service, open, onClose }) => {
   const [form, setForm] = useState({ name: "", email: "", phone: "" });
   const [confirmed, setConfirmed] = useState(false);
 
+  const [consultationType, setConsultationType] = useState("normal"); // 'normal' | 'urgent'
+  const [vastuType, setVastuType] = useState("domestic"); // 'domestic' | 'industrial'
+  const [vastuRangeIndex, setVastuRangeIndex] = useState(0);
+
   useEffect(() => {
     if (!open) {
       setDate(null);
       setSlot(null);
       setForm({ name: "", email: "", phone: "" });
       setConfirmed(false);
+      setConsultationType("normal");
+      setVastuType("domestic");
+      setVastuRangeIndex(0);
     }
   }, [open]);
 
   if (!service) return null;
+
+  const isVastu = service.id === "vastu-consultation";
+
+  let currentPrice = service.price;
+  let serviceDesc = service.desc;
+
+  if (isVastu) {
+    const rangeObj = VASTU_TYPES[vastuType].ranges[vastuRangeIndex];
+    currentPrice = rangeObj.price;
+    serviceDesc = `${service.desc} (Vastu Type: ${VASTU_TYPES[vastuType].label}, Size: ${rangeObj.area})`;
+  } else {
+    currentPrice = CONSULTATION_TYPES[consultationType].price;
+    serviceDesc = `${service.desc} (${CONSULTATION_TYPES[consultationType].label} - ${CONSULTATION_TYPES[consultationType].wait})`;
+  }
 
   const availableSlots = date ? getAvailableSlots(date) : [];
   const allSlots = ["09:00 AM", "10:30 AM", "12:00 PM", "02:00 PM", "03:30 PM", "05:00 PM", "06:30 PM"];
@@ -36,8 +57,17 @@ const BookingModal = ({ service, open, onClose }) => {
       return;
     }
     setConfirmed(true);
+
+    let bookingDetail = `${service.title}`;
+    if (isVastu) {
+      const rangeObj = VASTU_TYPES[vastuType].ranges[vastuRangeIndex];
+      bookingDetail += ` (${VASTU_TYPES[vastuType].label} - ${rangeObj.area})`;
+    } else {
+      bookingDetail += ` (${CONSULTATION_TYPES[consultationType].label})`;
+    }
+
     toast.success("Appointment confirmed — see you soon!", {
-      description: `${service.title} · ${date.toDateString()} · ${slot}`,
+      description: `${bookingDetail} · ${date.toDateString()} · ${slot}`,
     });
   };
 
@@ -96,7 +126,7 @@ const BookingModal = ({ service, open, onClose }) => {
                   {service.title}
                 </h2>
                 <p className="text-white/60 text-sm leading-relaxed mb-8">
-                  {service.desc}
+                  {serviceDesc}
                 </p>
 
                 <div className="space-y-4 border-t border-white/10 pt-6">
@@ -111,7 +141,7 @@ const BookingModal = ({ service, open, onClose }) => {
                       Fee
                     </span>
                     <span className="text-[#E5C06A] font-serif text-lg">
-                      {formatINR(service.price)}
+                      {formatINR(currentPrice)}
                     </span>
                   </div>
                   <div className="flex justify-between text-sm">
@@ -130,11 +160,111 @@ const BookingModal = ({ service, open, onClose }) => {
 
             {/* RIGHT - Form */}
             <div className="p-6 md:p-10 space-y-7 pb-32 md:pb-10">
-              {/* Step 1 */}
+              {/* Step 1 - Tier Selector */}
               <div>
                 <div className="flex items-center gap-3 mb-4">
                   <span className="w-6 h-6 rounded-full bg-[#B38B36] text-white text-xs font-medium flex items-center justify-center">
                     1
+                  </span>
+                  <h4 className="font-serif text-xl text-[#3C2A21]">
+                    {isVastu ? "Select Vastu properties" : "Select consultation urgency"}
+                  </h4>
+                </div>
+
+                {!isVastu ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {Object.entries(CONSULTATION_TYPES).map(([key, item]) => {
+                      const isSelected = consultationType === key;
+                      return (
+                        <button
+                          key={key}
+                          type="button"
+                          onClick={() => setConsultationType(key)}
+                          className={`flex flex-col text-left p-5 border transition-all duration-300 rounded-xl relative ${
+                            isSelected
+                              ? "border-[#B38B36] bg-[#B38B36]/5 shadow-sm"
+                              : "border-[#E5E1D8] hover:border-[#B38B36]/40 bg-white"
+                          }`}
+                        >
+                          <div className="flex items-center justify-between w-full mb-1">
+                            <span className="font-serif font-bold text-sm text-[#3C2A21]">
+                              {item.label}
+                            </span>
+                            <span className={`w-4.5 h-4.5 rounded-full border flex items-center justify-center transition-colors ${
+                              isSelected ? "border-[#B38B36] bg-[#B38B36]" : "border-[#E5E1D8]"
+                            }`}>
+                              {isSelected && <span className="w-1.5 h-1.5 rounded-full bg-white" />}
+                            </span>
+                          </div>
+                          <span className="text-[#B38B36] font-serif text-base font-bold mb-1">
+                            {formatINR(item.price)}
+                          </span>
+                          <span className="text-xs text-stone-400 font-light">
+                            {item.wait}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {/* Vastu Type Toggle */}
+                    <div className="grid grid-cols-2 gap-3 p-1 bg-[#F3F1EC] rounded-xl border border-[#E5E1D8]">
+                      {Object.entries(VASTU_TYPES).map(([key, item]) => {
+                        const isSelected = vastuType === key;
+                        return (
+                          <button
+                            key={key}
+                            type="button"
+                            onClick={() => {
+                              setVastuType(key);
+                              setVastuRangeIndex(0);
+                            }}
+                            className={`py-2 text-center rounded-lg text-xs font-medium tracking-wider uppercase transition-all duration-300 ${
+                              isSelected
+                                ? "bg-[#3C2A21] text-white shadow-sm"
+                                : "text-[#725D46] hover:text-[#3C2A21]"
+                            }`}
+                          >
+                            {item.label}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    {/* Vastu Area Range Selection */}
+                    <div className="flex flex-col space-y-1.5">
+                      <label className="text-[10px] uppercase tracking-widest text-[#B38B36] font-bold">
+                        Property / Plot Area Size
+                      </label>
+                      <div className="relative">
+                        <select
+                          value={vastuRangeIndex}
+                          onChange={(e) => setVastuRangeIndex(Number(e.target.value))}
+                          className="w-full bg-white border border-[#E5E1D8] text-[#3C2A21] px-4 py-3.5 rounded-xl text-sm focus:outline-none focus:border-[#B38B36] focus:ring-1 focus:ring-[#B38B36] appearance-none cursor-pointer font-serif"
+                        >
+                          {VASTU_TYPES[vastuType].ranges.map((range, index) => (
+                            <option key={index} value={index}>
+                              {range.area} — {formatINR(range.price)}
+                            </option>
+                          ))}
+                        </select>
+                        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[#B38B36]">
+                          <svg className="w-4 h-4 fill-current" viewBox="0 0 20 20">
+                            <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+                          </svg>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Step 2 */}
+              <div>
+                <div className="flex items-center gap-3 mb-4">
+                  <span className="w-6 h-6 rounded-full bg-[#B38B36] text-white text-xs font-medium flex items-center justify-center">
+                    2
                   </span>
                   <h4 className="font-serif text-xl text-[#3C2A21]">
                     Pick a date
@@ -154,11 +284,11 @@ const BookingModal = ({ service, open, onClose }) => {
                 </div>
               </div>
 
-              {/* Step 2 */}
+              {/* Step 3 */}
               <div>
                 <div className="flex items-center gap-3 mb-4">
                   <span className="w-6 h-6 rounded-full bg-[#B38B36] text-white text-xs font-medium flex items-center justify-center">
-                    2
+                    3
                   </span>
                   <h4 className="font-serif text-xl text-[#3C2A21]">
                     Available time slots
@@ -196,11 +326,11 @@ const BookingModal = ({ service, open, onClose }) => {
                 )}
               </div>
 
-              {/* Step 3 */}
+              {/* Step 4 */}
               <div>
                 <div className="flex items-center gap-3 mb-4">
                   <span className="w-6 h-6 rounded-full bg-[#B38B36] text-white text-xs font-medium flex items-center justify-center">
-                    3
+                    4
                   </span>
                   <h4 className="font-serif text-xl text-[#3C2A21]">
                     Your details
@@ -247,7 +377,7 @@ const BookingModal = ({ service, open, onClose }) => {
                 onClick={handleConfirm}
                 className="w-full bg-[#3C2A21] hover:bg-[#B38B36] text-white text-xs tracking-[0.25em] uppercase py-4 rounded-full transition-all duration-300 font-medium"
               >
-                Confirm Appointment · {formatINR(service.price)}
+                Confirm Appointment · {formatINR(currentPrice)}
               </button>
             </div>
           </div>

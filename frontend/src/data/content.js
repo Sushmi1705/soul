@@ -50,6 +50,19 @@ export const NAV_LINKS = [
       { label: "Numerology Analysis", href: "/courses/numerology-course" }
     ]
   },
+  {
+    label: "Shubh Muhurats 2026",
+    href: "#",
+    subLinks: [
+      { label: "Yagyopavit Muhurat", href: "/shubh-muhurat-2026/yagyopavit" },
+      { label: "Annaprashana Muhurat", href: "/shubh-muhurat-2026/annaprashana" },
+      { label: "Vidyarambh Muhurat", href: "/shubh-muhurat-2026/vidyarambh" },
+      { label: "Namkaran Muhurat", href: "/shubh-muhurat-2026/namkaran" },
+      { label: "Vivah Muhurat", href: "/shubh-muhurat-2026/vivah" },
+      { label: "Mundan Muhurat", href: "/shubh-muhurat-2026/mundan" },
+      { label: "Karnavedha Muhurat", href: "/shubh-muhurat-2026/karnavedha" }
+    ]
+  },
   { label: "Blog", href: "/blog" },
   { label: "Contact Us", href: "/contact" },
 ];
@@ -61,7 +74,7 @@ export const SERVICES = [
     desc: "We combine time-honored techniques with contemporary insights to provide you with personalized interpretations and actionable guidance.",
     image: "https://gitikasharma.in/wp-content/uploads/2024/03/1-3.png",
     duration: "60 min",
-    price: 2499,
+    price: 5100,
   },
   {
     id: "kundali-making",
@@ -69,7 +82,7 @@ export const SERVICES = [
     desc: "We meticulously craft your personalized birth chart, offering profound insights into the unique cosmic influences shaping your journey.",
     image: "https://gitikasharma.in/wp-content/uploads/2024/03/2-3.png",
     duration: "45 min",
-    price: 1999,
+    price: 5100,
   },
   {
     id: "match-making",
@@ -77,7 +90,7 @@ export const SERVICES = [
     desc: "Discover the magic of cosmic connection, embark on a journey of discovery, and let the stars align your path to enduring love.",
     image: "https://gitikasharma.in/wp-content/uploads/2024/03/3-2.png",
     duration: "75 min",
-    price: 3499,
+    price: 5100,
   },
   {
     id: "numerology-analysis",
@@ -85,7 +98,7 @@ export const SERVICES = [
     desc: "Unveil the mysteries of your destiny and embark on a transformative journey of self-discovery through the wisdom of numbers.",
     image: "https://gitikasharma.in/wp-content/uploads/2024/03/4-2.png",
     duration: "60 min",
-    price: 2199,
+    price: 5100,
   },
   {
     id: "vastu-consultation",
@@ -93,7 +106,7 @@ export const SERVICES = [
     desc: "Create a balanced environment for your home or workspace with insightful recommendations tailored to your specific needs.",
     image: "https://gitikasharma.in/wp-content/uploads/2024/03/5-2.png",
     duration: "90 min",
-    price: 4999,
+    price: 51000,
   },
   {
     id: "soul-purpose",
@@ -101,7 +114,7 @@ export const SERVICES = [
     desc: "Honor the whispers of your soul and embark on a quest to live a life of purpose, passion, and authenticity.",
     image: "https://gitikasharma.in/wp-content/uploads/2024/03/6-4.png",
     duration: "60 min",
-    price: 2999,
+    price: 5100,
   },
 ];
 
@@ -497,3 +510,42 @@ export const COURSES_PAGE_DATA = {
     ]
   }
 };
+
+export const CONSULTATION_TYPES = {
+  normal: {
+    label: "Normal Consultation",
+    wait: "7 - 10 days wait time",
+    price: 5100
+  },
+  urgent: {
+    label: "Urgent Consultation",
+    wait: "within 72 hours",
+    price: 11000
+  }
+};
+
+export const VASTU_TYPES = {
+  domestic: {
+    label: "Domestic Vastu",
+    ranges: [
+      { area: "upto 2000 Sqft", price: 51000 },
+      { area: "2001 - 4500 sqft Area", price: 75000 },
+      { area: "4501 - 7000 Sq ft Area", price: 125000 },
+      { area: "7001 - 10,000 sqft", price: 200000 },
+      { area: "10,000 & above", price: 300000 }
+    ]
+  },
+  industrial: {
+    label: "Industrial Vastu",
+    ranges: [
+      { area: "upto 20,000 sqft", price: 100000 },
+      { area: "20001 - 50000 sqft", price: 250000 },
+      { area: "50,001 - 1,00,000 Sqft", price: 500000 },
+      { area: "1,00,001 - 3,00,000 sqft", price: 1000000 },
+      { area: "3,00,001 sqft - 5,00,000 sqft", price: 1250000 },
+      { area: "5,00,001 sqft - 7,50,000 sqft", price: 1500000 },
+      { area: "7,50,001 sqft - 11,00,000 sqft", price: 2000000 }
+    ]
+  }
+};
+

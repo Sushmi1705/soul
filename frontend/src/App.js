@@ -29,7 +29,7 @@ import CalculatorPage from "@/pages/CalculatorPage";
 import AdminLogin from "@/pages/AdminLogin";
 import AdminDashboard from "@/pages/AdminDashboard";
 import PaymentPage from "@/pages/PaymentPage";
-import AccessibilityControl from "@/components/AccessibilityControl";
+import ShubhMuhuratPage from "@/pages/ShubhMuhuratPage";
 
 const Layout = ({ children }) => {
   const { pathname } = useLocation();
@@ -57,7 +57,6 @@ const Layout = ({ children }) => {
   if (isAdminRoute) {
     return (
       <div className="bg-[#0d0905] min-h-screen font-sans antialiased">
-        <AccessibilityControl />
         {children}
       </div>
     );
@@ -66,7 +65,6 @@ const Layout = ({ children }) => {
   return (
     <div className="bg-[#FDFBF7] text-[#3C2A21] min-h-screen font-sans antialiased pb-24 lg:pb-0">
       <Header />
-      <AccessibilityControl />
       <main>
         {children}
       </main>
@@ -82,13 +80,13 @@ const Home = () => {
     <>
       <NebulaBackground />
       <CelestialOracleHero />
-      <Calculators />
-      <About />
       <Panchang />
+      <About />
       <StatsBar />
       <ZodiacSigns />
       <Services />
       <Courses />
+      <Calculators />
       <Testimonials />
       <Journal />
     </>
@@ -111,6 +109,8 @@ function App() {
               <Route path="/blog" element={<BlogPage />} />
               <Route path="/contact" element={<ContactPage />} />
               <Route path="/calculator/:id" element={<CalculatorPage />} />
+              <Route path="/shubh-muhurat-2026" element={<ShubhMuhuratPage />} />
+              <Route path="/shubh-muhurat-2026/:type" element={<ShubhMuhuratPage />} />
               <Route path="/admin/login" element={<AdminLogin />} />
               <Route path="/admin" element={<AdminDashboard />} />
               <Route path="/payment" element={<PaymentPage />} />

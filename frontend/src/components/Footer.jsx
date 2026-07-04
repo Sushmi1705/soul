@@ -139,6 +139,7 @@ const Footer = () => {
                 { label: "Kundli Matching & Guna Milan", href: "/calculator/kundli-matching" },
                 { label: "Nakshatra (Birth Star) Finder", href: "/calculator/nakshatra" },
                 { label: "Rahu Ketu Placements Finder", href: "/calculator/rahu-ketu" },
+                { label: "Shubh Muhurats 2026", href: "/shubh-muhurat-2026" },
               ].map((item) => (
                 <li key={item.label} className="group/item flex items-start gap-2.5 py-0.5">
                   <span className="text-[#B38B36] group-hover/item:rotate-90 transition-transform duration-500 shrink-0 select-none mt-0.5">✦</span>

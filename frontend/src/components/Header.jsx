@@ -9,7 +9,7 @@ const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <header className="fixed top-0 inset-x-0 z-50 bg-[#FAF9F6]/95 backdrop-blur-2xl shadow-[0_10px_30px_rgba(0,0,0,0.05)] transition-all duration-500 border-b-2 border-[#D4AF37]">
+    <header className="fixed top-0 inset-x-0 z-50 bg-[#FAF9F6]/95 backdrop-blur-2xl shadow-[0_10px_30px_rgba(0,0,0,0.05)] transition-all duration-500 border-b-2 border-[#D4AF37] pb-2 md:pb-3">
       {/* Decorative Gold Top Line */}
       <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-[#4A0E1B] via-[#D4AF37] to-[#4A0E1B]"></div>
       
@@ -21,7 +21,7 @@ const Header = () => {
               <img 
                 src="/astropower-logo.png" 
                 alt="AstroPower 24" 
-                className="h-full w-auto object-contain transition-transform duration-300 origin-left transform scale-[1.5] translate-y-[8px] md:scale-[1.65] md:translate-y-[14px] group-hover:scale-[1.55] md:group-hover:scale-[1.7]" 
+                className="h-full w-auto object-contain transition-transform duration-300 origin-left transform scale-[1.5] translate-y-[4px] md:scale-[1.65] md:translate-y-[7px] group-hover:scale-[1.55] md:group-hover:scale-[1.7]" 
               />
           </Link>
         </div>

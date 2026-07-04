@@ -552,6 +552,9 @@ class HoroscopeCreate(BaseModel):
     tob: str
     pob: str
     is_calculator: bool = False
+    tab: str = "pending-karma"
+    partnerName: str = ""
+    partnerDob: str = ""
 
 class HoroscopeUnlock(BaseModel):
     report_id: str
@@ -848,7 +851,7 @@ def get_seeded_paragraph(rng, key):
     parts = [rng.choice(pool) for pool in pools]
     return "".join(parts)
 
-def generate_unique_horoscope(name: str, dob: str, tob: str, pob: str = ""):
+def generate_unique_horoscope(name: str, dob: str, tob: str, pob: str = "", tab: str = "pending-karma", partner_name: str = "", partner_dob: str = ""):
     name = name.strip() if (name and name.strip()) else "Seeker"
     # Build seed with date-based entropy so the same person gets a different report each day
     now_tag = datetime.now(timezone.utc).strftime("%Y-%m-%d-%H")
@@ -1021,7 +1024,18 @@ You must return a single, valid JSON object containing exactly the keys below. D
     if gemini_key and gemini_key.strip():
         persona = rng.choice(PERSONAS)
         tone = rng.choice(TONES)
-        focus = rng.choice(FOCUS_AREAS)
+        if tab == "pending-karma":
+            focus = "Uncovering unresolved past-life debts, recurring karmic cycles, ancestral patterns, and Saturn/Ketu lesson alignment."
+        elif tab == "karmic-connections":
+            focus = f"Exploring deep spiritual and karmic relationship bonds, mutual soul agreements, and dynamic compatibility with partner {partner_name} (born {partner_dob})."
+        elif tab == "soul-purpose":
+            focus = "Discovering your true calling, life mission, and ultimate spiritual destiny."
+        elif tab == "soul-blueprint":
+            focus = "Examine the unique cosmic coding of your character, latent talents, and inherent cosmic strengths."
+        elif tab == "soul-alignment":
+            focus = "Aligning your daily lifestyle, actions, diet, physical/mental wellness, and energies with current planetary transits."
+        else:
+            focus = rng.choice(FOCUS_AREAS)
         storytelling = rng.choice(STORYTELLING_FRAMES)
 
         prompt = f"""
@@ -1275,7 +1289,10 @@ async def generate_horoscope(request: HoroscopeCreate):
         name=req_name,
         dob=request.dob,
         tob=request.tob,
-        pob=request.pob
+        pob=request.pob,
+        tab=request.tab,
+        partner_name=request.partnerName,
+        partner_dob=request.partnerDob
     )
 
     doc = {
@@ -1284,6 +1301,9 @@ async def generate_horoscope(request: HoroscopeCreate):
         "dob": request.dob,
         "tob": request.tob,
         "pob": request.pob,
+        "tab": request.tab,
+        "partner_name": request.partnerName,
+        "partner_dob": request.partnerDob,
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "is_paid": False,
         "astrology_details": generated["astrology_details"],

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowRight, Sparkles, Moon, Star, Loader2, User, Calendar, Clock, MapPin } from "lucide-react";
+import { ArrowRight, Sparkles, Moon, Star, Loader2, User, Calendar, Clock, MapPin, Heart, History, Compass, Fingerprint, Activity } from "lucide-react";
 import { useDesign } from "@/context/DesignContext";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
@@ -65,16 +65,67 @@ const getCalculationLogs = (data) => {
   ];
 };
 
+const TABS = [
+  {
+    id: "pending-karma",
+    label: "Pending Karma",
+    shortLabel: "Karma",
+    icon: History,
+    title: "Pending Karma Analysis",
+    subtitle: "Uncover unresolved past-life debts, recurring cycles, and ancestral patterns.",
+    buttonText: "Analyze Karma"
+  },
+  {
+    id: "karmic-connections",
+    label: "Karmic Connections",
+    shortLabel: "Karmic",
+    icon: Heart,
+    title: "Karmic Connections",
+    subtitle: "Explore deep spiritual bonds and past-life agreements between you and a partner.",
+    buttonText: "Check Connection"
+  },
+  {
+    id: "soul-purpose",
+    label: "Soul Purpose",
+    shortLabel: "Purpose",
+    icon: Compass,
+    title: "Soul Purpose Path",
+    subtitle: "Discover your true path, life lessons, and ultimate destination this lifetime.",
+    buttonText: "Reveal Purpose"
+  },
+  {
+    id: "soul-blueprint",
+    label: "Soul Blueprint",
+    shortLabel: "Blueprint",
+    icon: Fingerprint,
+    title: "Soul Blueprint",
+    subtitle: "Examine the unique cosmic coding of your talents, strengths, and soul design.",
+    buttonText: "Unlock Blueprint"
+  },
+  {
+    id: "soul-alignment",
+    label: "Soul Alignment",
+    shortLabel: "Align",
+    icon: Activity,
+    title: "Soul Alignment",
+    subtitle: "Align your daily lifestyle, actions, and energies with current planetary transits.",
+    buttonText: "Align Soul"
+  }
+];
+
 const CelestialOracleHero = () => {
   const { bgDesign } = useDesign();
   const navigate = useNavigate();
   
   const [step, setStep] = useState("form"); // "form" | "loading"
+  const [activeTab, setActiveTab] = useState("pending-karma");
   const [formData, setFormData] = useState({
     name: "",
     dob: "",
     tob: "",
-    pob: ""
+    pob: "",
+    partnerName: "",
+    partnerDob: ""
   });
   
   const [submitting, setSubmitting] = useState(false);
@@ -219,6 +270,13 @@ const CelestialOracleHero = () => {
       return;
     }
 
+    if (activeTab === "karmic-connections") {
+      if (!formData.partnerName?.trim() || !formData.partnerDob) {
+        toast.error("Please fill in Partner's Name and Partner's Date of Birth.");
+        return;
+      }
+    }
+
     setSubmitting(true);
     setStep("loading");
 
@@ -226,7 +284,10 @@ const CelestialOracleHero = () => {
       const response = await fetch(`${apiUrl}/api/horoscope/generate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData)
+        body: JSON.stringify({
+          ...formData,
+          tab: activeTab
+        })
       });
       
       const data = await response.json();
@@ -292,7 +353,7 @@ const CelestialOracleHero = () => {
         <div className="relative z-20 max-w-7xl xl:max-w-[1360px] 2xl:max-w-[1480px] mx-auto px-6 lg:px-12 w-full grid lg:grid-cols-12 gap-12 items-center">
           
           {/* Left Column: Heading and Marketing Copy */}
-          <div className="lg:col-span-7 text-left relative py-8 px-6 md:py-0 md:px-0 rounded-2xl overflow-hidden z-10">
+          <div className="lg:col-span-6 text-left relative py-8 px-6 md:py-0 md:px-0 rounded-2xl overflow-hidden z-10">
             {/* Mobile-Only Video Background container */}
             <div className="block md:hidden absolute inset-0 z-0 opacity-[0.22] pointer-events-none overflow-hidden rounded-2xl">
               <iframe
@@ -305,8 +366,8 @@ const CelestialOracleHero = () => {
             </div>
 
             <div className="relative z-10 font-sans">
-              <div className="flex items-center gap-4 mb-8 animate-reveal opacity-0" style={{ animationDelay: '0.2s' }}>
-                <span className="inline-flex items-center gap-1.5 px-4 py-1.5 border border-[#B38B36]/30 rounded-full bg-[#B38B36]/10 text-[10px] tracking-[0.2em] uppercase text-[#B38B36] font-bold">
+              <div className="flex items-center gap-4 mb-6 animate-reveal opacity-0" style={{ animationDelay: '0.2s' }}>
+                <span className="inline-flex items-center gap-1.5 px-4 py-2 border border-[#B38B36]/40 rounded-xl bg-[#FCFAF2]/70 backdrop-blur-sm text-xs md:text-sm tracking-[0.2em] uppercase text-[#3C2A21] font-extrabold shadow-sm">
                   ✨ AI Personalized Horoscope
                 </span>
               </div>
@@ -339,8 +400,8 @@ const CelestialOracleHero = () => {
           </div>
 
           {/* Right Column: Direct Birth Chart Input Form */}
-          <div className="lg:col-span-5 relative w-full mt-8 lg:mt-0 animate-reveal opacity-0" style={{ animationDelay: '0.8s' }}>
-            <div className="relative w-full max-w-md lg:ml-auto lg:mr-0 mx-auto z-10 xl:translate-x-6 2xl:translate-x-12 transition-transform duration-500">
+          <div className="lg:col-span-6 relative w-full mt-8 lg:mt-0 animate-reveal opacity-0" style={{ animationDelay: '0.8s' }}>
+            <div className="relative w-full max-w-lg lg:ml-auto lg:mr-0 mx-auto z-10 xl:translate-x-6 2xl:translate-x-12 transition-transform duration-500">
                <div className="absolute inset-0 bg-[#B38B36]/5 blur-[100px] rounded-full pointer-events-none" />
                
                {/* Slow Rotating Background Zodiac Wheel Watermark */}
@@ -385,17 +446,41 @@ const CelestialOracleHero = () => {
                         transition={{ duration: 0.3 }}
                         className="space-y-6"
                       >
-                        <div className="text-center">
-                          <span className="inline-flex items-center gap-1 px-3 py-1 border border-[#E5C06A]/30 rounded-full bg-[#E5C06A]/10 text-[9px] tracking-widest uppercase text-[#E5C06A] font-bold mb-2 z-10 relative">
-                            ✨ Map Your Destiny
+                        {/* Premium Cosmic Dial Tab Selector */}
+                        <div className="flex justify-center items-center gap-3.5 mb-5 z-20 relative">
+                          {TABS.map((tab) => {
+                            const IconComponent = tab.icon;
+                            const isActive = activeTab === tab.id;
+                            return (
+                              <button
+                                key={tab.id}
+                                type="button"
+                                onClick={() => setActiveTab(tab.id)}
+                                title={tab.label}
+                                className={`w-11 h-11 rounded-full flex items-center justify-center border transition-all duration-500 cursor-pointer ${
+                                  isActive
+                                    ? "bg-gradient-to-b from-[#E5C06A] to-[#B38B36] border-white text-white shadow-[0_4px_12px_rgba(179,139,54,0.35)] scale-115 z-10"
+                                    : "bg-[#F4F0E6] border-[#B38B36]/30 text-[#8E6B23]/70 hover:border-[#B38B36]/60 hover:text-[#8E6B23] hover:scale-105"
+                                }`}
+                              >
+                                <IconComponent className="w-5 h-5 shrink-0" />
+                              </button>
+                            );
+                          })}
+                        </div>
+
+                        {/* Active Reading Details with Full Name Badge */}
+                        <div className="text-center space-y-1 mb-6">
+                          <span className="inline-flex items-center gap-1.5 px-3 py-1 border border-[#B38B36]/25 rounded-full bg-[#B38B36]/5 text-[9px] tracking-[0.25em] uppercase text-[#8E6B23] font-black mb-1.5 z-10 relative">
+                            {TABS.find(t => t.id === activeTab)?.label}
                           </span>
-                          <h3 className="font-serif text-2xl text-brand-dark font-semibold tracking-wide z-10 relative">
-                            Vedic Birth Chart
+                          <h3 className="font-serif text-2xl text-brand-dark font-semibold tracking-wide z-10 relative leading-normal">
+                            {TABS.find(t => t.id === activeTab)?.title}
                           </h3>
-                          <p className="text-[10px] text-stone-500 font-light mt-1 z-10 relative">
-                            Enter your exact coordinates to align planetary transits.
+                          <p className="text-[10px] text-stone-500 font-light z-10 relative max-w-xs mx-auto leading-relaxed">
+                            {TABS.find(t => t.id === activeTab)?.subtitle}
                           </p>
-                          <div className="w-24 h-[1px] bg-gradient-to-r from-transparent via-[#B38B36]/30 to-transparent mx-auto mt-4 mb-2" />
+                          <div className="w-24 h-[1px] bg-gradient-to-r from-transparent via-[#B38B36]/30 to-transparent mx-auto mt-4" />
                         </div>
 
                         <form onSubmit={handleFormSubmit} className="space-y-5 text-left">
@@ -515,13 +600,65 @@ const CelestialOracleHero = () => {
                             </div>
                           </div>
 
+                          {/* Partner details (only for Karmic Connections tab) */}
+                          {activeTab === "karmic-connections" && (
+                            <motion.div
+                              initial={{ opacity: 0, height: 0 }}
+                              animate={{ opacity: 1, height: "auto" }}
+                              exit={{ opacity: 0, height: 0 }}
+                              className="space-y-4 pt-2 border-t border-[#B38B36]/15 z-10 relative"
+                            >
+                              <div className="text-left">
+                                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 border border-[#B38B36]/20 rounded-full bg-[#B38B36]/5 text-[9px] tracking-wider uppercase text-[#8E6B23] font-bold">
+                                  Partner Details
+                                </span>
+                              </div>
+                              
+                              {/* Partner's Full Name */}
+                              <div className="flex flex-col gap-1.5 text-left">
+                                <label className="text-[10px] uppercase tracking-[0.2em] text-brand-dark font-sans font-bold z-10 relative drop-shadow-[0_1px_1px_rgba(255,255,255,0.8)]">
+                                  Partner's Name
+                                </label>
+                                <div className="relative group">
+                                  <User className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#B38B36] group-focus-within:text-[#E5C06A] group-focus-within:scale-110 transition-all duration-300 z-20" />
+                                  <Input
+                                    name="partnerName"
+                                    required={activeTab === "karmic-connections"}
+                                    placeholder="Partner's full name"
+                                    value={formData.partnerName}
+                                    onChange={handleFormChange}
+                                    className="pl-[38px] h-11 bg-[#FCFAF2]/35 hover:bg-[#FFFDF9]/60 border-[#B38B36]/30 hover:border-[#E5C06A]/60 focus-visible:ring-1 focus-visible:ring-[#E5C06A] focus-visible:border-[#E5C06A] focus-visible:shadow-[0_0_15px_rgba(229,192,106,0.25)] text-[#1E110A] text-xs rounded-xl shadow-sm transition-all z-10 relative"
+                                  />
+                                </div>
+                              </div>
+
+                              {/* Partner's Date of Birth */}
+                              <div className="flex flex-col gap-1.5 text-left">
+                                <label className="text-[10px] uppercase tracking-[0.2em] text-brand-dark font-sans font-bold z-10 relative drop-shadow-[0_1px_1px_rgba(255,255,255,0.8)]">
+                                  Partner's Date of Birth
+                                </label>
+                                <div className="relative group">
+                                  <Calendar className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#B38B36] group-focus-within:text-[#E5C06A] group-focus-within:scale-110 transition-all duration-300 z-20" />
+                                  <Input
+                                    name="partnerDob"
+                                    required={activeTab === "karmic-connections"}
+                                    type="date"
+                                    value={formData.partnerDob}
+                                    onChange={handleFormChange}
+                                    className="pl-[38px] h-11 bg-[#FCFAF2]/35 hover:bg-[#FFFDF9]/60 border-[#B38B36]/30 hover:border-[#E5C06A]/60 focus-visible:ring-1 focus-visible:ring-[#E5C06A] focus-visible:border-[#E5C06A] focus-visible:shadow-[0_0_15px_rgba(229,192,106,0.25)] text-[#1E110A] text-xs rounded-xl shadow-sm transition-all cursor-pointer z-10 relative"
+                                  />
+                                </div>
+                              </div>
+                            </motion.div>
+                          )}
+
                           {/* Submit Button */}
                           <button
                             type="submit"
                             disabled={submitting}
-                            className="w-full mt-4 py-4 bg-gradient-to-r from-[#BF953F] via-[#FCF6BA] to-[#B38728] hover:brightness-[1.12] text-[#1E110A] font-serif font-bold tracking-[0.22em] uppercase rounded-xl transition-all duration-500 shadow-[0_4px_20px_rgba(179,139,54,0.3)] hover:shadow-[0_8px_30px_rgba(229,192,106,0.55)] flex items-center justify-center gap-2 text-xs cursor-pointer hover:scale-[1.02] border border-[#FCF6BA]/40 z-10 relative"
+                            className="w-full mt-4 py-4 bg-gradient-to-r from-[#B38B36] to-[#8E6B23] hover:from-[#8E6B23] hover:to-[#725D46] text-white font-sans font-extrabold tracking-[0.22em] uppercase rounded-xl transition-all duration-500 shadow-[0_4px_20px_rgba(179,139,54,0.3)] hover:shadow-[0_8px_30px_rgba(179,139,54,0.5)] flex items-center justify-center gap-2 text-xs cursor-pointer hover:scale-[1.02] border border-[#B38B36]/30 z-10 relative"
                           >
-                            <span>GENERATE HOROSCOPE</span>
+                            <span>{TABS.find(t => t.id === activeTab)?.buttonText || "GENERATE HOROSCOPE"}</span>
                             <ArrowRight className="w-3.5 h-3.5 stroke-[3px]" />
                           </button>
                         </form>
@@ -813,13 +950,13 @@ const CelestialOracleHero = () => {
         }
         .glittery-form-card {
           animation: float-gentle 8s ease-in-out infinite, glow-pulse 6s ease-in-out infinite;
-          background: rgba(253, 251, 247, 0.22) !important;
+          background: rgba(253, 251, 247, 0.65) !important;
           backdrop-filter: blur(12px) !important;
           border: 1px solid rgba(229, 192, 106, 0.25) !important;
           transition: all 0.5s ease-in-out;
         }
         .glittery-form-card:hover {
-          background: rgba(253, 251, 247, 0.35) !important;
+          background: rgba(253, 251, 247, 0.75) !important;
           border-color: rgba(229, 192, 106, 0.4) !important;
           box-shadow: 
             0 30px 70px rgba(179, 139, 54, 0.2),

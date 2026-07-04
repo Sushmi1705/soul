@@ -24,52 +24,6 @@
 }
 
 :root {
-  --font-sans: "Outfit", sans-serif;
-  --font-serif: "Cormorant Garamond", serif;
-}
-
-/* Accessibility Font Family Option overrides */
-html.font-family-1 {
-  --font-sans: "Outfit", sans-serif;
-  --font-serif: "Cormorant Garamond", serif;
-}
-
-html.font-family-2 {
-  --font-sans: Georgia, serif;
-  --font-serif: Georgia, serif;
-}
-
-html.font-family-3 {
-  --font-sans: Garamond, Baskerville, "Baskerville Old Face", "Hoefler Text", "Times New Roman", serif;
-  --font-serif: Garamond, Baskerville, "Baskerville Old Face", "Hoefler Text", "Times New Roman", serif;
-}
-
-html.font-family-4 {
-  --font-sans: Arial, Helvetica, sans-serif;
-  --font-serif: Arial, Helvetica, sans-serif;
-}
-
-html.font-family-5 {
-  --font-sans: Verdana, Geneva, sans-serif;
-  --font-serif: Verdana, Geneva, sans-serif;
-}
-
-html.font-family-6 {
-  --font-sans: "Lora", Georgia, serif;
-  --font-serif: "Cinzel", serif;
-}
-
-html.font-family-7 {
-  --font-sans: "Arial Nova", Arial, Helvetica, sans-serif;
-  --font-serif: "Arial Nova", Arial, Helvetica, sans-serif;
-}
-
-html.font-family-8 {
-  --font-sans: "Poppins", sans-serif;
-  --font-serif: "Poppins", sans-serif;
-}
-
-html.font-family-9 {
   --font-sans: "Montserrat", sans-serif;
   --font-serif: "Montserrat", sans-serif;
 }
@@ -184,4 +138,13 @@ section[id] {
 /* Hide platform branding badge */
 #emergent-badge {
   display: none !important;
+}
+
+/* Hide scrollbars */
+.scrollbar-none {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
 }
