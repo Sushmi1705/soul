@@ -537,7 +537,9 @@ const Panchang = () => {
                         { label: "Nakshatra (Lunar Mansion)", value: data.elements?.nakshatra },
                         { label: "Yoga (Solilunar Aspect)", value: data.elements?.yoga },
                         { label: "Karana (Half Tithi)", value: data.elements?.karana },
-                        { label: "Vara (Day of the Week)", value: data.elements?.vara }
+                        { label: "Vara (Day of the Week)", value: data.elements?.vara },
+                        { label: "Moon Sign (Rashi)", value: data.elements?.moon_sign },
+                        { label: "Moon Phase", value: data.elements?.moon_phase }
                       ].map((item, idx) => (
                         <div key={idx} className="flex justify-between items-center py-2 border-b border-stone-100 last:border-0 last:pb-0">
                           <span className="font-semibold text-stone-600">{item.label}</span>
@@ -690,6 +692,50 @@ const Panchang = () => {
                         </div>
                       );
                     })}
+                  </div>
+                </div>
+
+                {/* 4. Sacred Fasting Table */}
+                <div className="bg-white/55 border border-[#B38B36]/15 rounded-2xl p-6 shadow-sm space-y-5">
+                  <div>
+                    <h4 className="font-serif text-sm uppercase tracking-widest text-[#8E6B23] font-bold border-b border-stone-200 pb-2 flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 text-[#B38B36]" />
+                      Sacred Fasting (2026)
+                    </h4>
+                    <p className="text-xs text-stone-500 font-light mt-1">
+                      Highly auspicious Ekadashi fasting dates and cosmic observances for the year.
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {[
+                      { month: "January", fastings: ["Shattila Ekadashi (14)", "Jaya Ekadashi (29)"] },
+                      { month: "February", fastings: ["Vijaya Ekadashi (13)", "Amalaki Ekadashi (27)"] },
+                      { month: "March", fastings: ["Papamochani Ekadashi (15)", "Kamada Ekadashi (29)"] },
+                      { month: "April", fastings: ["Varuthini Ekadashi (13)", "Mohini Ekadashi (27)"] },
+                      { month: "May", fastings: ["Apara Ekadashi (13)", "Nirjala Ekadashi (27)"] },
+                      { month: "June", fastings: ["Yogini Ekadashi (11)", "Devshayani Ekadashi (25)"] },
+                      { month: "July", fastings: ["Kamika Ekadashi (10)", "Shravana Putrada (24)"] },
+                      { month: "August", fastings: ["Aja Ekadashi (09)", "Parsva Ekadashi (23)"] },
+                      { month: "September", fastings: ["Indira Ekadashi (07)", "Papankusha Ekadashi (22)"] },
+                      { month: "October", fastings: ["Rama Ekadashi (06)", "Devutthana Ekadashi (20)"] },
+                      { month: "November", fastings: ["Utpanna Ekadashi (05)", "Mokshada Ekadashi (20)"] },
+                      { month: "December", fastings: ["Saphala Ekadashi (05)", "Putrada Ekadashi (19)"] }
+                    ].map((item, index) => (
+                      <div key={index} className="bg-white border border-[#E5E1D8] p-4 rounded-2xl shadow-sm flex flex-col justify-between hover:border-[#B38B36]/30 transition-all duration-300">
+                        <div>
+                          <span className="text-[10px] uppercase tracking-wider text-stone-400 font-extrabold block mb-2">{item.month}</span>
+                          <div className="space-y-1.5">
+                            {item.fastings.map((fasting, fIdx) => (
+                              <div key={fIdx} className="text-xs text-[#3C2A21] font-medium flex items-start gap-1.5">
+                                <span className="text-[#B38B36] mt-0.5">✦</span>
+                                <span>{fasting}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
 

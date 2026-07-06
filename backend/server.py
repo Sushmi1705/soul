@@ -1722,12 +1722,46 @@ async def get_panchang(response: Response, city: str = "New Delhi"):
     # Set Lahiri Sidereal mode
     swe.set_sid_mode(swe.SIDM_LAHIRI, 0.0, 0.0)
     
+    moon_sign_name = "Aries (Mesha)"
+    moon_phase_name = "Waxing Gibbous 0.50"
+    
     try:
         sun_res, _ = swe.calc_ut(jd, swe.SUN, swe.FLG_SIDEREAL)
         sun_lon = sun_res[0]
         
         moon_res, _ = swe.calc_ut(jd, swe.MOON, swe.FLG_SIDEREAL)
         moon_lon = moon_res[0]
+        
+        zodiac_signs = [
+            "Aries (Mesha)", "Taurus (Vrishabha)", "Gemini (Mithuna)", "Cancer (Karka)",
+            "Leo (Simha)", "Virgo (Kanya)", "Libra (Tula)", "Scorpio (Vrishchika)",
+            "Sagittarius (Dhanu)", "Capricorn (Makara)", "Aquarius (Kumbha)", "Pisces (Meena)"
+        ]
+        moon_sign_idx = int(moon_lon / 30.0)
+        moon_sign_name = zodiac_signs[min(moon_sign_idx, 11)]
+        
+        diff = (moon_lon - sun_lon) % 360.0
+        import math
+        illumination = (1.0 - math.cos(math.radians(diff))) / 2.0
+        
+        if diff < 15 or diff > 345:
+            phase_name = "New Moon"
+        elif 15 <= diff < 75:
+            phase_name = "Waxing Crescent"
+        elif 75 <= diff < 105:
+            phase_name = "First Quarter"
+        elif 105 <= diff < 165:
+            phase_name = "Waxing Gibbous"
+        elif 165 <= diff < 195:
+            phase_name = "Full Moon"
+        elif 195 <= diff < 255:
+            phase_name = "Waning Gibbous"
+        elif 255 <= diff < 285:
+            phase_name = "Third Quarter"
+        else:
+            phase_name = "Waning Crescent"
+            
+        moon_phase_name = f"{phase_name} {illumination:.2f}"
     except Exception:
         sun_lon = 0.0
         moon_lon = 0.0
@@ -1940,7 +1974,9 @@ async def get_panchang(response: Response, city: str = "New Delhi"):
             "nakshatra": nak_name,
             "yoga": yoga_name,
             "karana": karana_name,
-            "vara": vara_name
+            "vara": vara_name,
+            "moon_sign": moon_sign_name,
+            "moon_phase": moon_phase_name
         },
         "choghadiya": {
             "day": day_slots,
