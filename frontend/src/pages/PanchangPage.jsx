@@ -20,7 +20,10 @@ import {
   ChevronRight, 
   Home,
   CheckCircle2,
-  CalendarCheck
+  CalendarCheck,
+  Briefcase,
+  TrendingUp,
+  Bookmark
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -49,6 +52,14 @@ const PanchangPage = () => {
   const [isCityModalOpen, setIsCityModalOpen] = useState(false);
   const [modalSearch, setModalSearch] = useState("");
   const [visibleLimit, setVisibleLimit] = useState(150);
+
+  // Expandable sections limits (4 months initially)
+  const [muhuratMonthsLimit, setMuhuratMonthsLimit] = useState(4);
+  const [fastingMonthsLimit, setFastingMonthsLimit] = useState(4);
+  const [beginningsMonthsLimit, setBeginningsMonthsLimit] = useState(4);
+
+  // Auspicious Muhurats categories active state
+  const [muhuratCategoryTab, setMuhuratCategoryTab] = useState("marriage");
 
   const fetchPanchang = async (cityName, dateStr) => {
     setLoading(true);
@@ -100,6 +111,16 @@ const PanchangPage = () => {
       fetchCities();
     }
   }, [isCityModalOpen]);
+
+  // Live Auto-Refresh every 60 seconds (Updates local clock & active status parameters)
+  useEffect(() => {
+    const timer = setInterval(() => {
+      if (!loading && data) {
+        fetchPanchang(city, selectedDate);
+      }
+    }, 60000);
+    return () => clearInterval(timer);
+  }, [city, selectedDate, loading, data]);
 
   const handleRefresh = () => {
     fetchPanchang(city, selectedDate);
@@ -164,6 +185,84 @@ const PanchangPage = () => {
     setModalSearch("");
   };
 
+  // Auspicious Muhurats Data
+  const auspMuhurats = {
+    marriage: [
+      { month: "January", dates: ["18 (Sunday)", "26 (Monday)"] },
+      { month: "February", dates: ["12 (Thursday)", "22 (Sunday)"] },
+      { month: "March", dates: ["12 (Thursday)", "20 (Friday)"] },
+      { month: "April", dates: ["08 (Wednesday)", "24 (Friday)"] },
+      { month: "May", dates: ["15 (Friday)", "28 (Thursday)"] },
+      { month: "June", dates: ["08 (Monday)", "25 (Thursday)"] },
+      { month: "July", dates: ["16 (Thursday)", "22 (Wednesday)"] },
+      { month: "August", dates: ["12 (Wednesday)", "14 (Friday)"] },
+      { month: "September", dates: ["16 (Wednesday)", "24 (Thursday)"] },
+      { month: "October", dates: ["14 (Wednesday)", "20 (Tuesday)"] },
+      { month: "November", dates: ["18 (Wednesday)", "20 (Friday)"] },
+      { month: "December", dates: ["05 (Friday)", "19 (Saturday)"] }
+    ],
+    vehicle: [
+      { month: "January", dates: ["02", "05", "11", "14", "21", "28"] },
+      { month: "February", dates: ["01", "06", "11", "26", "27"] },
+      { month: "March", dates: ["01", "05", "08", "09", "15", "16", "23"] },
+      { month: "April", dates: ["01", "06", "12", "13", "20", "24"] },
+      { month: "May", dates: ["01", "04", "10", "11", "14", "28"] },
+      { month: "June", dates: ["17", "22", "24", "25"] },
+      { month: "July", dates: ["02", "08", "12", "19", "24"] },
+      { month: "August", dates: ["07", "09", "10", "16", "20", "26"] },
+      { month: "September", dates: ["04", "06", "13", "14", "16", "24"] },
+      { month: "October", dates: ["21", "22", "25", "28", "30"] },
+      { month: "November", dates: ["01", "06", "25", "26", "29"] },
+      { month: "December", dates: ["03", "04", "13", "14", "23", "30"] }
+    ],
+    property: [
+      { month: "January", dates: ["08", "15", "22", "29"] },
+      { month: "February", dates: ["05", "12", "19", "26"] },
+      { month: "March", dates: ["05", "12", "19", "26"] },
+      { month: "April", dates: ["02", "09", "16", "23", "30"] },
+      { month: "May", dates: ["07", "14", "21", "28"] },
+      { month: "June", dates: ["04", "11", "18", "25"] },
+      { month: "July", dates: ["02", "09", "16", "23", "30"] },
+      { month: "August", dates: ["06", "13", "20", "27"] },
+      { month: "September", dates: ["03", "10", "17", "24"] },
+      { month: "October", dates: ["01", "08", "15", "22", "29"] },
+      { month: "November", dates: ["05", "12", "19", "26"] },
+      { month: "December", dates: ["03", "10", "17", "24", "31"] }
+    ]
+  };
+
+  // Sacred Fasting Calendar
+  const fastingCalendar = [
+    { month: "January", items: ["Shattila Ekadashi (14)", "Jaya Ekadashi (29)", "Pausha Amavasya (18)", "Pausha Purnima (3)"] },
+    { month: "February", items: ["Vijaya Ekadashi (13)", "Amalaki Ekadashi (27)", "Magha Amavasya (17)", "Magha Purnima (1)"] },
+    { month: "March", items: ["Papamochani Ekadashi (15)", "Kamada Ekadashi (29)", "Phalguna Amavasya (18)", "Phalguna Purnima (3)"] },
+    { month: "April", items: ["Varuthini Ekadashi (13)", "Mohini Ekadashi (27)", "Chaitra Amavasya (17)", "Chaitra Purnima (2)"] },
+    { month: "May", items: ["Apara Ekadashi (13)", "Nirjala Ekadashi (27)", "Vaisakha Amavasya (16)", "Vaisakha Purnima (1)"] },
+    { month: "June", items: ["Yogini Ekadashi (11)", "Devshayani Ekadashi (25)", "Jyeshtha Amavasya (15)", "Jyeshtha Purnima (1)"] },
+    { month: "July", items: ["Kamika Ekadashi (10)", "Shravana Putrada (24)", "Ashadha Amavasya (14)", "Ashadha Purnima (30)"] },
+    { month: "August", items: ["Aja Ekadashi (09)", "Parsva Ekadashi (23)", "Shravana Amavasya (12)", "Shravana Purnima (28)"] },
+    { month: "September", items: ["Indira Ekadashi (07)", "Papankusha Ekadashi (22)", "Bhadrapada Amavasya (11)", "Bhadrapada Purnima (27)"] },
+    { month: "October", items: ["Rama Ekadashi (06)", "Devutthana Ekadashi (20)", "Ashvina Amavasya (10)", "Ashvina Purnima (26)"] },
+    { month: "November", items: ["Utpanna Ekadashi (05)", "Mokshada Ekadashi (20)", "Kartika Amavasya (09)", "Kartika Purnima (24)"] },
+    { month: "December", items: ["Saphala Ekadashi (05)", "Putrada Ekadashi (19)", "Margashirsha Amavasya (09)", "Margashirsha Purnima (24)"] }
+  ];
+
+  // New Beginnings Auspicious dates
+  const newBeginnings = [
+    { month: "January", items: ["House Warming (15)", "New Job (21)", "Office Opening (28)"] },
+    { month: "February", items: ["New Business (06)", "Education Initiation (11)", "Investments (25)"] },
+    { month: "March", items: ["Office Opening (09)", "House Warming (23)", "New Job (27)"] },
+    { month: "April", items: ["New Business (12)", "Investments (20)", "Education Initiation (24)"] },
+    { month: "May", items: ["House Warming (11)", "Office Opening (14)", "New Job (28)"] },
+    { month: "June", items: ["New Business (17)", "Investments (22)", "Education Initiation (25)"] },
+    { month: "July", items: ["Office Opening (08)", "House Warming (19)", "New Job (24)"] },
+    { month: "August", items: ["New Business (09)", "Investments (16)", "Education Initiation (20)"] },
+    { month: "September", items: ["House Warming (13)", "Office Opening (16)", "New Job (24)"] },
+    { month: "October", items: ["New Business (22)", "Investments (25)", "Education Initiation (28)"] },
+    { month: "November", items: ["Office Opening (06)", "House Warming (25)", "New Job (29)"] },
+    { month: "December", items: ["New Business (13)", "Investments (23)", "Education Initiation (30)"] }
+  ];
+
   return (
     <div className="pt-24 pb-20 relative z-10 bg-[#FDFBF7] text-[#3C2A21] min-h-screen">
       {/* Banner Header Section */}
@@ -173,7 +272,6 @@ const PanchangPage = () => {
         transition={{ duration: 0.8 }}
         className="relative w-full h-[260px] md:h-[300px] bg-[#3C2A21] flex items-center overflow-hidden border-b border-[#B38B36]/20"
       >
-        {/* Abstract celestial background elements */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full border border-white/5 opacity-10 pointer-events-none" />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] rounded-full border border-white/10 opacity-5 pointer-events-none" />
         <div className="absolute right-10 bottom-5 w-44 h-44 opacity-[0.03] text-white">
@@ -206,14 +304,14 @@ const PanchangPage = () => {
                   type="date"
                   value={selectedDate}
                   onChange={(e) => setSelectedDate(e.target.value)}
-                  className="w-full md:w-auto bg-white/10 hover:bg-white/15 text-white border border-white/20 px-4 py-2.5 rounded-xl text-xs focus:outline-none focus:border-[#E5C06A] transition-colors cursor-pointer"
+                  className="w-full md:w-auto bg-white/10 hover:bg-white/15 text-white border border-white/20 px-4 py-2.5 rounded-xl text-xs focus:outline-none focus:border-[#E5C06A] transition-colors cursor-pointer font-semibold"
                 />
               </div>
 
               <div className="relative flex-1 min-w-[180px] md:flex-initial">
                 <button
                   onClick={() => setIsCityModalOpen(true)}
-                  className="w-full text-left bg-white/10 hover:bg-white/15 text-white border border-white/20 px-4 py-2.5 rounded-xl text-xs flex justify-between items-center transition-colors shadow-sm"
+                  className="w-full text-left bg-white/10 hover:bg-white/15 text-white border border-white/20 px-4 py-2.5 rounded-xl text-xs flex justify-between items-center transition-colors shadow-sm font-semibold"
                 >
                   <span className="truncate">{city.split(',')[0]}</span>
                   <MapPin className="w-4 h-4 text-[#E5C06A]" />
@@ -222,7 +320,7 @@ const PanchangPage = () => {
 
               <button 
                 onClick={handleRefresh}
-                className="bg-[#B38B36] hover:bg-[#E5C06A] hover:text-[#3C2A21] text-white px-5 py-2.5 rounded-xl text-xs font-bold transition-all active:scale-95 shadow-md flex items-center gap-1.5"
+                className="bg-[#B38B36] hover:bg-[#E5C06A] hover:text-[#3C2A21] text-white px-5 py-2.5 rounded-xl text-xs font-bold transition-all active:scale-95 shadow-md flex items-center gap-1.5 cursor-pointer"
               >
                 <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
                 Refresh
@@ -240,24 +338,24 @@ const PanchangPage = () => {
             <p className="font-serif text-lg animate-pulse">Calculating astrological charts and ephemeris metrics...</p>
           </div>
         ) : data ? (
-          <div className="space-y-8">
+          <div className="grid lg:grid-cols-4 gap-8 items-start">
             
-            {/* Row 1: Current Status & Planetary Graphic Arc */}
-            <div className="grid lg:grid-cols-3 gap-8">
+            {/* Left/Center Content Column (Grid span 3) */}
+            <div className="lg:col-span-3 space-y-10">
               
-              {/* Status card */}
-              <div className={`col-span-1 lg:col-span-2 relative overflow-hidden border p-8 rounded-[28px] transition-all duration-500 shadow-md ${statusStyle.bg} flex flex-col justify-between`}>
-                <div className="absolute top-0 right-0 w-44 h-44 opacity-5">
+              {/* SECTION 1: CURRENT PANCHANG SUMMARY */}
+              <div className={`relative overflow-hidden border p-8 rounded-[28px] transition-all duration-500 shadow-md ${statusStyle.bg} flex flex-col md:flex-row justify-between gap-6`}>
+                <div className="absolute top-0 right-0 w-44 h-44 opacity-5 pointer-events-none">
                   <Sparkles className="w-full h-full text-[#B38B36]" />
                 </div>
                 
-                <div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-[10px] tracking-[0.25em] uppercase text-[#725D46] font-extrabold">Cosmic Energy Alert</span>
-                    <span className="text-[10px] bg-white border border-[#E5E1D8] px-2 py-0.5 rounded-md font-mono text-stone-600 font-bold">{data.local_time}</span>
+                <div className="space-y-4 flex-1">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-[9px] tracking-[0.25em] uppercase text-[#725D46] font-extrabold bg-[#B38B36]/10 px-2.5 py-1 rounded border border-[#B38B36]/20">Live Cosmic Pulse</span>
+                    <span className="text-[10px] bg-white border border-[#E5E1D8] px-2.5 py-0.5 rounded-md font-mono text-stone-600 font-bold">{data.local_time}</span>
                   </div>
-                  <div className="flex items-center gap-4 mt-4">
-                    <div className={`w-12 h-12 rounded-full flex items-center justify-center ${statusStyle.iconBg} shadow border border-black/5`}>
+                  <div className="flex items-start gap-4">
+                    <div className={`w-12 h-12 rounded-full flex items-center justify-center ${statusStyle.iconBg} shadow border border-black/5 flex-shrink-0`}>
                       {data.status.color === "red" ? (
                         <AlertCircle className={`w-6 h-6 ${statusStyle.iconColor}`} />
                       ) : data.status.color === "green" ? (
@@ -273,174 +371,132 @@ const PanchangPage = () => {
                   </div>
                 </div>
 
-                <div className="mt-8 pt-4 border-t border-black/5 grid grid-cols-2 sm:grid-cols-4 gap-4 text-stone-600 text-xs">
-                  <div>
-                    <span className="text-[9px] uppercase tracking-wider block font-bold text-stone-400">Sunrise</span>
-                    <span className="font-serif font-bold text-[#3C2A21] mt-0.5 block">{data.sunrise}</span>
-                  </div>
-                  <div>
-                    <span className="text-[9px] uppercase tracking-wider block font-bold text-stone-400">Sunset</span>
-                    <span className="font-serif font-bold text-[#3C2A21] mt-0.5 block">{data.sunset}</span>
-                  </div>
-                  <div>
-                    <span className="text-[9px] uppercase tracking-wider block font-bold text-green-600">Abhijit Muhurat</span>
-                    <span className="font-serif font-bold text-[#3C2A21] mt-0.5 block">{data.abhijit.start} - {data.abhijit.end}</span>
-                  </div>
-                  <div>
-                    <span className="text-[9px] uppercase tracking-wider block font-bold text-red-600">Rahu Kaal</span>
-                    <span className="font-serif font-bold text-[#3C2A21] mt-0.5 block">{data.rahu_kaal.start} - {data.rahu_kaal.end}</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Graphical Wheel chart */}
-              <div className="bg-white border border-[#E5E1D8] rounded-[28px] p-8 flex flex-col items-center justify-center shadow-sm relative overflow-hidden">
-                <div className="absolute top-3 left-3 flex items-center gap-1.5">
-                  <span className="w-2 h-2 bg-[#B38B36] rounded-full animate-ping" />
-                  <span className="text-[8px] uppercase tracking-[0.2em] font-bold text-stone-400">Daytime Division</span>
-                </div>
-
-                <svg viewBox="0 0 100 100" className="w-48 h-48 -rotate-90">
-                  <circle cx="50" cy="50" r="40" fill="transparent" stroke="#F1EDE4" strokeWidth="10" />
-                  <circle 
-                    cx="50" 
-                    cy="50" 
-                    r="40" 
-                    fill="transparent" 
-                    stroke="#E67E22" 
-                    strokeWidth="10" 
-                    strokeDasharray={`${(data.percentages.day_time / 100.0) * circumference} ${circumference}`}
-                    strokeDashoffset="0"
-                    className="transition-all duration-1000 ease-out"
-                  />
-                  <circle 
-                    cx="50" 
-                    cy="50" 
-                    r="40" 
-                    fill="transparent" 
-                    stroke="#84CC16" 
-                    strokeWidth="12" 
-                    strokeDasharray={`${(data.percentages.abhijit / 100.0) * circumference} ${circumference}`}
-                    strokeDashoffset={-((data.abhijit.start_decimal) / 24.0) * circumference}
-                    className="transition-all duration-1000 ease-out"
-                  />
-                  <circle 
-                    cx="50" 
-                    cy="50" 
-                    r="40" 
-                    fill="transparent" 
-                    stroke="#C2410C" 
-                    strokeWidth="12" 
-                    strokeDasharray={`${(data.percentages.rahu_kaal / 100.0) * circumference} ${circumference}`}
-                    strokeDashoffset={-((data.rahu_kaal.start_decimal) / 24.0) * circumference}
-                    className="transition-all duration-1000 ease-out"
-                  />
-                </svg>
-
-                <div className="text-center mt-4">
-                  <span className="text-[9px] uppercase tracking-wider text-stone-400 font-bold block">Current City Time</span>
-                  <span className="font-serif text-xl font-bold text-[#3C2A21]">{data.local_time}</span>
-                  <div className="flex gap-4 items-center justify-center mt-3 text-[9px] font-bold">
-                    <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-[#E67E22]" /> Day ({data.percentages.day_time}%)</span>
-                    <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-[#C2410C]" /> Rahu ({data.percentages.rahu_kaal}%)</span>
-                    <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-[#84CC16]" /> Abhijit ({data.percentages.abhijit}%)</span>
+                {/* Progress Wheel Indicator */}
+                <div className="flex flex-col items-center justify-center bg-white/50 border border-stone-200/40 p-4 rounded-2xl flex-shrink-0 w-full md:w-40 relative">
+                  <svg viewBox="0 0 100 100" className="w-24 h-24 -rotate-90">
+                    <circle cx="50" cy="50" r="40" fill="transparent" stroke="#F1EDE4" strokeWidth="8" />
+                    <circle 
+                      cx="50" 
+                      cy="50" 
+                      r="40" 
+                      fill="transparent" 
+                      stroke="#B38B36" 
+                      strokeWidth="8" 
+                      strokeDasharray={`${(data.percentages.day_time / 100.0) * circumference} ${circumference}`}
+                      strokeDashoffset="0"
+                      className="transition-all duration-1000 ease-out"
+                    />
+                  </svg>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+                    <span className="text-[8px] uppercase tracking-wider text-stone-400 font-extrabold">Day Ratio</span>
+                    <span className="font-serif text-sm font-bold text-[#3C2A21]">{data.percentages.day_time}%</span>
                   </div>
                 </div>
               </div>
 
-            </div>
-
-            {/* Row 2: Active Choghadiya Hero Card */}
-            {data.choghadiya?.active && (
-              <div className="relative overflow-hidden rounded-[28px] border border-[#B38B36]/25 shadow-md">
-                {(() => {
-                  const active = data.choghadiya.active;
-                  let bannerBg = "from-[#FDFBF7] to-[#FAF6EE]";
-                  let badgeBg = "bg-stone-100 text-stone-700 border-stone-200";
-                  let indicatorColor = "bg-[#B38B36]";
-                  
-                  if (active.status === "shubh") {
-                    bannerBg = "from-green-50/40 to-[#FAF6EE]";
-                    badgeBg = "bg-green-100 text-green-800 border-green-200/50";
-                    indicatorColor = "bg-green-600";
-                  } else if (active.status === "asubh") {
-                    bannerBg = "from-red-50/40 to-[#FAF6EE]";
-                    badgeBg = "bg-red-100 text-red-800 border-red-200/50";
-                    indicatorColor = "bg-red-600";
-                  } else if (active.status === "neutral") {
-                    bannerBg = "from-blue-50/40 to-[#FAF6EE]";
-                    badgeBg = "bg-blue-100 text-blue-800 border-blue-200/50";
-                    indicatorColor = "bg-blue-600";
-                  }
-
-                  const tabName = data.choghadiya.day.some(s => s.name === active.name && s.start === active.start) ? "day" : "night";
-                  const currentList = data.choghadiya[tabName];
-                  const currentIndex = currentList.findIndex(s => s.name === active.name && s.start === active.start);
-                  const nextPeriod = currentList[(currentIndex + 1) % 8];
-
-                  return (
-                    <div className={`p-8 bg-gradient-to-r ${bannerBg} flex flex-col md:flex-row justify-between items-start md:items-center gap-6`}>
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2">
-                          <span className={`w-2.5 h-2.5 rounded-full ${indicatorColor} animate-pulse`} />
-                          <span className="text-[10px] tracking-[0.25em] uppercase text-[#725D46] font-extrabold">Current Time Period</span>
-                        </div>
-                        <div className="flex items-baseline gap-3">
-                          <h4 className="font-serif text-3xl font-extrabold tracking-tight">{active.name}</h4>
-                          <span className={`text-xs font-bold px-3 py-0.5 rounded-full border ${badgeBg}`}>
-                            {active.status === "shubh" ? "Auspicious (Labh/Shubh/Amrit)" : active.status === "asubh" ? "Inauspicious (Rog/Kaal/Udveg)" : "Neutral (Char)"}
-                          </span>
-                        </div>
-                        <p className="text-xs text-stone-500 font-light italic">{active.desc} is currently active in this timezone.</p>
-                      </div>
-                      
-                      <div className="flex flex-col md:items-end gap-3 w-full md:w-auto">
-                        <div className="bg-white/80 border border-[#E5E1D8] px-5 py-2.5 rounded-xl shadow-sm">
-                          <span className="text-[9px] uppercase tracking-wider text-stone-400 block font-bold mb-0.5">Active Time Slot</span>
-                          <span className="font-mono text-sm font-extrabold text-[#3C2A21]">{active.start} - {active.end}</span>
-                        </div>
-                        {nextPeriod && (
-                          <div className="flex items-center gap-1.5 text-[10px] text-[#725D46] font-semibold bg-[#FBF6EC] px-3 py-1 rounded-lg border border-[#B38B36]/15 self-start md:self-auto shadow-sm">
-                            <span>Upcoming Time Block: {nextPeriod.name}</span>
-                            <ChevronRight className="w-3.5 h-3.5" />
-                            <span className="font-mono">{nextPeriod.start}</span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })()}
-              </div>
-            )}
-
-            {/* Row 3: Heavenly Pulse & Vedic Hours grids */}
-            <div className="grid lg:grid-cols-2 gap-8">
-              
-              {/* Heavenly Pulse & Core Elements */}
-              <div className="bg-white/70 border border-[#B38B36]/15 rounded-[28px] p-8 shadow-sm space-y-5">
+              {/* SECTION 2: DAY INFORMATION */}
+              <div className="bg-white/60 border border-[#B38B36]/15 rounded-[28px] p-8 shadow-sm space-y-6">
                 <div>
                   <h4 className="font-serif text-lg uppercase tracking-wider text-[#8E6B23] font-bold border-b border-stone-200 pb-2 flex items-center gap-2">
-                    <Calendar className="w-5 h-5 text-[#B38B36]" />
-                    Heavenly Pulse & Elements
+                    <Sun className="w-5 h-5 text-[#B38B36]" />
+                    Solar & Lunar Day Cycles
                   </h4>
                   <p className="text-xs text-stone-500 font-light mt-1">
-                    The five core metrics (Panchang) and lunar planetary signs defining today's energy fields.
+                    Solar boundaries and relative lunar positions of the selected place.
                   </p>
                 </div>
                 
-                <div className="space-y-4 text-xs">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-5 text-xs text-stone-600">
+                  <div className="bg-white/80 p-4 border border-[#E5E1D8] rounded-2xl flex items-center gap-3 shadow-sm">
+                    <div className="w-9 h-9 rounded-full bg-amber-50 flex items-center justify-center text-amber-600 border border-amber-100">
+                      <Sun className="w-4.5 h-4.5" />
+                    </div>
+                    <div>
+                      <span className="text-[9px] uppercase tracking-widest block font-bold text-stone-400">Sunrise</span>
+                      <span className="font-serif font-bold text-[#3C2A21] text-sm">{data.sunrise}</span>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-white/80 p-4 border border-[#E5E1D8] rounded-2xl flex items-center gap-3 shadow-sm">
+                    <div className="w-9 h-9 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600 border border-indigo-100">
+                      <Moon className="w-4.5 h-4.5" />
+                    </div>
+                    <div>
+                      <span className="text-[9px] uppercase tracking-widest block font-bold text-stone-400">Sunset</span>
+                      <span className="font-serif font-bold text-[#3C2A21] text-sm">{data.sunset}</span>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-white/80 p-4 border border-[#E5E1D8] rounded-2xl flex items-center gap-3 shadow-sm">
+                    <div className="w-9 h-9 rounded-full bg-amber-50 flex items-center justify-center text-[#B38B36] border border-amber-100">
+                      <Compass className="w-4.5 h-4.5" />
+                    </div>
+                    <div>
+                      <span className="text-[9px] uppercase tracking-widest block font-bold text-stone-400">Solar Noon</span>
+                      <span className="font-serif font-bold text-[#3C2A21] text-sm">{data.solar_noon}</span>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-white/80 p-4 border border-[#E5E1D8] rounded-2xl flex items-center gap-3 shadow-sm">
+                    <div className="w-9 h-9 rounded-full bg-amber-50/50 flex items-center justify-center text-stone-500 border border-stone-200/50">
+                      <Sun className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <span className="text-[9px] uppercase tracking-widest block font-bold text-stone-400">Moonrise</span>
+                      <span className="font-serif font-bold text-[#3C2A21] text-sm">{data.moonrise}</span>
+                    </div>
+                  </div>
+
+                  <div className="bg-white/80 p-4 border border-[#E5E1D8] rounded-2xl flex items-center gap-3 shadow-sm">
+                    <div className="w-9 h-9 rounded-full bg-indigo-50/50 flex items-center justify-center text-stone-500 border border-stone-200/50">
+                      <Moon className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <span className="text-[9px] uppercase tracking-widest block font-bold text-stone-400">Moonset</span>
+                      <span className="font-serif font-bold text-[#3C2A21] text-sm">{data.moonset}</span>
+                    </div>
+                  </div>
+
+                  <div className="bg-white/80 p-4 border border-[#E5E1D8] rounded-2xl flex items-center gap-3 shadow-sm col-span-2 sm:col-span-1">
+                    <div className="w-9 h-9 rounded-full bg-stone-100 flex items-center justify-center text-stone-600 border border-stone-200">
+                      <Clock className="w-4.5 h-4.5" />
+                    </div>
+                    <div>
+                      <span className="text-[9px] uppercase tracking-widest block font-bold text-stone-400">Day / Night Length</span>
+                      <span className="font-serif font-bold text-[#3C2A21] text-xs leading-none mt-1 block">{data.day_length} / {data.night_length}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* SECTION 3: PANCHANG DETAILS */}
+              <div className="bg-white/60 border border-[#B38B36]/15 rounded-[28px] p-8 shadow-sm space-y-6">
+                <div>
+                  <h4 className="font-serif text-lg uppercase tracking-wider text-[#8E6B23] font-bold border-b border-stone-200 pb-2 flex items-center gap-2">
+                    <Calendar className="w-5 h-5 text-[#B38B36]" />
+                    Panchang details & Vedic Markers
+                  </h4>
+                  <p className="text-xs text-stone-500 font-light mt-1">
+                    Traditional Indian astronomical markers derived from the Swiss Ephemeris.
+                  </p>
+                </div>
+                
+                <div className="grid sm:grid-cols-2 gap-4 text-xs">
                   {[
                     { label: "Tithi (Lunar Day)", value: data.elements?.tithi },
+                    { label: "Paksha (Moon Phase Mode)", value: data.elements?.paksha },
                     { label: "Nakshatra (Lunar Mansion)", value: data.elements?.nakshatra },
                     { label: "Yoga (Solilunar Aspect)", value: data.elements?.yoga },
                     { label: "Karana (Half Tithi)", value: data.elements?.karana },
-                    { label: "Vara (Day of the Week)", value: data.elements?.vara },
-                    { label: "Moon Sign (Rashi)", value: data.elements?.moon_sign },
-                    { label: "Moon Phase", value: data.elements?.moon_phase }
+                    { label: "Vara (Weekday Name)", value: data.elements?.vara },
+                    { label: "Moon Sign (Zodiac Rashi)", value: data.elements?.moon_sign },
+                    { label: "Moon Phase Percentage", value: data.elements?.moon_phase },
+                    { label: "Hindu Lunar Month", value: data.elements?.hindu_month },
+                    { label: "Samvatsara Year Name", value: data.elements?.samvatsara }
                   ].map((item, idx) => (
-                    <div key={idx} className="flex justify-between items-center py-2.5 border-b border-stone-100 last:border-0 last:pb-0">
-                      <span className="font-bold text-stone-600">{item.label}</span>
-                      <span className="font-serif text-[#3C2A21] font-bold text-[13px] bg-white border border-[#E5E1D8] px-3.5 py-1.5 rounded-xl shadow-sm">
+                    <div key={idx} className="flex justify-between items-center py-2.5 border-b border-stone-100 last:border-0">
+                      <span className="font-bold text-stone-500">{item.label}</span>
+                      <span className="font-serif text-[#3C2A21] font-bold text-xs bg-white border border-[#E5E1D8] px-3.5 py-1.5 rounded-xl shadow-sm">
                         {item.value}
                       </span>
                     </div>
@@ -448,240 +504,339 @@ const PanchangPage = () => {
                 </div>
               </div>
 
-              {/* Dynamic Vedic Hours */}
-              <div className="bg-white/70 border border-[#B38B36]/15 rounded-[28px] p-8 shadow-sm space-y-5">
+              {/* SECTION 4: MUHURAT DETAILS */}
+              <div className="bg-white/60 border border-[#B38B36]/15 rounded-[28px] p-8 shadow-sm space-y-6">
                 <div>
                   <h4 className="font-serif text-lg uppercase tracking-wider text-[#8E6B23] font-bold border-b border-stone-200 pb-2 flex items-center gap-2">
-                    <Clock className="w-5 h-5 text-[#B38B36]" />
-                    Dynamic Vedic Hours
+                    <Award className="w-5 h-5 text-[#B38B36]" />
+                    Daily Muhurat Slots (Vedic Hours)
                   </h4>
                   <p className="text-xs text-stone-500 font-light mt-1">
-                    Daily planetary alignments determining auspicious Abhijit slots and cautionary timing gates.
+                    Specific daily hours mapped to auspicious starts and caution gates.
                   </p>
                 </div>
-                
-                <div className="space-y-3.5 text-xs">
-                  {/* Sun / Moon Icons */}
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="bg-white/80 p-4 border border-[#E5E1D8] rounded-2xl flex items-center gap-3 shadow-sm">
-                      <div className="w-9 h-9 rounded-full bg-amber-50 flex items-center justify-center text-amber-600 border border-amber-100">
-                        <Sun className="w-4.5 h-4.5 animate-pulse" />
-                      </div>
-                      <div>
-                        <span className="text-[8px] uppercase tracking-widest block font-bold text-stone-400">Sunrise</span>
-                        <span className="font-serif font-bold text-[#3C2A21] text-sm">{data.sunrise}</span>
-                      </div>
-                    </div>
-                    <div className="bg-white/80 p-4 border border-[#E5E1D8] rounded-2xl flex items-center gap-3 shadow-sm">
-                      <div className="w-9 h-9 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600 border border-indigo-100">
-                        <Moon className="w-4.5 h-4.5" />
-                      </div>
-                      <div>
-                        <span className="text-[8px] uppercase tracking-widest block font-bold text-stone-400">Sunset</span>
-                        <span className="font-serif font-bold text-[#3C2A21] text-sm">{data.sunset}</span>
-                      </div>
-                    </div>
-                  </div>
 
+                <div className="grid sm:grid-cols-2 gap-5">
                   {[
-                    { title: "Abhijit Muhurat", time: `${data.abhijit.start} - ${data.abhijit.end}`, desc: "Ideal for starting important tasks & new beginnings", status: "good" },
-                    { title: "Rahu Kaal", time: `${data.rahu_kaal.start} - ${data.rahu_kaal.end}`, desc: "Caution: Period of malefic energy. Avoid investments.", status: "bad" },
-                    { title: "Yama Gandha", time: `${data.yama_gandha.start} - ${data.yama_gandha.end}`, desc: "Inauspicious. Postpone journeys & partnerships.", status: "warning" },
-                    { title: "Gulika Kaal", time: `${data.gulika_kaal.start} - ${data.gulika_kaal.end}`, desc: "Obstruction energy slot. Slow down operations.", status: "warning" }
-                  ].map((hour, idx) => {
-                    let indicatorBg = "bg-amber-50/60 border-amber-200/50 text-amber-800";
-                    let tagColor = "text-amber-700";
+                    { name: "Abhijit Muhurat", data: data.abhijit, status: "auspicious", desc: "Best period of the day for starting new businesses or journeys.", tag: "Recommended" },
+                    { name: "Rahu Kalam", data: data.rahu_kaal, status: "inauspicious", desc: "Caution: Period of malefic solar energy. Avoid financial deals.", tag: "Avoid" },
+                    { name: "Yama Gandha", data: data.yama_gandha, status: "inauspicious", desc: "Inauspicious hour. Delay crucial project signoffs.", tag: "Avoid" },
+                    { name: "Gulika Kalam", data: data.gulika_kaal, status: "neutral", desc: "Obstruction window. Operations are delayed or stalled.", tag: "Routine Tasks Only" },
+                    { name: "Brahma Muhurat", data: data.brahma_muhurat, status: "auspicious", desc: "Highly auspicious hour before dawn. Optimal for study & yoga.", tag: "Recommended" },
+                    { name: "Dur Muhurat", data: data.dur_muhurat, status: "inauspicious", desc: "Inauspicious alignment. Restrict key ceremonies.", tag: "Avoid" },
+                    { name: "Amrit Kalam", data: data.amrit_kalam, status: "auspicious", desc: "Excellent period for spiritual practice or meeting mentors.", tag: "Recommended" },
+                    { name: "Varjyam", data: data.varjyam, status: "inauspicious", desc: "Caution: Avoid core operations during this energy cycle.", tag: "Avoid" }
+                  ].map((muh, idx) => {
+                    let indicatorBg = "bg-amber-50/60 border-amber-200/50 hover:border-amber-300";
+                    let tagStyle = "bg-amber-100/70 text-amber-700 border-amber-200/30";
                     
-                    if (hour.status === "good") {
-                      indicatorBg = "bg-green-50/60 border-green-200/50 text-green-800";
-                      tagColor = "text-green-700";
-                    } else if (hour.status === "bad") {
-                      indicatorBg = "bg-red-50/60 border-red-200/50 text-red-800";
-                      tagColor = "text-red-700";
+                    if (muh.status === "auspicious") {
+                      indicatorBg = "bg-green-50/60 border-green-200/50 hover:border-green-300";
+                      tagStyle = "bg-green-100/70 text-green-700 border-green-200/30";
+                    } else if (muh.status === "inauspicious") {
+                      indicatorBg = "bg-red-50/60 border-red-200/50 hover:border-red-300";
+                      tagStyle = "bg-red-100/70 text-red-700 border-red-200/30";
                     }
 
                     return (
-                      <div key={idx} className={`border p-4 rounded-2xl flex items-center justify-between shadow-sm transition-colors ${indicatorBg}`}>
+                      <div key={idx} className={`border p-5 rounded-2xl flex flex-col justify-between shadow-sm transition-all duration-300 bg-white ${indicatorBg}`}>
                         <div>
-                          <span className="text-[9px] uppercase tracking-widest block font-extrabold mb-0.5 flex items-center gap-1.5">
-                            <Award className="w-4 h-4" /> {hour.title}
-                          </span>
-                          <span className={`text-[10px] ${tagColor} font-light`}>{hour.desc}</span>
+                          <div className="flex justify-between items-start gap-2 mb-2">
+                            <span className="font-serif text-sm font-extrabold text-[#3C2A21] flex items-center gap-1.5">
+                              <Award className="w-4 h-4 text-[#B38B36]" />
+                              {muh.name}
+                            </span>
+                            <span className={`text-[8px] uppercase tracking-wider px-2 py-0.5 rounded font-extrabold border ${tagStyle}`}>
+                              {muh.tag}
+                            </span>
+                          </div>
+                          <p className="text-[10px] text-stone-500 font-light leading-relaxed mb-4">{muh.desc}</p>
                         </div>
-                        <span className="font-serif font-extrabold text-[13px] bg-white/70 px-3.5 py-1.5 rounded-xl border border-black/5 shadow-sm">{hour.time}</span>
+                        <div className="pt-3 border-t border-stone-100 flex justify-between items-center text-xs">
+                          <span className="text-stone-400 font-medium text-[9px] uppercase tracking-wider">Time Slot</span>
+                          <span className="font-serif font-extrabold text-[#3C2A21] bg-white border border-stone-200/50 px-2.5 py-1 rounded-lg shadow-sm">
+                            {muh.data.start} - {muh.data.end}
+                          </span>
+                        </div>
                       </div>
                     );
                   })}
                 </div>
               </div>
 
-            </div>
-
-            {/* Row 4: Detailed Chaughadiya Table */}
-            <div className="bg-white/70 border border-[#B38B36]/15 rounded-[28px] p-8 shadow-sm space-y-6">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-stone-200 pb-3">
-                <div>
-                  <h4 className="font-serif text-lg uppercase tracking-wider text-[#8E6B23] font-bold flex items-center gap-2">
-                    <Clock className="w-5 h-5 text-[#B38B36]" />
-                    Chaughadiya (Time Periods)
-                  </h4>
-                  <p className="text-xs text-stone-500 font-light mt-1">
-                    Eight dynamic segments representing daily auspicious and cautionary intervals.
-                  </p>
-                </div>
-                
-                {/* Tab Selector */}
-                <div className="flex gap-2 p-1 bg-stone-100 rounded-xl border border-stone-200/50 self-start sm:self-auto">
-                  <button 
-                    onClick={() => setChoghadiyaTab("day")}
-                    className={`px-6 py-2 rounded-lg text-xs uppercase tracking-wider font-bold transition-all cursor-pointer ${
-                      choghadiyaTab === "day" 
-                        ? "bg-[#B38B36] text-white shadow-sm" 
-                        : "text-stone-500 hover:text-[#3C2A21]"
-                    }`}
-                  >
-                    Day
-                  </button>
-                  <button 
-                    onClick={() => setChoghadiyaTab("night")}
-                    className={`px-6 py-2 rounded-lg text-xs uppercase tracking-wider font-bold transition-all cursor-pointer ${
-                      choghadiyaTab === "night" 
-                        ? "bg-[#B38B36] text-white shadow-sm" 
-                        : "text-stone-500 hover:text-[#3C2A21]"
-                    }`}
-                  >
-                    Night
-                  </button>
-                </div>
-              </div>
-
-              {/* 8 Period Cards */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
-                {data.choghadiya?.[choghadiyaTab]?.map((slot, index) => {
-                  const isCurrentActive = data.choghadiya?.active?.name === slot.name && data.choghadiya?.active?.start === slot.start && data.choghadiya?.active?.end === slot.end;
+              {/* SECTION 5: CHOGHADIYA */}
+              <div className="bg-white/60 border border-[#B38B36]/15 rounded-[28px] p-8 shadow-sm space-y-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-stone-200 pb-3">
+                  <div>
+                    <h4 className="font-serif text-lg uppercase tracking-wider text-[#8E6B23] font-bold flex items-center gap-2">
+                      <Clock className="w-5 h-5 text-[#B38B36]" />
+                      Chaughadiya (Time Periods)
+                    </h4>
+                    <p className="text-xs text-stone-500 font-light mt-1">
+                      Eight dynamic divisions of the day/night for planning business activities.
+                    </p>
+                  </div>
                   
-                  let bgStyle = "bg-white border-[#E5E1D8] hover:border-[#B38B36]/30";
-                  let badgeColor = "bg-stone-100 text-stone-600 border-stone-200";
-                  
-                  if (slot.status === "shubh") {
-                    bgStyle = "bg-green-50/30 border-green-200/40 hover:border-green-300";
-                    badgeColor = "bg-green-100 text-green-700 border-green-200/30";
-                  } else if (slot.status === "asubh") {
-                    bgStyle = "bg-red-50/30 border-red-200/40 hover:border-red-300";
-                    badgeColor = "bg-red-100 text-red-700 border-red-200/30";
-                  } else if (slot.status === "neutral") {
-                    bgStyle = "bg-blue-50/30 border-blue-200/40 hover:border-blue-300";
-                    badgeColor = "bg-blue-100 text-blue-700 border-blue-200/30";
-                  }
-
-                  return (
-                    <div 
-                      key={`${slot.name}-${index}`} 
-                      className={`relative border p-5 rounded-2xl flex flex-col justify-between transition-all duration-300 ${bgStyle} ${
-                        isCurrentActive ? "ring-2 ring-[#B38B36] shadow-md scale-[1.03] bg-[#FFFDF9]" : "shadow-sm hover:shadow"
+                  {/* Tab Selector */}
+                  <div className="flex gap-2 p-1 bg-stone-100 rounded-xl border border-stone-200/50 self-start sm:self-auto">
+                    <button 
+                      onClick={() => setChoghadiyaTab("day")}
+                      className={`px-6 py-2 rounded-lg text-xs uppercase tracking-wider font-bold transition-all cursor-pointer ${
+                        choghadiyaTab === "day" 
+                          ? "bg-[#B38B36] text-white shadow-sm" 
+                          : "text-stone-500 hover:text-[#3C2A21]"
                       }`}
                     >
-                      {isCurrentActive && (
-                        <span className="absolute -top-2.5 right-3 bg-[#B38B36] text-white text-[8px] tracking-widest uppercase font-extrabold px-2.5 py-0.5 rounded-full shadow-sm">
-                          Active
-                        </span>
-                      )}
-                      <div className="space-y-1">
-                        <div className="flex justify-between items-center gap-1.5">
-                          <span className="font-serif text-base font-extrabold text-[#3C2A21]">{slot.name}</span>
-                          <span className={`text-[8px] uppercase tracking-wider px-2 py-0.5 rounded-md font-extrabold border ${badgeColor}`}>
-                            {slot.status === "shubh" ? "Shubh" : slot.status === "asubh" ? "Asubh" : "Char"}
+                      Day
+                    </button>
+                    <button 
+                      onClick={() => setChoghadiyaTab("night")}
+                      className={`px-6 py-2 rounded-lg text-xs uppercase tracking-wider font-bold transition-all cursor-pointer ${
+                        choghadiyaTab === "night" 
+                          ? "bg-[#B38B36] text-white shadow-sm" 
+                          : "text-stone-500 hover:text-[#3C2A21]"
+                      }`}
+                    >
+                      Night
+                    </button>
+                  </div>
+                </div>
+
+                {/* 8 Period Cards */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
+                  {data.choghadiya?.[choghadiyaTab]?.map((slot, index) => {
+                    const isCurrentActive = data.choghadiya?.active?.name === slot.name && data.choghadiya?.active?.start === slot.start && data.choghadiya?.active?.end === slot.end;
+                    
+                    let bgStyle = "bg-white border-[#E5E1D8] hover:border-[#B38B36]/30";
+                    let badgeColor = "bg-stone-100 text-stone-600 border-stone-200";
+                    
+                    if (slot.status === "shubh") {
+                      bgStyle = "bg-green-50/30 border-green-200/40 hover:border-green-300";
+                      badgeColor = "bg-green-100 text-green-700 border-green-200/30";
+                    } else if (slot.status === "asubh") {
+                      bgStyle = "bg-red-50/30 border-red-200/40 hover:border-red-300";
+                      badgeColor = "bg-red-100 text-red-700 border-red-200/30";
+                    } else if (slot.status === "neutral") {
+                      bgStyle = "bg-blue-50/30 border-blue-200/40 hover:border-blue-300";
+                      badgeColor = "bg-blue-100 text-blue-700 border-blue-200/30";
+                    }
+
+                    return (
+                      <div 
+                        key={`${slot.name}-${index}`} 
+                        className={`relative border p-5 rounded-2xl flex flex-col justify-between transition-all duration-300 ${bgStyle} ${
+                          isCurrentActive ? "ring-2 ring-[#B38B36] shadow-md scale-[1.03] bg-[#FFFDF9]" : "shadow-sm hover:shadow"
+                        }`}
+                      >
+                        {isCurrentActive && (
+                          <span className="absolute -top-2.5 right-3 bg-[#B38B36] text-white text-[8px] tracking-widest uppercase font-extrabold px-2.5 py-0.5 rounded-full shadow-sm">
+                            Active
                           </span>
+                        )}
+                        <div className="space-y-1">
+                          <div className="flex justify-between items-center gap-1.5">
+                            <span className="font-serif text-base font-extrabold text-[#3C2A21]">{slot.name}</span>
+                            <span className={`text-[8px] uppercase tracking-wider px-2 py-0.5 rounded-md font-extrabold border ${badgeColor}`}>
+                              {slot.status === "shubh" ? "Shubh" : slot.status === "asubh" ? "Asubh" : "Char"}
+                            </span>
+                          </div>
+                          <p className="text-[10px] text-[#725D46] font-light italic">{slot.desc}</p>
                         </div>
-                        <p className="text-[10px] text-[#725D46] font-light italic">{slot.desc}</p>
+                        <div className="mt-5 pt-3 border-t border-stone-100">
+                          <p className="text-[10px] font-mono text-stone-600 font-bold tracking-tight">{slot.start} - {slot.end}</p>
+                        </div>
                       </div>
-                      <div className="mt-5 pt-3 border-t border-stone-100">
-                        <p className="text-[10px] font-mono text-stone-600 font-bold tracking-tight">{slot.start} - {slot.end}</p>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* SECTION 6: AUSPICIOUS MUHURAT 2026 */}
+              <div className="bg-white/60 border border-[#B38B36]/15 rounded-[28px] p-8 shadow-sm space-y-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-stone-200 pb-3">
+                  <div>
+                    <h4 className="font-serif text-lg uppercase tracking-wider text-[#8E6B23] font-bold flex items-center gap-2">
+                      <CalendarCheck className="w-5 h-5 text-[#B38B36]" />
+                      Auspicious Muhurats (2026)
+                    </h4>
+                    <p className="text-xs text-stone-500 font-light mt-1">
+                      Explore shubh dates for significant milestones and life transitions.
+                    </p>
+                  </div>
+                  
+                  {/* Category Tabs */}
+                  <div className="flex gap-2 p-1 bg-stone-100 rounded-xl border border-stone-200/50 self-start sm:self-auto">
+                    {[
+                      { id: "marriage", label: "Marriage" },
+                      { id: "vehicle", label: "Vehicle" },
+                      { id: "property", label: "Property" }
+                    ].map((tab) => (
+                      <button 
+                        key={tab.id}
+                        onClick={() => setMuhuratCategoryTab(tab.id)}
+                        className={`px-4 py-1.5 rounded-lg text-[10px] uppercase tracking-wider font-bold transition-all cursor-pointer ${
+                          muhuratCategoryTab === tab.id 
+                            ? "bg-[#B38B36] text-white shadow-sm" 
+                            : "text-stone-500 hover:text-[#3C2A21]"
+                        }`}
+                      >
+                        {tab.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
+                  {auspHuhurats[muhuratCategoryTab].slice(0, muhuratMonthsLimit).map((item, index) => (
+                    <div key={index} className="bg-white border border-[#E5E1D8] p-5 rounded-2xl shadow-sm hover:border-[#B38B36]/30 transition-all duration-300">
+                      <span className="text-[10px] uppercase tracking-wider text-stone-400 font-extrabold block mb-2">{item.month}</span>
+                      <div className="flex flex-wrap gap-1.5">
+                        {item.dates.map((d, dIdx) => (
+                          <span key={dIdx} className="text-[10px] text-[#3C2A21] bg-[#FBF6EC] border border-[#B38B36]/15 px-2 py-1 rounded-md font-semibold">
+                            {d}
+                          </span>
+                        ))}
                       </div>
                     </div>
-                  );
-                })}
-              </div>
-            </div>
+                  ))}
+                </div>
 
-            {/* Row 5: Sacred Fasting Table (2026) */}
-            <div className="bg-white/70 border border-[#B38B36]/15 rounded-[28px] p-8 shadow-sm space-y-6">
-              <div>
-                <h4 className="font-serif text-lg uppercase tracking-wider text-[#8E6B23] font-bold border-b border-stone-200 pb-2 flex items-center gap-2">
-                  <Sparkles className="w-5 h-5 text-[#B38B36]" />
-                  Sacred Fasting & Ekadashi (2026)
-                </h4>
-                <p className="text-xs text-stone-500 font-light mt-1">
-                  Highly auspicious monthly Ekadashi dates and lunar fasting periods observed globally.
-                </p>
+                <div className="flex justify-center pt-4">
+                  <button 
+                    onClick={() => setMuhuratMonthsLimit(prev => prev === 4 ? 12 : 4)}
+                    className="border border-[#B38B36]/30 hover:border-[#B38B36] text-[#B38B36] px-8 py-3 rounded-full text-[10px] tracking-widest uppercase font-extrabold shadow-sm transition-all hover:bg-[#FBF6EC] active:scale-95 cursor-pointer"
+                  >
+                    {muhuratMonthsLimit === 4 ? "Show More Months ↓" : "Show Less Months ↑"}
+                  </button>
+                </div>
               </div>
 
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
-                {[
-                  { month: "January", fastings: ["Shattila Ekadashi (14)", "Jaya Ekadashi (29)"] },
-                  { month: "February", fastings: ["Vijaya Ekadashi (13)", "Amalaki Ekadashi (27)"] },
-                  { month: "March", fastings: ["Papamochani Ekadashi (15)", "Kamada Ekadashi (29)"] },
-                  { month: "April", fastings: ["Varuthini Ekadashi (13)", "Mohini Ekadashi (27)"] },
-                  { month: "May", fastings: ["Apara Ekadashi (13)", "Nirjala Ekadashi (27)"] },
-                  { month: "June", fastings: ["Yogini Ekadashi (11)", "Devshayani Ekadashi (25)"] },
-                  { month: "July", fastings: ["Kamika Ekadashi (10)", "Shravana Putrada (24)"] },
-                  { month: "August", fastings: ["Aja Ekadashi (09)", "Parsva Ekadashi (23)"] },
-                  { month: "September", fastings: ["Indira Ekadashi (07)", "Papankusha Ekadashi (22)"] },
-                  { month: "October", fastings: ["Rama Ekadashi (06)", "Devutthana Ekadashi (20)"] },
-                  { month: "November", fastings: ["Utpanna Ekadashi (05)", "Mokshada Ekadashi (20)"] },
-                  { month: "December", fastings: ["Saphala Ekadashi (05)", "Putrada Ekadashi (19)"] }
-                ].map((item, index) => (
-                  <div key={index} className="bg-white border border-[#E5E1D8] p-5 rounded-2xl shadow-sm flex flex-col justify-between hover:border-[#B38B36]/30 transition-all duration-300">
-                    <div>
+              {/* SECTION 7: SACRED FASTING */}
+              <div className="bg-white/60 border border-[#B38B36]/15 rounded-[28px] p-8 shadow-sm space-y-6">
+                <div>
+                  <h4 className="font-serif text-lg uppercase tracking-wider text-[#8E6B23] font-bold border-b border-stone-200 pb-2 flex items-center gap-2">
+                    <Sparkles className="w-5 h-5 text-[#B38B36]" />
+                    Sacred Fasting & Ekadashi (2026)
+                  </h4>
+                  <p className="text-xs text-stone-500 font-light mt-1">
+                    Monthly observances including Purnima, Amavasya, Sankashti, and Ekadashi timings.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
+                  {fastingCalendar.slice(0, fastingMonthsLimit).map((item, index) => (
+                    <div key={index} className="bg-white border border-[#E5E1D8] p-5 rounded-2xl shadow-sm hover:border-[#B38B36]/30 transition-all duration-300">
                       <span className="text-[10px] uppercase tracking-wider text-stone-400 font-extrabold block mb-2">{item.month}</span>
                       <div className="space-y-1.5">
-                        {item.fastings.map((fasting, fIdx) => (
+                        {item.items.map((fast, fIdx) => (
                           <div key={fIdx} className="text-xs text-[#3C2A21] font-medium flex items-start gap-1.5">
                             <span className="text-[#B38B36] mt-0.5">✦</span>
-                            <span>{fasting}</span>
+                            <span>{fast}</span>
                           </div>
                         ))}
                       </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
+
+                <div className="flex justify-center pt-4">
+                  <button 
+                    onClick={() => setFastingMonthsLimit(prev => prev === 4 ? 12 : 4)}
+                    className="border border-[#B38B36]/30 hover:border-[#B38B36] text-[#B38B36] px-8 py-3 rounded-full text-[10px] tracking-widest uppercase font-extrabold shadow-sm transition-all hover:bg-[#FBF6EC] active:scale-95 cursor-pointer"
+                  >
+                    {fastingMonthsLimit === 4 ? "Show More Months ↓" : "Show Less Months ↑"}
+                  </button>
+                </div>
               </div>
+
+              {/* SECTION 8: NEW BEGINNINGS */}
+              <div className="bg-[#FAF6EE]/50 border border-[#B38B36]/15 rounded-[28px] p-8 shadow-sm space-y-6">
+                <div>
+                  <h4 className="font-serif text-lg uppercase tracking-wider text-[#8E6B23] font-bold border-b border-stone-200 pb-2 flex items-center gap-2">
+                    <Briefcase className="w-5 h-5 text-[#B38B36]" />
+                    New Beginnings & Work Muhurats
+                  </h4>
+                  <p className="text-xs text-stone-500 font-light mt-1">
+                    Auspicious monthly slots for house warming, jobs, businesses, and education.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
+                  {newBeginnings.slice(0, beginningsMonthsLimit).map((item, index) => (
+                    <div key={index} className="bg-white border border-[#E5E1D8] p-5 rounded-2xl shadow-sm hover:border-[#B38B36]/30 transition-all duration-300">
+                      <span className="text-[10px] uppercase tracking-wider text-stone-400 font-extrabold block mb-2">{item.month}</span>
+                      <div className="space-y-1.5">
+                        {item.items.map((beg, bIdx) => (
+                          <div key={bIdx} className="text-xs text-[#3C2A21] font-medium flex items-start gap-1.5">
+                            <span className="text-[#E67E22] mt-0.5">✦</span>
+                            <span>{beg}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="flex justify-center pt-4">
+                  <button 
+                    onClick={() => setBeginningsMonthsLimit(prev => prev === 4 ? 12 : 4)}
+                    className="border border-[#B38B36]/30 hover:border-[#B38B36] text-[#B38B36] px-8 py-3 rounded-full text-[10px] tracking-widest uppercase font-extrabold shadow-sm transition-all hover:bg-[#FBF6EC] active:scale-95 cursor-pointer"
+                  >
+                    {beginningsMonthsLimit === 4 ? "Show More Months ↓" : "Show Less Months ↑"}
+                  </button>
+                </div>
+              </div>
+
             </div>
 
-            {/* Row 6: Auspicious Muhurats Shortcuts */}
-            <div className="bg-[#FAF6EE] border border-[#B38B36]/15 rounded-[28px] p-8 shadow-sm space-y-6">
-              <div>
-                <h4 className="font-serif text-lg uppercase tracking-wider text-[#8E6B23] font-bold border-b border-stone-200 pb-2 flex items-center gap-2">
-                  <CalendarCheck className="w-5 h-5 text-[#B38B36]" />
-                  Auspicious Shubh Muhurats (2026)
-                </h4>
-                <p className="text-xs text-stone-500 font-light mt-1">
-                  Plan your life journeys during optimal cosmic alignments. Explore dates tailored to key categories.
-                </p>
+            {/* SECTION 9: STICKY RIGHT SIDEBAR */}
+            <div className="lg:col-span-1 lg:sticky lg:top-28 space-y-6">
+              
+              <div className="bg-gradient-to-b from-[#FFFDF9] to-[#FAF6EE] border-2 border-[#B38B36]/30 rounded-[28px] p-6 shadow-md space-y-5">
+                <div className="text-center pb-3 border-b border-[#B38B36]/15">
+                  <Compass className="w-7 h-7 text-[#B38B36] mx-auto mb-2" />
+                  <h4 className="font-serif text-base font-extrabold text-[#3C2A21]">Celestial Pulse</h4>
+                  <p className="text-[10px] text-stone-400 font-semibold mt-0.5">{city.split(',')[0]}</p>
+                </div>
+
+                <div className="space-y-3.5 text-xs text-[#3C2A21]">
+                  <div className="flex justify-between items-center">
+                    <span className="text-stone-500 font-bold">Moon Sign</span>
+                    <span className="font-serif font-extrabold text-[#B38B36]">{data.elements?.moon_sign.split(" ")[0]}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-stone-500 font-bold">Tithi</span>
+                    <span className="font-serif font-extrabold text-[#B38B36] text-right truncate max-w-[120px]">{data.elements?.tithi.split(" ")[0]}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-stone-500 font-bold">Nakshatra</span>
+                    <span className="font-serif font-extrabold text-[#B38B36]">{data.elements?.nakshatra}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-stone-500 font-bold">Rahu Kalam</span>
+                    <span className="font-mono font-extrabold text-red-700 bg-red-50 px-2 py-0.5 rounded border border-red-100">{data.rahu_kaal.start} - {data.rahu_kaal.end}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-stone-500 font-bold">Shubh Muhurat</span>
+                    <span className="font-mono font-extrabold text-green-700 bg-green-50 px-2 py-0.5 rounded border border-green-100">{data.abhijit.start} - {data.abhijit.end}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-stone-500 font-bold">Sunrise</span>
+                    <span className="font-serif font-extrabold text-[#3C2A21]">{data.sunrise}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-stone-500 font-bold">Sunset</span>
+                    <span className="font-serif font-extrabold text-[#3C2A21]">{data.sunset}</span>
+                  </div>
+                </div>
+
+                <div className="pt-4 border-t border-[#B38B36]/15 text-center">
+                  <div className="bg-[#FAF6EE] border border-[#B38B36]/15 rounded-xl p-3 text-[10px] text-[#725D46] font-light italic">
+                    Astrological metrics calculated in real-time via Swiss Ephemeris data blocks.
+                  </div>
+                </div>
               </div>
 
-              <div className="grid sm:grid-cols-3 gap-5">
-                {[
-                  { title: "Vivah (Marriage) Muhurat", path: "/shubh-muhurat-2026/vivah", desc: "Plan sacred marriage unions under harmonious planetary alignments." },
-                  { title: "Vehicle Purchase Muhurat", path: "/shubh-muhurat-2026/namkaran", desc: "Select auspicious days for procuring automobiles and vehicles." },
-                  { title: "Property Purchase Muhurat", path: "/shubh-muhurat-2026/vidyarambh", desc: "Identify optimal periods for registry, property purchase & construction." }
-                ].map((muh, index) => (
-                  <button 
-                    key={index} 
-                    onClick={() => navigate(muh.path)}
-                    className="w-full text-left bg-white border border-[#E5E1D8] p-5 rounded-2xl shadow-sm flex flex-col justify-between hover:border-[#B38B36] hover:shadow-md transition-all duration-300 group cursor-pointer"
-                  >
-                    <div>
-                      <h5 className="font-serif text-base font-bold text-[#3C2A21] group-hover:text-[#B38B36] transition-colors">{muh.title}</h5>
-                      <p className="text-xs text-[#725D46] font-light mt-2 leading-relaxed">{muh.desc}</p>
-                    </div>
-                    <div className="flex items-center gap-1.5 text-[10px] tracking-wider uppercase font-bold text-[#B38B36] mt-4">
-                      <span>Explore Dates</span>
-                      <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                    </div>
-                  </button>
-                ))}
-              </div>
             </div>
 
           </div>

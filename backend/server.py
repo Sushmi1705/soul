@@ -1951,11 +1951,61 @@ async def get_panchang(response: Response, city: str = "New Delhi", date: str = 
                 active_choghadiya = night_slots[i]
                 break
 
+    # Moonrise and Moonset calculations (dynamic astronomical approximation based on tithi)
+    moonrise_dec = (sunrise_local + tithi_idx * 0.8) % 24
+    moonset_dec = (sunset_local + tithi_idx * 0.8) % 24
+    
+    # Paksha
+    paksha = "Shukla Paksha" if tithi_idx < 15 else "Krishna Paksha"
+    
+    # Hindu Lunar Month Approximation
+    hindu_months = [
+        "Pausha / Magha",      # Jan
+        "Magha / Phalguna",    # Feb
+        "Phalguna / Chaitra",  # Mar
+        "Chaitra / Vaisakha",  # Apr
+        "Vaisakha / Jyeshtha", # May
+        "Jyeshtha / Ashadha",  # Jun
+        "Ashadha / Shravana",  # Jul
+        "Shravana / Bhadrapada",# Aug
+        "Bhadrapada / Ashvina", # Sep
+        "Ashvina / Kartika",   # Oct
+        "Kartika / Margashirsha",# Nov
+        "Margashirsha / Pausha" # Dec
+    ]
+    hindu_month = hindu_months[local_now.month - 1]
+    
+    # Samvatsara
+    if local_now.year == 2026:
+        samvatsara = "Krodhi (Year 38)"
+    elif local_now.year == 2025:
+        samvatsara = "Krodhana (Year 37)"
+    else:
+        samvatsara = "Vishvavasu (Year 39)"
+        
+    # Brahma Muhurat: 1 hour 36 minutes (1.6h) before Sunrise
+    brahma_start = (sunrise_local - 1.6) % 24
+    brahma_end = (sunrise_local - 0.8) % 24
+    
+    # Dur Muhurat: 10th or 12th muhurat of the day (approx 0.8h duration)
+    dur_start = (noon_local + 1.2) % 24
+    dur_end = (dur_start + 0.8) % 24
+    
+    # Amrit Kalam: 1.5h duration
+    amrit_start = (noon_local - 3.2) % 24
+    amrit_end = (amrit_start + 1.5) % 24
+    
+    # Varjyam: 2h duration
+    varjyam_start = (noon_local + 8.5) % 24
+    varjyam_end = (varjyam_start + 2.0) % 24
+
     return {
         "city": city,
         "local_time": local_now.strftime("%I:%M %p"),
         "sunrise": format_hour_to_12h(sunrise_local),
         "sunset": format_hour_to_12h(sunset_local),
+        "moonrise": format_hour_to_12h(moonrise_dec),
+        "moonset": format_hour_to_12h(moonset_dec),
         "solar_noon": format_hour_to_12h(noon_local),
         "day_length": f"{int(day_length)}h {int((day_length - int(day_length))*60)}m",
         "night_length": f"{int(night_length)}h {int((night_length - int(night_length))*60)}m",
@@ -1980,6 +2030,22 @@ async def get_panchang(response: Response, city: str = "New Delhi", date: str = 
             "start": format_hour_to_12h(gulika_start),
             "end": format_hour_to_12h(gulika_end)
         },
+        "brahma_muhurat": {
+            "start": format_hour_to_12h(brahma_start),
+            "end": format_hour_to_12h(brahma_end)
+        },
+        "dur_muhurat": {
+            "start": format_hour_to_12h(dur_start),
+            "end": format_hour_to_12h(dur_end)
+        },
+        "amrit_kalam": {
+            "start": format_hour_to_12h(amrit_start),
+            "end": format_hour_to_12h(amrit_end)
+        },
+        "varjyam": {
+            "start": format_hour_to_12h(varjyam_start),
+            "end": format_hour_to_12h(varjyam_end)
+        },
         "status": {
             "label": status_label,
             "description": status_desc,
@@ -1998,7 +2064,10 @@ async def get_panchang(response: Response, city: str = "New Delhi", date: str = 
             "karana": karana_name,
             "vara": vara_name,
             "moon_sign": moon_sign_name,
-            "moon_phase": moon_phase_name
+            "moon_phase": moon_phase_name,
+            "paksha": paksha,
+            "hindu_month": hindu_month,
+            "samvatsara": samvatsara
         },
         "choghadiya": {
             "day": day_slots,
