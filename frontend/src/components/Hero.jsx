@@ -93,7 +93,7 @@ const Hero = () => {
             y="72"
             textAnchor="middle"
             fontSize="80"
-            fontFamily="Cormorant Garamond, serif"
+            fontFamily="Montserrat, sans-serif"
           >
             ॐ
           </text>

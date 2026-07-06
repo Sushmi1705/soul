@@ -102,7 +102,7 @@ section[id] {
   margin: 0;
 }
 .rdp-caption_label {
-  font-family: "Cormorant Garamond", serif;
+  font-family: var(--font-sans) !important;
   font-size: 1.1rem;
   color: #1a1a1a;
 }
