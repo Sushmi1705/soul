@@ -7,7 +7,7 @@ try:
 except Exception:
     pass
 
-from fastapi import FastAPI, APIRouter, Header, HTTPException, Depends, Request, UploadFile, File
+from fastapi import FastAPI, APIRouter, Header, HTTPException, Depends, Request, UploadFile, File, Response
 from fastapi.staticfiles import StaticFiles
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
@@ -1621,7 +1621,8 @@ def format_hour_to_12h(h: float) -> str:
     return f"{display_hrs:02d}:{mins:02d} {period}"
 
 @api_router.get("/panchang")
-async def get_panchang(city: str = "New Delhi"):
+async def get_panchang(response: Response, city: str = "New Delhi"):
+    response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate"
     city_key = city.lower().strip()
     if city_key in CITIES_DB:
         coords = CITIES_DB[city_key]

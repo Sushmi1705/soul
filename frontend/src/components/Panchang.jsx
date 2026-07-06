@@ -21,7 +21,7 @@ const Panchang = () => {
     setLoading(true);
     try {
       const apiUrl = process.env.REACT_APP_API_URL || "http://127.0.0.1:8005";
-      const res = await fetch(`${apiUrl}/api/panchang?city=${encodeURIComponent(cityName)}`);
+      const res = await fetch(`${apiUrl}/api/panchang?city=${encodeURIComponent(cityName)}&t=${Date.now()}`);
       if (res.ok) {
         const json = await res.json();
         setData(json);
