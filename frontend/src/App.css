@@ -148,3 +148,23 @@ section[id] {
 .scrollbar-none::-webkit-scrollbar {
   display: none;
 }
+
+/* Global Font Size Upgrades for Small/Subtext Elements */
+.text-xs {
+  font-size: 0.85rem !important; /* Scale up from 12px to 13.6px */
+}
+.text-sm {
+  font-size: 0.95rem !important; /* Scale up from 14px to 15.2px */
+}
+.text-\[8px\] {
+  font-size: 10.5px !important;  /* Scale up from 8px to 10.5px */
+}
+.text-\[9px\] {
+  font-size: 11px !important;    /* Scale up from 9px to 11px */
+}
+.text-\[10px\] {
+  font-size: 12px !important;    /* Scale up from 10px to 12px */
+}
+.text-\[11px\] {
+  font-size: 12.5px !important;  /* Scale up from 11px to 12.5px */
+}
