@@ -31,7 +31,7 @@ const Services = () => {
               <span className="italic font-light text-[#B38B36]">Self Mastery.</span>
             </h2>
           </div>
-          <p className="max-w-xs text-stone-400 text-xs leading-loose font-light italic mb-6">
+          <p className="max-w-xs text-stone-700 text-xs leading-loose font-medium italic mb-6">
             We provide a curated gallery of celestial services designed to align your earthly path with the stars.
           </p>
         </div>
@@ -65,7 +65,7 @@ const Services = () => {
                 {/* Footer: Price & Action */}
                 <div className="flex items-end justify-between pt-6 border-t border-[#E5E0D8] mt-auto">
                     <div className="flex flex-col">
-                       <span className="text-[9px] tracking-[0.2em] uppercase text-stone-400 font-semibold mb-1">Starting From</span>
+                       <span className="text-[9px] tracking-[0.2em] uppercase text-stone-600 font-semibold mb-1">Starting From</span>
                        <span className="font-serif text-xl text-[#3C2A21]">{formatINR(item.price)}</span>
                     </div>
                     

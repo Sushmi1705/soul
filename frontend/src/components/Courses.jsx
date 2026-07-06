@@ -53,7 +53,7 @@ const Courses = () => {
               <em className="italic text-[#B38B36] font-light">sacred sciences.</em>
             </h2>
           </div>
-          <p className="text-stone-500 max-w-md leading-relaxed font-light">
+          <p className="text-stone-700 max-w-md leading-relaxed font-medium">
             Lifetime access, certificate upon completion, and a private cohort
             of fellow seekers guided personally by Gitika.
           </p>
@@ -82,7 +82,7 @@ const Courses = () => {
                 <h3 className="font-serif text-2xl text-[#3C2A21] mb-4 group-hover:text-[#B38B36] transition-colors">{c.title}</h3>
                 <div className="flex items-center justify-between mt-auto pt-6 border-t border-stone-100">
                   <div>
-                    <div className="text-[10px] tracking-[0.25em] uppercase text-stone-400 font-bold mb-1">
+                    <div className="text-[10px] tracking-[0.25em] uppercase text-stone-600 font-bold mb-1">
                       Tuition
                     </div>
                     <div className="font-serif text-2xl text-[#3C2A21]">

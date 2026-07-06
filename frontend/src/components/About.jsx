@@ -63,7 +63,7 @@ const About = () => {
 
             <div className="grid md:grid-cols-2 gap-12 text-left">
               <div className="space-y-8">
-                <p className="text-stone-500 leading-relaxed font-light first-letter:text-5xl first-letter:font-serif first-letter:text-[#B38B36] first-letter:mr-3 first-letter:float-left">
+                <p className="text-stone-700 leading-relaxed font-medium first-letter:text-5xl first-letter:font-serif first-letter:text-[#B38B36] first-letter:mr-3 first-letter:float-left">
                   Gitika Sharma is a seasoned astrologer and IT professional with 24 years of experience 
                   dedicated to unraveling the intricate threads of pending karma woven within the fabric of existence. 
                   Our reports are individualized and meticulously researched to provide profound insights.
@@ -81,8 +81,8 @@ const About = () => {
                   { name: "Numerology", desc: "The language of numbers" }
                 ].map((item, i) => (
                   <div key={i} className="group border-l border-brand-dark/5 pl-6 py-2 hover:border-[#B38B36] transition-all">
-                    <div className="text-[10px] tracking-[0.2em] uppercase font-black text-stone-400 group-hover:text-[#B38B36] transition-colors">{item.name}</div>
-                    <div className="text-xs text-stone-400 font-light italic mt-1">{item.desc}</div>
+                    <div className="text-[10px] tracking-[0.2em] uppercase font-black text-stone-600 group-hover:text-[#B38B36] transition-colors">{item.name}</div>
+                    <div className="text-xs text-stone-500 font-normal italic mt-1">{item.desc}</div>
                   </div>
                 ))}
               </div>

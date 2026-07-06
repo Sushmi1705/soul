@@ -127,7 +127,7 @@ const ZodiacSigns = () => {
                 <span className="italic font-light text-[#B38B36]">Zodiac Soul.</span>
               </h2>
            </div>
-           <p className="max-w-xs text-stone-400 text-xs leading-loose font-light italic mb-4">
+           <p className="max-w-xs text-stone-700 text-xs leading-loose font-medium italic mb-4">
              Each symbol is a gateway to a unique cosmic frequency. Click to decode your celestial signature.
            </p>
         </div>
@@ -150,7 +150,7 @@ const ZodiacSigns = () => {
                 <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[10rem] text-[#D4AF37]/[0.08] group-hover:text-[#D4AF37]/[0.15] pointer-events-none transition-all duration-700 group-hover:scale-110 ease-out">
                   {sign.icon}
                 </span>
-
+ 
                 {/* Header: Icon */}
                 <div className="w-16 h-16 rounded-full border border-[#D4AF37]/30 flex items-center justify-center text-3xl text-[#D4AF37] mb-6 bg-white shadow-sm group-hover:scale-110 group-hover:rotate-12 transition-transform duration-500 ease-out relative z-10">
                   {sign.icon}
@@ -161,14 +161,14 @@ const ZodiacSigns = () => {
                 <span className="text-[10px] tracking-[0.2em] uppercase text-[#B38B36] font-bold mb-6 relative z-10">
                   {sign.dates}
                 </span>
-
+ 
                 {/* Element Tag */}
                 <div className="px-5 py-1.5 rounded-full bg-gradient-to-r from-[#1A050A] to-[#4A0E1B] text-[9px] tracking-widest uppercase text-[#D4AF37] mb-6 shadow-md border border-[#D4AF37]/30 group-hover:border-[#D4AF37]/60 transition-colors relative z-10 font-bold">
                   Element: <span className="text-white ml-1">{sign.element}</span>
                 </div>
-
+ 
                 {/* Traits */}
-                <p className="text-xs text-[#3C2A21]/80 leading-relaxed font-light italic relative z-10">
+                <p className="text-xs text-[#3C2A21] leading-relaxed font-semibold italic relative z-10">
                   "{sign.traits}"
                 </p>
                 
@@ -179,7 +179,7 @@ const ZodiacSigns = () => {
           ))}
         </div>
       </div>
-
+ 
       {/* Zodiac Horoscope Modal */}
       <AnimatePresence>
         {selectedZodiac && (() => {
@@ -212,7 +212,7 @@ const ZodiacSigns = () => {
                 <span className="absolute -right-8 -bottom-8 text-[12rem] text-[#D4AF37]/[0.05] pointer-events-none select-none">
                   {selectedZodiac.icon}
                 </span>
-
+ 
                 {/* Close Button */}
                 <button
                   onClick={() => setSelectedZodiac(null)}
@@ -222,7 +222,7 @@ const ZodiacSigns = () => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>
-
+ 
                 {/* Header */}
                 <div className="flex items-center gap-4 mb-6 text-left">
                   <div className="w-14 h-14 rounded-full border border-[#D4AF37]/40 flex items-center justify-center text-2xl text-[#D4AF37] bg-white shadow-sm shrink-0">
@@ -237,31 +237,31 @@ const ZodiacSigns = () => {
                     </h3>
                   </div>
                 </div>
-
+ 
                 {/* Info Grid */}
                 <div className="grid grid-cols-3 gap-4 mb-6 border-y border-[#D4AF37]/20 py-4 text-center">
                   <div>
-                    <span className="block text-[9px] uppercase tracking-wider text-stone-400">Element</span>
+                    <span className="block text-[9px] uppercase tracking-wider text-stone-600 font-medium">Element</span>
                     <span className="font-semibold text-xs text-[#3C2A21]">{selectedZodiac.element}</span>
                   </div>
                   <div>
-                    <span className="block text-[9px] uppercase tracking-wider text-stone-400">Lucky Color</span>
+                    <span className="block text-[9px] uppercase tracking-wider text-stone-600 font-medium">Lucky Color</span>
                     <span className="font-semibold text-xs text-[#3C2A21]">{horoscope.luckyColor}</span>
                   </div>
                   <div>
-                    <span className="block text-[9px] uppercase tracking-wider text-stone-400">Lucky Number</span>
+                    <span className="block text-[9px] uppercase tracking-wider text-stone-600 font-medium">Lucky Number</span>
                     <span className="font-semibold text-xs text-[#3C2A21]">{horoscope.luckyNumber}</span>
                   </div>
                 </div>
-
+ 
                 {/* Prediction Text */}
                 <div className="mb-6 text-left">
                   <h4 className="text-[10px] uppercase tracking-widest text-[#B38B36] font-bold mb-2">Today's Forecast</h4>
-                  <p className="text-sm text-[#3C2A21]/90 leading-relaxed font-light">
+                  <p className="text-sm text-[#3C2A21] leading-relaxed font-normal">
                     {horoscope.prediction}
                   </p>
                 </div>
-
+ 
                 {/* Cosmic Tip */}
                 <div className="mb-6 p-4 rounded-xl bg-[#F9F5EC] border border-[#D4AF37]/20 text-left">
                   <h4 className="text-[9px] uppercase tracking-widest text-[#B38B36] font-black mb-1">Cosmic Tip of the Day</h4>
@@ -269,10 +269,10 @@ const ZodiacSigns = () => {
                     "{horoscope.cosmicTip}"
                   </p>
                 </div>
-
+ 
                 {/* Energy Indicator */}
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] uppercase tracking-wider text-stone-400">Cosmic Energy Flow</span>
+                  <span className="text-[10px] uppercase tracking-wider text-stone-600 font-medium">Cosmic Energy Flow</span>
                   <div className="flex items-center gap-3 w-2/3">
                     <div className="w-full bg-[#E5E1D8] h-2 rounded-full overflow-hidden">
                       <motion.div 

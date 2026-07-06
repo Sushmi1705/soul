@@ -199,7 +199,7 @@ const BookingModal = ({ service, open, onClose }) => {
                           <span className="text-[#B38B36] font-serif text-base font-bold mb-1">
                             {formatINR(item.price)}
                           </span>
-                          <span className="text-xs text-stone-400 font-light">
+                          <span className="text-xs text-stone-600 font-normal">
                             {item.wait}
                           </span>
                         </button>
@@ -241,7 +241,7 @@ const BookingModal = ({ service, open, onClose }) => {
                         <select
                           value={vastuRangeIndex}
                           onChange={(e) => setVastuRangeIndex(Number(e.target.value))}
-                          className="w-full bg-white border border-[#E5E1D8] text-[#3C2A21] px-4 py-3.5 rounded-xl text-sm focus:outline-none focus:border-[#B38B36] focus:ring-1 focus:ring-[#B38B36] appearance-none cursor-pointer font-serif"
+                          className="w-full bg-white border border-[#E5E1D8] text-[#3C2A21] px-4 py-3.5 rounded-xl text-sm focus:outline-none focus:border-[#B38B36] focus:ring-1 focus:ring-[#B38B36] appearance-none cursor-pointer font-sans"
                         >
                           {VASTU_TYPES[vastuType].ranges.map((range, index) => (
                             <option key={index} value={index}>
