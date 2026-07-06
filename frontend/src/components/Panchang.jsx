@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { MapPin, RefreshCw, Sparkles, AlertCircle, HelpCircle, X, Compass, Calendar, Clock, ShieldAlert, Award, Search, Globe } from "lucide-react";
+import { MapPin, RefreshCw, Sparkles, AlertCircle, HelpCircle, X, Compass, Calendar, Clock, ShieldAlert, Award, Search, Globe, Sun, Moon, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -417,210 +417,292 @@ const Panchang = () => {
 
       <AnimatePresence>
         {showDetailedModal && data && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/65 backdrop-blur-md">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#3C2A21]/70 backdrop-blur-md">
+            <div className="absolute inset-0" onClick={() => setShowDetailedModal(false)} />
+            
             <motion.div
-              initial={{ opacity: 0, scale: 0.92, y: 15 }}
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.92, y: 15 }}
-              transition={{ duration: 0.35, ease: "easeOut" }}
-              className="w-full max-w-2xl bg-gradient-to-b from-[#FFFDF9] to-[#FAF6EE] border border-[#B38B36]/30 p-6 md:p-8 rounded-3xl shadow-2xl relative max-h-[85vh] overflow-y-auto text-[#3C2A21] scrollbar-none"
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
+              className="w-full max-w-4xl bg-gradient-to-b from-[#FFFDF9] to-[#FAF6EE] border-2 border-[#B38B36]/35 rounded-[32px] shadow-2xl relative max-h-[90vh] overflow-y-auto text-[#3C2A21] scrollbar-none flex flex-col"
             >
-              <button 
-                onClick={() => setShowDetailedModal(false)}
-                className="absolute top-4 right-4 p-2 rounded-full hover:bg-stone-100 text-[#725D46] hover:text-[#3C2A21] transition-all transform cursor-pointer border border-[#E5E1D8]"
-              >
-                <X className="w-4 h-4" />
-              </button>
-
-              <div className="space-y-6">
-                <div className="text-center pb-2 border-b border-[#B38B36]/15">
-                  <div className="w-10 h-10 rounded-full bg-[#B38B36]/15 flex items-center justify-center mx-auto mb-2.5 text-[#8E6B23] border border-[#B38B36]/25">
-                    <Compass className="w-5 h-5 animate-spin" style={{ animationDuration: '60s' }} />
+              {/* Sticky Header Bar */}
+              <div className="sticky top-0 bg-gradient-to-b from-[#FFFDF9] via-[#FFFDF9] to-transparent z-10 pt-6 px-6 md:px-8 pb-4 border-b border-[#B38B36]/15 backdrop-blur-md flex justify-between items-start">
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <Compass className="w-5 h-5 text-[#B38B36]" />
+                    <span className="text-[10px] tracking-[0.25em] uppercase font-bold text-[#8E6B23]">Celestial Guide</span>
                   </div>
-                  <h3 className="font-serif text-2xl font-bold">Vedic Panchangam</h3>
-                  <p className="text-xs text-[#725D46] mt-1.5 font-light">
-                    Real-time celestial elements for <span className="font-bold text-[#3C2A21]">{data.city}</span> ({data.local_time})
+                  <h3 className="font-serif text-3xl font-bold tracking-tight">Vedic Panchangam</h3>
+                  <p className="text-xs text-[#725D46] mt-1 font-light">
+                    Real-time energy for <span className="font-bold text-[#3C2A21]">{data.city}</span> ({data.local_time})
                   </p>
                 </div>
+                <button 
+                  onClick={() => setShowDetailedModal(false)}
+                  className="p-2.5 rounded-full hover:bg-[#FBF6EC] text-[#725D46] hover:text-[#3C2A21] transition-all transform cursor-pointer border border-[#E5E1D8] shadow-sm active:scale-95"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
 
-                <div className="grid md:grid-cols-2 gap-6 pt-2">
-                  <div className="space-y-4">
-                    <h4 className="font-serif text-xs uppercase tracking-widest text-[#8E6B23] font-bold border-b border-stone-200 pb-1 flex items-center gap-1.5">
-                      <Calendar className="w-3.5 h-3.5" />
+              {/* Scrollable Content */}
+              <div className="p-6 md:p-8 space-y-8 flex-1">
+                
+                {/* 1. Active Choghadiya Big Banner (AstroArunPandit Style) */}
+                {data.choghadiya?.active && (
+                  <div className="relative overflow-hidden rounded-2xl border border-[#B38B36]/20 shadow-md">
+                    <div className="absolute top-0 right-0 w-48 h-full opacity-[0.03] pointer-events-none select-none">
+                      <Compass className="w-full h-full text-[#B38B36] rotate-45" />
+                    </div>
+                    
+                    {(() => {
+                      const active = data.choghadiya.active;
+                      let bannerBg = "from-[#FDFBF7] to-[#FAF6EE]";
+                      let accentColor = "text-[#B38B36]";
+                      let badgeBg = "bg-stone-100 text-stone-700 border-stone-200";
+                      let indicatorColor = "bg-[#B38B36]";
+                      
+                      if (active.status === "shubh") {
+                        bannerBg = "from-green-50/30 to-[#FAF6EE]";
+                        accentColor = "text-green-700";
+                        badgeBg = "bg-green-100 text-green-800 border-green-200/50";
+                        indicatorColor = "bg-green-600";
+                      } else if (active.status === "asubh") {
+                        bannerBg = "from-red-50/30 to-[#FAF6EE]";
+                        accentColor = "text-red-700";
+                        badgeBg = "bg-red-100 text-red-800 border-red-200/50";
+                        indicatorColor = "bg-red-600";
+                      } else if (active.status === "neutral") {
+                        bannerBg = "from-blue-50/30 to-[#FAF6EE]";
+                        accentColor = "text-blue-700";
+                        badgeBg = "bg-blue-100 text-blue-800 border-blue-200/50";
+                        indicatorColor = "bg-blue-600";
+                      }
+
+                      const tabName = data.choghadiya.day.some(s => s.name === active.name && s.start === active.start) ? "day" : "night";
+                      const currentList = data.choghadiya[tabName];
+                      const currentIndex = currentList.findIndex(s => s.name === active.name && s.start === active.start);
+                      const nextPeriod = currentList[(currentIndex + 1) % 8];
+
+                      return (
+                        <div className={`p-6 bg-gradient-to-r ${bannerBg} flex flex-col md:flex-row justify-between items-start md:items-center gap-6`}>
+                          <div className="space-y-2">
+                            <div className="flex items-center gap-2">
+                              <span className={`w-2.5 h-2.5 rounded-full ${indicatorColor} animate-pulse`} />
+                              <span className="text-[10px] tracking-[0.2em] uppercase font-bold text-[#725D46]">Current Chaughadiya</span>
+                            </div>
+                            <div className="flex items-baseline gap-3">
+                              <h4 className="font-serif text-3xl font-bold tracking-tight">{active.name}</h4>
+                              <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full border ${badgeBg}`}>
+                                {active.status === "shubh" ? "Auspicious" : active.status === "asubh" ? "Inauspicious" : "Neutral (Char)"}
+                              </span>
+                            </div>
+                            <p className="text-xs text-stone-500 font-light italic">{active.desc} is active locally</p>
+                          </div>
+                          
+                          <div className="flex flex-col md:items-end gap-3 w-full md:w-auto">
+                            <div className="bg-white/80 border border-[#E5E1D8] px-5 py-2.5 rounded-xl shadow-sm">
+                              <span className="text-[9px] uppercase tracking-wider text-stone-400 block font-bold mb-0.5">Active Time Slot</span>
+                              <span className="font-mono text-sm font-extrabold text-[#3C2A21]">{active.start} - {active.end}</span>
+                            </div>
+                            {nextPeriod && (
+                              <div className="flex items-center gap-1.5 text-[10px] text-[#725D46] font-semibold bg-[#FBF6EC] px-3 py-1 rounded-lg border border-[#B38B36]/15 self-start md:self-auto">
+                                <span>Next: {nextPeriod.name}</span>
+                                <ChevronRight className="w-3.5 h-3.5" />
+                                <span className="font-mono">{nextPeriod.start}</span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })()}
+                  </div>
+                )}
+
+                {/* Grid Layout for Core Elements and Vedic Hours */}
+                <div className="grid lg:grid-cols-2 gap-8">
+                  
+                  {/* The 5 Core Elements */}
+                  <div className="bg-white/55 border border-[#B38B36]/15 rounded-2xl p-6 shadow-sm space-y-4">
+                    <h4 className="font-serif text-sm uppercase tracking-widest text-[#8E6B23] font-bold border-b border-stone-200 pb-2 flex items-center gap-2">
+                      <Calendar className="w-4 h-4" />
                       The 5 Core Elements
                     </h4>
                     
-                    <div className="space-y-3 text-xs">
-                      <div className="flex justify-between items-center py-1.5 border-b border-stone-100">
-                        <span className="font-semibold text-stone-600">Tithi (Lunar Day)</span>
-                        <span className="font-serif text-[#3C2A21] font-bold text-[13px] bg-white border border-[#E5E1D8] px-2.5 py-0.5 rounded-lg">{data.elements?.tithi}</span>
-                      </div>
-                      <div className="flex justify-between items-center py-1.5 border-b border-stone-100">
-                        <span className="font-semibold text-stone-600">Nakshatra (Lunar Mansion)</span>
-                        <span className="font-serif text-[#3C2A21] font-bold text-[13px] bg-white border border-[#E5E1D8] px-2.5 py-0.5 rounded-lg">{data.elements?.nakshatra}</span>
-                      </div>
-                      <div className="flex justify-between items-center py-1.5 border-b border-stone-100">
-                        <span className="font-semibold text-stone-600">Yoga (Solilunar Aspect)</span>
-                        <span className="font-serif text-[#3C2A21] font-bold text-[13px] bg-white border border-[#E5E1D8] px-2.5 py-0.5 rounded-lg">{data.elements?.yoga}</span>
-                      </div>
-                      <div className="flex justify-between items-center py-1.5 border-b border-stone-100">
-                        <span className="font-semibold text-stone-600">Karana (Half Tithi)</span>
-                        <span className="font-serif text-[#3C2A21] font-bold text-[13px] bg-white border border-[#E5E1D8] px-2.5 py-0.5 rounded-lg">{data.elements?.karana}</span>
-                      </div>
-                      <div className="flex justify-between items-center py-1.5">
-                        <span className="font-semibold text-stone-600">Vara (Day of the Week)</span>
-                        <span className="font-serif text-[#3C2A21] font-bold text-[13px] bg-white border border-[#E5E1D8] px-2.5 py-0.5 rounded-lg">{data.elements?.vara}</span>
-                      </div>
+                    <div className="space-y-3.5 text-xs">
+                      {[
+                        { label: "Tithi (Lunar Day)", value: data.elements?.tithi },
+                        { label: "Nakshatra (Lunar Mansion)", value: data.elements?.nakshatra },
+                        { label: "Yoga (Solilunar Aspect)", value: data.elements?.yoga },
+                        { label: "Karana (Half Tithi)", value: data.elements?.karana },
+                        { label: "Vara (Day of the Week)", value: data.elements?.vara }
+                      ].map((item, idx) => (
+                        <div key={idx} className="flex justify-between items-center py-2 border-b border-stone-100 last:border-0 last:pb-0">
+                          <span className="font-semibold text-stone-600">{item.label}</span>
+                          <span className="font-serif text-[#3C2A21] font-bold text-[13px] bg-white border border-[#E5E1D8] px-3 py-1 rounded-lg shadow-sm">
+                            {item.value}
+                          </span>
+                        </div>
+                      ))}
                     </div>
                   </div>
 
-                  <div className="space-y-4">
-                    <h4 className="font-serif text-xs uppercase tracking-widest text-[#8E6B23] font-bold border-b border-stone-200 pb-1 flex items-center gap-1.5">
-                      <Clock className="w-3.5 h-3.5" />
+                  {/* Dynamic Vedic Hours */}
+                  <div className="bg-white/55 border border-[#B38B36]/15 rounded-2xl p-6 shadow-sm space-y-4">
+                    <h4 className="font-serif text-sm uppercase tracking-widest text-[#8E6B23] font-bold border-b border-stone-200 pb-2 flex items-center gap-2">
+                      <Clock className="w-4 h-4" />
                       Dynamic Vedic Hours
                     </h4>
                     
-                    <div className="space-y-3.5 text-xs">
-                      <div className="grid grid-cols-2 gap-2 text-stone-600">
-                        <div className="bg-white/60 p-2 border border-[#E5E1D8] rounded-lg">
-                          <span className="text-[7.5px] uppercase tracking-widest block font-bold text-stone-400 mb-0.5">Sunrise</span>
-                          <span className="font-serif font-bold text-[#3C2A21]">{data.sunrise}</span>
+                    <div className="space-y-3 text-xs">
+                      <div className="grid grid-cols-2 gap-3 text-stone-600">
+                        <div className="bg-white/80 p-3 border border-[#E5E1D8] rounded-xl flex items-center gap-2.5 shadow-sm">
+                          <div className="w-8 h-8 rounded-full bg-amber-50 flex items-center justify-center text-amber-600 border border-amber-100">
+                            <Sun className="w-4 h-4 animate-pulse" />
+                          </div>
+                          <div>
+                            <span className="text-[8px] uppercase tracking-widest block font-bold text-stone-400">Sunrise</span>
+                            <span className="font-serif font-bold text-[#3C2A21] text-sm">{data.sunrise}</span>
+                          </div>
                         </div>
-                        <div className="bg-white/60 p-2 border border-[#E5E1D8] rounded-lg">
-                          <span className="text-[7.5px] uppercase tracking-widest block font-bold text-stone-400 mb-0.5">Sunset</span>
-                          <span className="font-serif font-bold text-[#3C2A21]">{data.sunset}</span>
+                        <div className="bg-white/80 p-3 border border-[#E5E1D8] rounded-xl flex items-center gap-2.5 shadow-sm">
+                          <div className="w-8 h-8 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600 border border-indigo-100">
+                            <Moon className="w-4 h-4" />
+                          </div>
+                          <div>
+                            <span className="text-[8px] uppercase tracking-widest block font-bold text-stone-400">Sunset</span>
+                            <span className="font-serif font-bold text-[#3C2A21] text-sm">{data.sunset}</span>
+                          </div>
                         </div>
                       </div>
 
-                      <div className="bg-green-50/60 border border-green-200/50 p-2.5 rounded-lg flex items-center justify-between">
-                        <div>
-                          <span className="text-[8px] uppercase tracking-widest block font-bold text-green-700 mb-0.5 flex items-center gap-1">
-                            <Award className="w-3 h-3" /> Abhijit Muhurat
-                          </span>
-                          <span className="text-[10px] text-green-600 font-light">Best time for new beginnings</span>
-                        </div>
-                        <span className="font-serif font-bold text-green-800 text-[13px]">{data.abhijit.start} - {data.abhijit.end}</span>
-                      </div>
+                      {[
+                        { title: "Abhijit Muhurat", time: `${data.abhijit.start} - ${data.abhijit.end}`, desc: "Best time for new beginnings", status: "good" },
+                        { title: "Rahu Kaal", time: `${data.rahu_kaal.start} - ${data.rahu_kaal.end}`, desc: "Avoid starting new projects", status: "bad" },
+                        { title: "Yama Gandha", time: `${data.yama_gandha.start} - ${data.yama_gandha.end}`, desc: "Inauspicious timing slot", status: "warning" },
+                        { title: "Gulika Kaal", time: `${data.gulika_kaal.start} - ${data.gulika_kaal.end}`, desc: "Obstruction energy slot", status: "warning" }
+                      ].map((hour, idx) => {
+                        let indicatorBg = "bg-amber-50/60 border-amber-200/50 text-amber-800";
+                        let tagColor = "text-amber-700";
+                        
+                        if (hour.status === "good") {
+                          indicatorBg = "bg-green-50/60 border-green-200/50 text-green-800";
+                          tagColor = "text-green-700";
+                        } else if (hour.status === "bad") {
+                          indicatorBg = "bg-red-50/60 border-red-200/50 text-red-800";
+                          tagColor = "text-red-700";
+                        }
 
-                      <div className="bg-red-50/60 border border-red-200/50 p-2.5 rounded-lg flex items-center justify-between">
-                        <div>
-                          <span className="text-[8px] uppercase tracking-widest block font-bold text-red-700 mb-0.5 flex items-center gap-1">
-                            <ShieldAlert className="w-3 h-3" /> Rahu Kaal
-                          </span>
-                          <span className="text-[10px] text-red-600 font-light">Avoid starting new projects</span>
-                        </div>
-                        <span className="font-serif font-bold text-red-800 text-[13px]">{data.rahu_kaal.start} - {data.rahu_kaal.end}</span>
-                      </div>
-
-                      <div className="bg-amber-50/60 border border-amber-200/50 p-2.5 rounded-lg flex items-center justify-between">
-                        <div>
-                          <span className="text-[8px] uppercase tracking-widest block font-bold text-amber-800 mb-0.5 flex items-center gap-1">
-                            <ShieldAlert className="w-3 h-3" /> Yama Gandha
-                          </span>
-                          <span className="text-[10px] text-amber-700 font-light">Inauspicious timing slot</span>
-                        </div>
-                        <span className="font-serif font-bold text-[#3C2A21] text-[13px]">{data.yama_gandha.start} - {data.yama_gandha.end}</span>
-                      </div>
-
-                      <div className="bg-amber-50/60 border border-amber-200/50 p-2.5 rounded-lg flex items-center justify-between">
-                        <div>
-                          <span className="text-[8px] uppercase tracking-widest block font-bold text-amber-800 mb-0.5 flex items-center gap-1">
-                            <ShieldAlert className="w-3 h-3" /> Gulika Kaal
-                          </span>
-                          <span className="text-[10px] text-amber-700 font-light">Obstruction energy slot</span>
-                        </div>
-                        <span className="font-serif font-bold text-[#3C2A21] text-[13px]">{data.gulika_kaal.start} - {data.gulika_kaal.end}</span>
-                      </div>
-
+                        return (
+                          <div key={idx} className={`border p-3 rounded-xl flex items-center justify-between shadow-sm transition-colors ${indicatorBg}`}>
+                            <div>
+                              <span className="text-[9px] uppercase tracking-widest block font-extrabold mb-0.5 flex items-center gap-1">
+                                <Award className="w-3.5 h-3.5" /> {hour.title}
+                              </span>
+                              <span className={`text-[10px] ${tagColor} font-light`}>{hour.desc}</span>
+                            </div>
+                            <span className="font-serif font-extrabold text-[13px] bg-white/70 px-3 py-1 rounded-lg border border-black/5 shadow-sm">{hour.time}</span>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 </div>
 
-                <div className="border-t border-[#B38B36]/15 pt-6 space-y-4 col-span-1 md:col-span-2">
-                  <h4 className="font-serif text-xs uppercase tracking-widest text-[#8E6B23] font-bold border-b border-stone-200 pb-1 flex items-center gap-1.5">
-                    <Clock className="w-3.5 h-3.5" />
-                    Choghadiya Periods (Today)
-                  </h4>
-                  
-                  {/* Tab Selector */}
-                  <div className="flex gap-2 p-1 bg-stone-100/80 rounded-xl max-w-[200px] border border-stone-200/50">
-                    <button 
-                      onClick={() => setChoghadiyaTab("day")}
-                      className={`flex-1 text-center py-1.5 rounded-lg text-[10px] uppercase tracking-wider font-bold transition-all cursor-pointer ${
-                        choghadiyaTab === "day" 
-                          ? "bg-white text-[#B38B36] shadow-sm" 
-                          : "text-stone-500 hover:text-[#3C2A21]"
-                      }`}
-                    >
-                      Day
-                    </button>
-                    <button 
-                      onClick={() => setChoghadiyaTab("night")}
-                      className={`flex-1 text-center py-1.5 rounded-lg text-[10px] uppercase tracking-wider font-bold transition-all cursor-pointer ${
-                        choghadiyaTab === "night" 
-                          ? "bg-white text-[#B38B36] shadow-sm" 
-                          : "text-stone-500 hover:text-[#3C2A21]"
-                      }`}
-                    >
-                      Night
-                    </button>
+                {/* 3. Detailed Chaughadiya Table */}
+                <div className="bg-white/55 border border-[#B38B36]/15 rounded-2xl p-6 shadow-sm space-y-5">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-stone-200 pb-3">
+                    <h4 className="font-serif text-sm uppercase tracking-widest text-[#8E6B23] font-bold flex items-center gap-2">
+                      <Clock className="w-4 h-4 animate-spin-slow" />
+                      Chaughadiya (Time Periods)
+                    </h4>
+                    
+                    {/* Tab Selector */}
+                    <div className="flex gap-2 p-1 bg-stone-100 rounded-xl border border-stone-200/50 self-start sm:self-auto">
+                      <button 
+                        onClick={() => setChoghadiyaTab("day")}
+                        className={`px-4 py-1.5 rounded-lg text-[10px] uppercase tracking-wider font-bold transition-all cursor-pointer ${
+                          choghadiyaTab === "day" 
+                            ? "bg-[#B38B36] text-white shadow-sm" 
+                            : "text-stone-500 hover:text-[#3C2A21]"
+                        }`}
+                      >
+                        Day
+                      </button>
+                      <button 
+                        onClick={() => setChoghadiyaTab("night")}
+                        className={`px-4 py-1.5 rounded-lg text-[10px] uppercase tracking-wider font-bold transition-all cursor-pointer ${
+                          choghadiyaTab === "night" 
+                            ? "bg-[#B38B36] text-white shadow-sm" 
+                            : "text-stone-500 hover:text-[#3C2A21]"
+                        }`}
+                      >
+                        Night
+                      </button>
+                    </div>
                   </div>
-                  
-                  {/* List of Choghadiya slots */}
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+
+                  {/* 8 Period Cards */}
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                     {data.choghadiya?.[choghadiyaTab]?.map((slot, index) => {
                       const isCurrentActive = data.choghadiya?.active?.name === slot.name && data.choghadiya?.active?.start === slot.start && data.choghadiya?.active?.end === slot.end;
                       
-                      let bgStyle = "bg-white/60 border-[#E5E1D8]";
+                      let bgStyle = "bg-white border-[#E5E1D8] hover:border-[#B38B36]/30";
                       let badgeColor = "bg-stone-100 text-stone-600 border-stone-200";
                       
                       if (slot.status === "shubh") {
-                        bgStyle = "bg-green-50/40 border-green-200/40";
-                        badgeColor = "bg-green-100/70 text-green-700 border-green-200/30";
+                        bgStyle = "bg-green-50/30 border-green-200/40 hover:border-green-300";
+                        badgeColor = "bg-green-100 text-green-700 border-green-200/30";
                       } else if (slot.status === "asubh") {
-                        bgStyle = "bg-red-50/40 border-red-200/40";
-                        badgeColor = "bg-red-100/70 text-red-700 border-red-200/30";
+                        bgStyle = "bg-red-50/30 border-red-200/40 hover:border-red-300";
+                        badgeColor = "bg-red-100 text-red-700 border-red-200/30";
                       } else if (slot.status === "neutral") {
-                        bgStyle = "bg-blue-50/40 border-blue-200/40";
-                        badgeColor = "bg-blue-100/70 text-blue-700 border-blue-200/30";
+                        bgStyle = "bg-blue-50/30 border-blue-200/40 hover:border-blue-300";
+                        badgeColor = "bg-blue-100 text-blue-700 border-blue-200/30";
                       }
 
                       return (
                         <div 
                           key={`${slot.name}-${index}`} 
-                          className={`relative border p-3 rounded-xl flex flex-col justify-between transition-all duration-300 ${bgStyle} ${
-                            isCurrentActive ? "ring-2 ring-[#B38B36] shadow-md scale-[1.02] bg-amber-50/20" : "shadow-sm"
+                          className={`relative border p-4 rounded-2xl flex flex-col justify-between transition-all duration-300 ${bgStyle} ${
+                            isCurrentActive ? "ring-2 ring-[#B38B36] shadow-md scale-[1.03] bg-[#FFFDF9]" : "shadow-sm hover:shadow"
                           }`}
                         >
                           {isCurrentActive && (
-                            <span className="absolute -top-2 right-2 bg-[#B38B36] text-white text-[7px] tracking-wider uppercase font-bold px-1.5 py-0.5 rounded-full shadow-sm">
-                              ✦ Active
+                            <span className="absolute -top-2.5 right-3 bg-[#B38B36] text-white text-[7px] tracking-widest uppercase font-extrabold px-2 py-0.5 rounded-full shadow-sm">
+                              Active
                             </span>
                           )}
-                          <div>
-                            <div className="flex justify-between items-center gap-1.5 mb-1">
-                              <span className="font-serif text-xs font-bold text-[#3C2A21]">{slot.name}</span>
-                              <span className={`text-[7px] uppercase tracking-wider px-1.5 py-0.5 rounded font-bold border ${badgeColor}`}>
+                          <div className="space-y-1">
+                            <div className="flex justify-between items-center gap-1">
+                              <span className="font-serif text-sm font-extrabold text-[#3C2A21]">{slot.name}</span>
+                              <span className={`text-[7px] uppercase tracking-wider px-1.5 py-0.5 rounded-md font-extrabold border ${badgeColor}`}>
                                 {slot.status === "shubh" ? "Shubh" : slot.status === "asubh" ? "Asubh" : "Char"}
                               </span>
                             </div>
-                            <p className="text-[9px] text-[#725D46] font-light italic mb-2">{slot.desc}</p>
+                            <p className="text-[9px] text-[#725D46] font-light italic">{slot.desc}</p>
                           </div>
-                          <p className="text-[8px] font-mono text-stone-600 font-bold">{slot.start} - {slot.end}</p>
+                          <div className="mt-4 pt-2 border-t border-stone-100">
+                            <p className="text-[9px] font-mono text-stone-600 font-bold tracking-tight">{slot.start} - {slot.end}</p>
+                          </div>
                         </div>
                       );
                     })}
                   </div>
                 </div>
 
-                <div className="text-center pt-4 border-t border-[#B38B36]/15">
-                  <button 
-                    onClick={() => setShowDetailedModal(false)}
-                    className="bg-[#B38B36] hover:bg-[#8E6B23] text-white px-8 py-3 rounded-full text-[10px] tracking-widest uppercase font-bold shadow-md hover:shadow-lg transition-all active:scale-95 transform cursor-pointer border border-[#E5C06A]/30"
-                  >
-                    Close Panchangam
-                  </button>
-                </div>
+              </div>
+
+              {/* Bottom Footer Bar */}
+              <div className="p-6 border-t border-[#B38B36]/15 bg-[#FAF6EE] rounded-b-[30px] flex justify-center">
+                <button 
+                  onClick={() => setShowDetailedModal(false)}
+                  className="bg-[#B38B36] hover:bg-[#8E6B23] text-white px-10 py-3.5 rounded-full text-[10px] tracking-widest uppercase font-extrabold shadow-md hover:shadow-lg transition-all active:scale-95 transform cursor-pointer border border-[#E5C06A]/30"
+                >
+                  Close Detailed Panchangam
+                </button>
               </div>
             </motion.div>
           </div>
