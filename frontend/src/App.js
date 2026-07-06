@@ -30,6 +30,7 @@ import AdminLogin from "@/pages/AdminLogin";
 import AdminDashboard from "@/pages/AdminDashboard";
 import PaymentPage from "@/pages/PaymentPage";
 import ShubhMuhuratPage from "@/pages/ShubhMuhuratPage";
+import PanchangPage from "@/pages/PanchangPage";
 
 const Layout = ({ children }) => {
   const { pathname } = useLocation();
@@ -101,6 +102,7 @@ function App() {
           <Layout>
             <Routes>
               <Route path="/" element={<Home />} />
+              <Route path="/panchang" element={<PanchangPage />} />
               <Route path="/about-us" element={<AboutUs />} />
               <Route path="/about" element={<AboutUs />} />
               <Route path="/astro-solutions/:slug" element={<AstroSolutionPage />} />

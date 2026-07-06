@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { MapPin, RefreshCw, Sparkles, AlertCircle, HelpCircle, X, Compass, Calendar, Clock, ShieldAlert, Award, Search, Globe, Sun, Moon, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 
 const Panchang = () => {
+  const navigate = useNavigate();
   const [city, setCity] = useState("New Delhi");
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -237,13 +239,23 @@ const Panchang = () => {
             </div>
 
             {data && !loading && (
-              <button 
-                onClick={() => setShowDetailedModal(true)}
-                className="inline-flex items-center gap-2 text-[10px] tracking-[0.3em] uppercase font-bold text-[#3C2A21] border-b border-[#3C2A21]/20 pb-1 hover:text-[#B38B36] hover:border-[#B38B36] hover:gap-3 transition-all duration-300 transform cursor-pointer bg-transparent"
-              >
-                <span>View detailed panchang</span>
-                <span>✦</span>
-              </button>
+              <div className="flex flex-col gap-4 items-start">
+                <button 
+                  onClick={() => setShowDetailedModal(true)}
+                  className="inline-flex items-center gap-2 text-[10px] tracking-[0.3em] uppercase font-bold text-[#3C2A21] border-b border-[#3C2A21]/20 pb-1 hover:text-[#B38B36] hover:border-[#B38B36] hover:gap-3 transition-all duration-300 transform cursor-pointer bg-transparent"
+                >
+                  <span>View detailed panchang</span>
+                  <span>✦</span>
+                </button>
+                
+                <button 
+                  onClick={() => navigate("/panchang")}
+                  className="mt-2 bg-[#B38B36] hover:bg-[#8E6B23] text-white px-8 py-3.5 rounded-full text-[10px] tracking-widest uppercase font-extrabold shadow-md hover:shadow-lg transition-all active:scale-95 transform cursor-pointer border border-[#E5C06A]/30 flex items-center gap-2"
+                >
+                  <Sparkles className="w-3.5 h-3.5" />
+                  View More Details
+                </button>
+              </div>
             )}
 
           </div>

@@ -1621,7 +1621,7 @@ def format_hour_to_12h(h: float) -> str:
     return f"{display_hrs:02d}:{mins:02d} {period}"
 
 @api_router.get("/panchang")
-async def get_panchang(response: Response, city: str = "New Delhi"):
+async def get_panchang(response: Response, city: str = "New Delhi", date: str = None):
     response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate"
     city_key = city.lower().strip()
     if city_key in CITIES_DB:
@@ -1631,6 +1631,12 @@ async def get_panchang(response: Response, city: str = "New Delhi"):
         lat, lon = geocode_place(city)
         
     dt_now = datetime.now()
+    if date:
+        try:
+            dt_now = datetime.strptime(date, "%Y-%m-%d")
+        except Exception:
+            pass
+            
     offset = get_timezone_offset(lat, lon, dt_now)
     
     # Parse offset to float
@@ -1647,7 +1653,23 @@ async def get_panchang(response: Response, city: str = "New Delhi"):
 
     # Get local current time
     now_utc = datetime.now(timezone.utc)
-    local_now = now_utc + timedelta(hours=offset_val)
+    if date:
+        try:
+            parsed_date = datetime.strptime(date, "%Y-%m-%d")
+            local_now = datetime(
+                year=parsed_date.year,
+                month=parsed_date.month,
+                day=parsed_date.day,
+                hour=now_utc.hour,
+                minute=now_utc.minute,
+                second=now_utc.second
+            )
+            now_utc = local_now - timedelta(hours=offset_val)
+        except Exception:
+            local_now = now_utc + timedelta(hours=offset_val)
+    else:
+        local_now = now_utc + timedelta(hours=offset_val)
+        
     local_hour_decimal = local_now.hour + local_now.minute / 60.0 + local_now.second / 3600.0
     weekday = local_now.weekday()
     
