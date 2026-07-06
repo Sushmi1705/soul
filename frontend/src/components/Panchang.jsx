@@ -16,6 +16,7 @@ const Panchang = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalSearch, setModalSearch] = useState("");
   const [visibleLimit, setVisibleLimit] = useState(150);
+  const [choghadiyaTab, setChoghadiyaTab] = useState("day");
 
   const fetchPanchang = async (cityName) => {
     setLoading(true);
@@ -532,6 +533,83 @@ const Panchang = () => {
                       </div>
 
                     </div>
+                  </div>
+                </div>
+
+                <div className="border-t border-[#B38B36]/15 pt-6 space-y-4 col-span-1 md:col-span-2">
+                  <h4 className="font-serif text-xs uppercase tracking-widest text-[#8E6B23] font-bold border-b border-stone-200 pb-1 flex items-center gap-1.5">
+                    <Clock className="w-3.5 h-3.5" />
+                    Choghadiya Periods (Today)
+                  </h4>
+                  
+                  {/* Tab Selector */}
+                  <div className="flex gap-2 p-1 bg-stone-100/80 rounded-xl max-w-[200px] border border-stone-200/50">
+                    <button 
+                      onClick={() => setChoghadiyaTab("day")}
+                      className={`flex-1 text-center py-1.5 rounded-lg text-[10px] uppercase tracking-wider font-bold transition-all cursor-pointer ${
+                        choghadiyaTab === "day" 
+                          ? "bg-white text-[#B38B36] shadow-sm" 
+                          : "text-stone-500 hover:text-[#3C2A21]"
+                      }`}
+                    >
+                      Day
+                    </button>
+                    <button 
+                      onClick={() => setChoghadiyaTab("night")}
+                      className={`flex-1 text-center py-1.5 rounded-lg text-[10px] uppercase tracking-wider font-bold transition-all cursor-pointer ${
+                        choghadiyaTab === "night" 
+                          ? "bg-white text-[#B38B36] shadow-sm" 
+                          : "text-stone-500 hover:text-[#3C2A21]"
+                      }`}
+                    >
+                      Night
+                    </button>
+                  </div>
+                  
+                  {/* List of Choghadiya slots */}
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    {data.choghadiya?.[choghadiyaTab]?.map((slot, index) => {
+                      const isCurrentActive = data.choghadiya?.active?.name === slot.name && data.choghadiya?.active?.start === slot.start && data.choghadiya?.active?.end === slot.end;
+                      
+                      let bgStyle = "bg-white/60 border-[#E5E1D8]";
+                      let badgeColor = "bg-stone-100 text-stone-600 border-stone-200";
+                      
+                      if (slot.status === "shubh") {
+                        bgStyle = "bg-green-50/40 border-green-200/40";
+                        badgeColor = "bg-green-100/70 text-green-700 border-green-200/30";
+                      } else if (slot.status === "asubh") {
+                        bgStyle = "bg-red-50/40 border-red-200/40";
+                        badgeColor = "bg-red-100/70 text-red-700 border-red-200/30";
+                      } else if (slot.status === "neutral") {
+                        bgStyle = "bg-blue-50/40 border-blue-200/40";
+                        badgeColor = "bg-blue-100/70 text-blue-700 border-blue-200/30";
+                      }
+
+                      return (
+                        <div 
+                          key={`${slot.name}-${index}`} 
+                          className={`relative border p-3 rounded-xl flex flex-col justify-between transition-all duration-300 ${bgStyle} ${
+                            isCurrentActive ? "ring-2 ring-[#B38B36] shadow-md scale-[1.02] bg-amber-50/20" : "shadow-sm"
+                          }`}
+                        >
+                          {isCurrentActive && (
+                            <span className="absolute -top-2 right-2 bg-[#B38B36] text-white text-[7px] tracking-wider uppercase font-bold px-1.5 py-0.5 rounded-full shadow-sm">
+                              ✦ Active
+                            </span>
+                          )}
+                          <div>
+                            <div className="flex justify-between items-center gap-1.5 mb-1">
+                              <span className="font-serif text-xs font-bold text-[#3C2A21]">{slot.name}</span>
+                              <span className={`text-[7px] uppercase tracking-wider px-1.5 py-0.5 rounded font-bold border ${badgeColor}`}>
+                                {slot.status === "shubh" ? "Shubh" : slot.status === "asubh" ? "Asubh" : "Char"}
+                              </span>
+                            </div>
+                            <p className="text-[9px] text-[#725D46] font-light italic mb-2">{slot.desc}</p>
+                          </div>
+                          <p className="text-[8px] font-mono text-stone-600 font-bold">{slot.start} - {slot.end}</p>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
 

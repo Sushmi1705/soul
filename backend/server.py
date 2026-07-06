@@ -1819,7 +1819,82 @@ async def get_panchang(response: Response, city: str = "New Delhi"):
     rahu_pct = (day_part / 24.0) * 100.0
     # Abhijit is 48 mins (0.8h)
     abhijit_pct = (0.8 / 24.0) * 100.0
+    # Choghadiya Calculations
+    CHOGHADIYA_METADATA = {
+        "Amrit": {"status": "shubh", "desc": "Nectar Time"},
+        "Rog": {"status": "asubh", "desc": "Disease Time"},
+        "Labh": {"status": "shubh", "desc": "Gain Time"},
+        "Shubh": {"status": "shubh", "desc": "Auspicious Time"},
+        "Char": {"status": "neutral", "desc": "Movement Time"},
+        "Kaal": {"status": "asubh", "desc": "Death Time"},
+        "Udveg": {"status": "asubh", "desc": "Anxiety Time"}
+    }
     
+    day_slot_duration = day_length / 8.0
+    day_slots = []
+    planetary_order = ["Amrit", "Rog", "Labh", "Shubh", "Char", "Kaal", "Udveg"]
+    
+    # Day Choghadiya starts with the lord of the weekday
+    day_start_idx = weekday
+    for i in range(8):
+        name = planetary_order[(day_start_idx + i) % 7]
+        start_dec = (sunrise_local + i * day_slot_duration) % 24
+        end_dec = (sunrise_local + (i + 1) * day_slot_duration) % 24
+        meta = CHOGHADIYA_METADATA.get(name, {"status": "neutral", "desc": ""})
+        day_slots.append({
+            "name": name,
+            "start": format_hour_to_12h(start_dec),
+            "end": format_hour_to_12h(end_dec),
+            "status": meta["status"],
+            "desc": meta["desc"]
+        })
+        
+    night_slot_duration = night_length / 8.0
+    night_slots = []
+    # Night Choghadiya starts with the 5th day lord from current weekday
+    night_start_idx = (weekday + 4) % 7
+    for i in range(8):
+        name = planetary_order[(night_start_idx + i) % 7]
+        start_dec = (sunset_local + i * night_slot_duration) % 24
+        end_dec = (sunset_local + (i + 1) * night_slot_duration) % 24
+        meta = CHOGHADIYA_METADATA.get(name, {"status": "neutral", "desc": ""})
+        night_slots.append({
+            "name": name,
+            "start": format_hour_to_12h(start_dec),
+            "end": format_hour_to_12h(end_dec),
+            "status": meta["status"],
+            "desc": meta["desc"]
+        })
+        
+    # Determine active Choghadiya
+    active_choghadiya = None
+    for i in range(8):
+        start_val = (sunrise_local + i * day_slot_duration) % 24
+        end_val = (sunrise_local + (i + 1) * day_slot_duration) % 24
+        in_slot = False
+        if start_val < end_val:
+            in_slot = start_val <= local_hour_decimal <= end_val
+        else:
+            in_slot = local_hour_decimal >= start_val or local_hour_decimal <= end_val
+            
+        if in_slot:
+            active_choghadiya = day_slots[i]
+            break
+            
+    if not active_choghadiya:
+        for i in range(8):
+            start_val = (sunset_local + i * night_slot_duration) % 24
+            end_val = (sunset_local + (i + 1) * night_slot_duration) % 24
+            in_slot = False
+            if start_val < end_val:
+                in_slot = start_val <= local_hour_decimal <= end_val
+            else:
+                in_slot = local_hour_decimal >= start_val or local_hour_decimal <= end_val
+                
+            if in_slot:
+                active_choghadiya = night_slots[i]
+                break
+
     return {
         "city": city,
         "local_time": local_now.strftime("%I:%M %p"),
@@ -1866,6 +1941,11 @@ async def get_panchang(response: Response, city: str = "New Delhi"):
             "yoga": yoga_name,
             "karana": karana_name,
             "vara": vara_name
+        },
+        "choghadiya": {
+            "day": day_slots,
+            "night": night_slots,
+            "active": active_choghadiya
         }
     }
 
