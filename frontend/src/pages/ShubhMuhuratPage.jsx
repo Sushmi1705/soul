@@ -170,7 +170,7 @@ const ShubhMuhuratPage = () => {
                   {activeData.title}
                 </h2>
               </div>
-              <p className="text-[#725D46] font-light leading-relaxed text-sm">
+              <p className="text-[#3C2A21] font-medium leading-relaxed text-sm">
                 {activeData.desc}
               </p>
 
@@ -220,7 +220,7 @@ const ShubhMuhuratPage = () => {
                         ))
                       ) : (
                         <tr>
-                          <td colSpan="5" className="py-8 text-center text-[#725D46] italic font-light">
+                          <td colSpan="5" className="py-8 text-center text-[#3C2A21] italic font-medium">
                             No dates match your filter terms. Try searching for a different keyword.
                           </td>
                         </tr>
@@ -246,7 +246,7 @@ const ShubhMuhuratPage = () => {
                     Personalized Muhurat Finder
                   </h3>
                 </div>
-                <p className="text-[#725D46] text-xs font-light leading-relaxed mb-8">
+                <p className="text-[#3C2A21] text-xs font-medium leading-relaxed mb-8">
                   General Muhurats are stellar guideposts. However, for a perfect alignment, we calculate Muhurats according to your birth nakshatra and horoscope chart nodes. Enter your birth details to generate your mock celestial compatibility.
                 </p>
 

@@ -192,7 +192,7 @@ const BlogPage = () => {
               </div>
 
               {/* Excerpt Banner */}
-              <div className="border-l-4 border-[#B38B36] pl-4 italic text-[#725D46] mb-8 text-base md:text-lg leading-relaxed font-light text-left">
+              <div className="border-l-4 border-[#B38B36] pl-4 italic text-[#3C2A21] mb-8 text-base md:text-lg leading-relaxed font-semibold text-left">
                 {selectedPost.excerpt}
               </div>
 
@@ -214,7 +214,7 @@ const BlogPage = () => {
                     if (pStr.startsWith('•') || pStr.startsWith('-')) {
                       const items = pStr.split(/\n+/).map(item => item.replace(/^[•\-]\s*/, '').trim()).filter(Boolean);
                       return (
-                        <ul key={idx} className="list-disc pl-6 mb-6 space-y-2 text-[#725D46] font-light">
+                        <ul key={idx} className="list-disc pl-6 mb-6 space-y-2 text-[#3C2A21] font-medium">
                           {items.map((item, i) => <li key={i}>{item}</li>)}
                         </ul>
                       );
@@ -224,7 +224,7 @@ const BlogPage = () => {
                     if (/^\d+\.\s/.test(pStr)) {
                       const items = pStr.split(/\n+/).map(item => item.replace(/^\d+\.\s*/, '').trim()).filter(Boolean);
                       return (
-                        <ol key={idx} className="list-decimal pl-6 mb-6 space-y-2 text-[#725D46] font-light">
+                        <ol key={idx} className="list-decimal pl-6 mb-6 space-y-2 text-[#3C2A21] font-medium">
                           {items.map((item, i) => <li key={i}>{item}</li>)}
                         </ol>
                       );
@@ -242,7 +242,7 @@ const BlogPage = () => {
 
                     // Normal paragraph
                     return (
-                      <p key={idx} className="text-[#725D46] font-light leading-relaxed mb-6">
+                      <p key={idx} className="text-[#3C2A21] font-medium leading-relaxed mb-6">
                         {pStr}
                       </p>
                     );

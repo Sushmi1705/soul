@@ -121,7 +121,7 @@ const AstroSolutionPage = () => {
             <h2 className="font-serif text-2xl md:text-3xl text-[#3C2A21] leading-tight font-bold">
               {data.subtitle}
             </h2>
-            <div className="space-y-6 text-[#725D46] font-light leading-relaxed text-sm">
+            <div className="space-y-6 text-[#3C2A21] font-medium leading-relaxed text-sm">
               {data.paragraphs.map((p, i) => (
                 <div key={i} className="space-y-2">
                   {typeof p === 'string' ? (
@@ -172,7 +172,7 @@ const AstroSolutionPage = () => {
               initial="initial"
               whileInView="whileInView"
               viewport={{ once: true, margin: "-100px" }}
-              className="space-y-4 text-[#725D46] font-light text-sm"
+              className="space-y-4 text-[#3C2A21] font-medium text-sm"
             >
               <motion.li variants={staggerItem} className="flex items-start gap-3">
                 <CheckCircle2 className="w-5 h-5 text-[#B38B36] shrink-0 mt-0.5" />

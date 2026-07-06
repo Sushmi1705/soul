@@ -736,7 +736,7 @@ const CalculatorPage = () => {
             </h1>
           </div>
           
-          <p className="text-[#725D46] max-w-xl mx-auto text-[11px] md:text-xs font-light leading-normal">
+          <p className="text-[#3C2A21] max-w-xl mx-auto text-[11px] md:text-xs font-medium leading-normal">
             {calc.desc}
           </p>
         </div>

@@ -107,7 +107,7 @@ const ServicePage = () => {
             <h2 className="font-serif text-2xl md:text-3xl text-[#3C2A21] leading-tight font-bold">
               {data.subtitle}
             </h2>
-            <div className="space-y-6 text-[#725D46] font-light leading-relaxed text-sm">
+            <div className="space-y-6 text-[#3C2A21] font-medium leading-relaxed text-sm">
               {data.paragraphs.map((p, i) => (
                 <div key={i} className="space-y-2">
                   {typeof p === 'string' ? (

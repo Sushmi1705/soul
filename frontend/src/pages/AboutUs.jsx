@@ -62,7 +62,7 @@ const AboutUs = () => {
             <h2 className="font-serif text-4xl md:text-5xl text-[#3C2A21] leading-tight">
               Welcome To <span className="text-[#B38B36] italic font-light">Astro Power 24</span>
             </h2>
-            <div className="space-y-4 text-[#725D46] font-light leading-relaxed text-sm">
+            <div className="space-y-4 text-[#3C2A21] font-medium leading-relaxed text-sm">
               <p>Welcome to Astro Power 24, your trusted source for Vedic Astrology and Vastu solutions. We blend ancient cosmic wisdom with modern life circumstances to provide comprehensive guidance and remedies for a harmonious, aligned, and prosperous life.</p>
               <p>With a deep-seated understanding of Vedic principles and years of experience, our team of expert astrologers and Vastu consultants is dedicated to assisting you on your journey towards self-discovery, personal growth, and holistic well-being.</p>
               <p>Our approach is rooted in authenticity, integrity, and compassion. We believe that every individual has a unique cosmic blueprint, and through the precise analysis of planetary positions and energy flows, we offer insightful interpretations and practical remedies tailored to your specific needs.</p>
@@ -110,7 +110,7 @@ const AboutUs = () => {
             <h2 className="font-serif text-4xl md:text-5xl text-[#3C2A21] leading-tight">
               Gitika Sharma
             </h2>
-            <div className="space-y-4 text-[#725D46] font-light leading-relaxed text-sm">
+            <div className="space-y-4 text-[#3C2A21] font-medium leading-relaxed text-sm">
               <p>I am Gitika Sharma, a seasoned astrologer and IT Professional with 24 years of enriching experience, dedicated to unraveling the intricate threads of pending karma woven within the fabric of existence.</p>
               <p>My journey into the cosmic realms began at a young age, fueled by an insatiable curiosity and a deep-seated reverence for the celestial wonders that adorn our universe. As I delved deeper into the ancient wisdom of astrology, I found myself drawn to the profound mysteries of pending karma—the unseen forces that shape our destinies and guide our souls along the journey of life.</p>
               <p>With over a decade of devoted study and practice, I have honed my craft and cultivated a deep understanding of the karmic energies that influence our experiences and choices. Through the alignment of planets and the analysis of birth charts, I offer profound insights into the karmic patterns that govern our lives, illuminating the pathways to healing, growth, and spiritual evolution.</p>
