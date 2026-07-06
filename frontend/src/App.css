@@ -185,6 +185,18 @@ section[id] {
 .text-\[\#6E5D53\]\/70 {
   color: rgba(60, 42, 33, 0.9) !important;
 }
+.text-\[\#725D46\] {
+  color: #3C2A21 !important; /* Upgrade light brown/grey to high-contrast brand dark */
+}
+.text-\[\#725D46\]\/60 {
+  color: rgba(60, 42, 33, 0.8) !important;
+}
+.text-\[\#725D46\]\/70 {
+  color: rgba(60, 42, 33, 0.85) !important;
+}
+.text-\[\#725D46\]\/85 {
+  color: rgba(60, 42, 33, 0.9) !important;
+}
 .font-light {
   font-weight: 500 !important; /* Upgrade light/thin font-weight to medium-bold globally */
 }

@@ -11,6 +11,7 @@ from fastapi import FastAPI, APIRouter, Header, HTTPException, Depends, Request,
 from fastapi.staticfiles import StaticFiles
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import logging
@@ -1572,6 +1573,375 @@ async def get_horoscope_report(report_id: str):
             "life_report": report["life_report"]
         }
 
+# Helper database for instant city coords
+CITIES_DB = {
+    "new delhi": {"lat": 28.6139, "lon": 77.2090, "tz": "+05:30"},
+    "mumbai": {"lat": 19.0760, "lon": 72.8777, "tz": "+05:30"},
+    "bangalore": {"lat": 12.9716, "lon": 77.5946, "tz": "+05:30"},
+    "london": {"lat": 51.5074, "lon": -0.1278, "tz": "+00:00"},
+    "new york": {"lat": 40.7128, "lon": -74.0060, "tz": "-04:00"}
+}
+
+def calculate_sunrise_sunset(dt_utc: datetime, lat: float, lon: float):
+    import math
+    n = dt_utc.timetuple().tm_yday
+    dec = 0.4092 * math.sin(2 * math.pi / 365 * (n - 81))
+    lat_rad = math.radians(lat)
+    
+    b = 2 * math.pi / 364 * (n - 81)
+    eq_time = 9.87 * math.sin(2 * b) - 7.53 * math.cos(b) - 1.5 * math.sin(b)
+    
+    solar_noon_utc = 12.0 - (lon / 15.0) - (eq_time / 60.0)
+    
+    cos_h = (math.cos(math.radians(90.833)) - math.sin(lat_rad) * math.sin(dec)) / (math.cos(lat_rad) * math.cos(dec))
+    
+    if cos_h > 1:
+        return None, None, solar_noon_utc
+    elif cos_h < -1:
+        return None, None, solar_noon_utc
+        
+    H = math.acos(cos_h)
+    h_hours = math.degrees(H) / 15.0
+    
+    sunrise_utc = solar_noon_utc - h_hours
+    sunset_utc = solar_noon_utc + h_hours
+    
+    return sunrise_utc, sunset_utc, solar_noon_utc
+
+def format_hour_to_12h(h: float) -> str:
+    hrs = int(h)
+    mins = int(round((h - hrs) * 60))
+    if mins == 60:
+        hrs = (hrs + 1) % 24
+        mins = 0
+    period = "AM" if hrs < 12 else "PM"
+    display_hrs = hrs % 12
+    if display_hrs == 0:
+        display_hrs = 12
+    return f"{display_hrs:02d}:{mins:02d} {period}"
+
+@api_router.get("/panchang")
+async def get_panchang(city: str = "New Delhi"):
+    city_key = city.lower().strip()
+    if city_key in CITIES_DB:
+        coords = CITIES_DB[city_key]
+        lat, lon = coords["lat"], coords["lon"]
+    else:
+        lat, lon = geocode_place(city)
+        
+    dt_now = datetime.now()
+    offset = get_timezone_offset(lat, lon, dt_now)
+    
+    # Parse offset to float
+    sign = 1
+    offset_str = offset
+    if offset_str.startswith("-"):
+        sign = -1
+        offset_str = offset_str[1:]
+    elif offset_str.startswith("+"):
+        offset_str = offset_str[1:]
+    parts = offset_str.split(":")
+    offset_hours = int(parts[0]) + (int(parts[1]) / 60.0 if len(parts) > 1 else 0)
+    offset_val = sign * offset_hours
+
+    # Get local current time
+    now_utc = datetime.now(timezone.utc)
+    local_now = now_utc + timedelta(hours=offset_val)
+    local_hour_decimal = local_now.hour + local_now.minute / 60.0 + local_now.second / 3600.0
+    weekday = local_now.weekday()
+    
+    # Calculate sunrise/sunset in UTC
+    sunrise_utc, sunset_utc, noon_utc = calculate_sunrise_sunset(now_utc, lat, lon)
+    
+    if sunrise_utc is None:
+        # Fallback to standard 6 AM / 6 PM if polar region
+        sunrise_utc = 6.0 - offset_val
+        sunset_utc = 18.0 - offset_val
+        noon_utc = 12.0 - offset_val
+        
+    # Convert to local decimal hours
+    sunrise_local = (sunrise_utc + offset_val) % 24
+    sunset_local = (sunset_utc + offset_val) % 24
+    noon_local = (noon_utc + offset_val) % 24
+    
+    day_length = (sunset_local - sunrise_local) % 24
+    night_length = 24.0 - day_length
+    
+    # Abhijit Muhurat: Solar Noon midpoint ± 24 minutes (0.4 hours)
+    abhijit_start = (noon_local - 0.4) % 24
+    abhijit_end = (noon_local + 0.4) % 24
+    
+    # Rahu Kaal: 1 of 8 daytime parts depending on weekday
+    day_part = day_length / 8.0
+    rahu_parts = {
+        0: 2, # Mon
+        1: 7, # Tue
+        2: 5, # Wed
+        3: 6, # Thu
+        4: 4, # Fri
+        5: 3, # Sat
+        6: 8  # Sun
+    }
+    part_idx = rahu_parts.get(weekday, 2)
+    rahu_start = (sunrise_local + (part_idx - 1) * day_part) % 24
+    rahu_end = (sunrise_local + part_idx * day_part) % 24
+
+    # Yama Gandha: 1 of 8 daytime parts
+    yama_parts = {
+        0: 5, # Mon
+        1: 4, # Tue
+        2: 3, # Wed
+        3: 2, # Thu
+        4: 8, # Fri
+        5: 7, # Sat
+        6: 6  # Sun
+    }
+    y_idx = yama_parts.get(weekday, 5)
+    yama_start = (sunrise_local + (y_idx - 1) * day_part) % 24
+    yama_end = (sunrise_local + y_idx * day_part) % 24
+
+    # Gulika Kaal: 1 of 8 daytime parts
+    gulika_parts = {
+        0: 6, # Mon
+        1: 5, # Tue
+        2: 4, # Wed
+        3: 3, # Thu
+        4: 2, # Fri
+        5: 1, # Sat
+        6: 7  # Sun
+    }
+    g_idx = gulika_parts.get(weekday, 6)
+    gulika_start = (sunrise_local + (g_idx - 1) * day_part) % 24
+    gulika_end = (sunrise_local + g_idx * day_part) % 24
+    
+    # Calculate Julian Day in UT for Swiss Ephemeris calculations
+    ut_hour = now_utc.hour + now_utc.minute / 60.0 + now_utc.second / 3600.0
+    jd = swe.julday(now_utc.year, now_utc.month, now_utc.day, ut_hour)
+    
+    # Set Lahiri Sidereal mode
+    swe.set_sid_mode(swe.SIDM_LAHIRI, 0.0, 0.0)
+    
+    try:
+        sun_res, _ = swe.calc_ut(jd, swe.SUN, swe.FLG_SIDEREAL)
+        sun_lon = sun_res[0]
+        
+        moon_res, _ = swe.calc_ut(jd, swe.MOON, swe.FLG_SIDEREAL)
+        moon_lon = moon_res[0]
+    except Exception:
+        sun_lon = 0.0
+        moon_lon = 0.0
+
+    # Define Vedic constants
+    TITHIS = [
+        "Shukla Prathama (1)", "Shukla Dwitiya (2)", "Shukla Tritiya (3)", "Shukla Chaturthi (4)",
+        "Shukla Panchami (5)", "Shukla Shasthi (6)", "Shukla Saptami (7)", "Shukla Ashtami (8)",
+        "Shukla Navami (9)", "Shukla Dashami (10)", "Shukla Ekadashi (11)", "Shukla Dwadashi (12)",
+        "Shukla Trayodashi (13)", "Shukla Chaturdashi (14)", "Shukla Purnima (Full Moon) (15)",
+        "Krishna Prathama (16)", "Krishna Dwitiya (17)", "Krishna Tritiya (18)", "Krishna Chaturthi (19)",
+        "Krishna Panchami (20)", "Krishna Shasthi (21)", "Krishna Saptami (22)", "Krishna Ashtami (23)",
+        "Krishna Navami (24)", "Krishna Dashami (25)", "Krishna Ekadashi (26)", "Krishna Dwadashi (27)",
+        "Krishna Trayodashi (28)", "Krishna Chaturdashi (29)", "Krishna Amavasya (New Moon) (30)"
+    ]
+
+    YOGAS = [
+        "Vishkumbha", "Preeti", "Ayushman", "Saubhagya", "Sobhana", "Atiganda", "Sukarma",
+        "Dhriti", "Shoola", "Ganda", "Vriddhi", "Dhruva", "Vyaghata", "Harshana", "Vajra",
+        "Siddhi", "Vyatipata", "Variyan", "Parigha", "Shiva", "Siddha", "Sadhya", "Shubha",
+        "Shukla", "Brahma", "Indra", "Vaidhriti"
+    ]
+
+    NAKSHATRAS_LIST = [
+        "Ashwini", "Bharani", "Krittika", "Rohini", "Mrigashira", "Ardra", "Punarvasu",
+        "Pushya", "Ashlesha", "Magha", "Purva Phalguni", "Uttara Phalguni", "Hasta", "Chitra",
+        "Swati", "Vishakha", "Anuradha", "Jyeshtha", "Moola", "Purva Ashadha", "Uttara Ashadha",
+        "Shravana", "Dhanishta", "Shatabhisha", "Purva Bhadrapada", "Uttara Bhadrapada", "Revati"
+    ]
+
+    # Calculate 5 elements (Panchang)
+    diff = (moon_lon - sun_lon) % 360.0
+    tithi_idx = int(diff / 12.0)
+    tithi_name = TITHIS[min(tithi_idx, 29)]
+    
+    nak_width = 360.0 / 27.0
+    nak_idx = int(moon_lon / nak_width)
+    nak_name = NAKSHATRAS_LIST[min(nak_idx, 26)]
+    
+    sum_lon = (sun_lon + moon_lon) % 360.0
+    yoga_idx = int(sum_lon / nak_width)
+    yoga_name = YOGAS[min(yoga_idx, 26)]
+    
+    karana_idx = int(diff / 6.0)
+    karanas = ["Kimstughna", "Bava", "Balava", "Kaulava", "Taitila", "Gara", "Vanija", "Vishti (Bhadra)",
+               "Shakuni", "Chatuspada", "Naga"]
+    if karana_idx == 0:
+        karana_name = karanas[0]
+    elif karana_idx >= 57:
+        karana_name = karanas[karana_idx - 57 + 8]
+    else:
+        karana_name = karanas[((karana_idx - 1) % 7) + 1]
+        
+    weekday_names = ["Monday (Somavara)", "Tuesday (Mangalavara)", "Wednesday (Budhavara)",
+                     "Thursday (Guruvara)", "Friday (Sukravara)", "Saturday (Shanivara)",
+                     "Sunday (Ravivara)"]
+    vara_name = weekday_names[weekday]
+
+    # Determine current energy status
+    # Standard check if current hour is in Rahu Kaal or Abhijit Muhurat
+    in_rahu = False
+    if rahu_start < rahu_end:
+        in_rahu = rahu_start <= local_hour_decimal <= rahu_end
+    else:
+        in_rahu = local_hour_decimal >= rahu_start or local_hour_decimal <= rahu_end
+        
+    in_abhijit = False
+    if abhijit_start < abhijit_end:
+        in_abhijit = abhijit_start <= local_hour_decimal <= abhijit_end
+    else:
+        in_abhijit = local_hour_decimal >= abhijit_start or local_hour_decimal <= abhijit_end
+
+    if in_rahu:
+        status_label = "Inauspicious (Rahu Kaal)"
+        status_desc = f"Rahu Kaal is active (starts at {format_hour_to_12h(rahu_start)}). Avoid starting new ventures."
+        status_color = "red"
+    elif in_abhijit:
+        status_label = "Auspicious (Shubh)"
+        status_desc = f"Abhijit Muhurat is active (starts at {format_hour_to_12h(abhijit_start)}). Excellent for starting important tasks."
+        status_color = "green"
+    else:
+        status_label = "Neutral (Sadhana)"
+        status_desc = "Neutral cosmic energies. Good for routine and spiritual work."
+        status_color = "yellow"
+        
+    # Percentages of 24h day for visualizer segments
+    day_pct = (day_length / 24.0) * 100.0
+    night_pct = (night_length / 24.0) * 100.0
+    rahu_pct = (day_part / 24.0) * 100.0
+    # Abhijit is 48 mins (0.8h)
+    abhijit_pct = (0.8 / 24.0) * 100.0
+    
+    return {
+        "city": city,
+        "local_time": local_now.strftime("%I:%M %p"),
+        "sunrise": format_hour_to_12h(sunrise_local),
+        "sunset": format_hour_to_12h(sunset_local),
+        "solar_noon": format_hour_to_12h(noon_local),
+        "day_length": f"{int(day_length)}h {int((day_length - int(day_length))*60)}m",
+        "night_length": f"{int(night_length)}h {int((night_length - int(night_length))*60)}m",
+        "sunrise_decimal": sunrise_local,
+        "day_length_decimal": day_length,
+        "abhijit": {
+            "start": format_hour_to_12h(abhijit_start),
+            "end": format_hour_to_12h(abhijit_end),
+            "start_decimal": abhijit_start
+        },
+        "rahu_kaal": {
+            "start": format_hour_to_12h(rahu_start),
+            "end": format_hour_to_12h(rahu_end),
+            "start_decimal": rahu_start,
+            "length_decimal": day_part
+        },
+        "yama_gandha": {
+            "start": format_hour_to_12h(yama_start),
+            "end": format_hour_to_12h(yama_end)
+        },
+        "gulika_kaal": {
+            "start": format_hour_to_12h(gulika_start),
+            "end": format_hour_to_12h(gulika_end)
+        },
+        "status": {
+            "label": status_label,
+            "description": status_desc,
+            "color": status_color
+        },
+        "percentages": {
+            "day_time": round(day_pct, 1),
+            "night_time": round(night_pct, 1),
+            "rahu_kaal": round(rahu_pct, 1),
+            "abhijit": round(abhijit_pct, 1)
+        },
+        "elements": {
+            "tithi": tithi_name,
+            "nakshatra": nak_name,
+            "yoga": yoga_name,
+            "karana": karana_name,
+            "vara": vara_name
+        }
+    }
+
+# --- Cities API Enhancements ---
+CITIES_LIST = []
+
+def load_cities_list():
+    global CITIES_LIST
+    try:
+        root = Path(__file__).parent
+        country_file = root / "country.json"
+        state_file = root / "state.json"
+        city_file = root / "city.json"
+        
+        if not (country_file.exists() and state_file.exists() and city_file.exists()):
+            logger.warning("Cities database files not found. Cities API will return empty list.")
+            CITIES_LIST = []
+            return
+            
+        with open(country_file, "r", encoding="utf-8") as f:
+            countries_data = json.load(f)
+        with open(state_file, "r", encoding="utf-8") as f:
+            states_data = json.load(f)
+        with open(city_file, "r", encoding="utf-8") as f:
+            cities_data = json.load(f)
+            
+        countries_map = {c["isoCode"]: c["name"] for c in countries_data}
+        states_map = {(s["countryCode"], s["isoCode"]): s["name"] for s in states_data}
+        
+        seen = set()
+        loaded = []
+        for c in cities_data:
+            name = c[0]
+            country_code = c[1]
+            state_code = c[2]
+            
+            country_name = countries_map.get(country_code, country_code)
+            state_name = states_map.get((country_code, state_code), "")
+            
+            if state_name:
+                formatted = f"{name}, {state_name}, {country_name}"
+            else:
+                formatted = f"{name}, {country_name}"
+                
+            if formatted not in seen:
+                seen.add(formatted)
+                loaded.append({
+                    "name": name,
+                    "state": state_name,
+                    "country": country_name,
+                    "formatted": formatted
+                })
+        
+        # Sort alphabetically, prioritizing clean standard letters and putting special characters/numbers in logical locations
+        import re
+        def sort_key(x):
+            formatted = x["formatted"].lower()
+            cleaned = re.sub(r"^[^a-z0-9]+", "", formatted)
+            if cleaned and cleaned[0].isdigit():
+                return "z~" + cleaned
+            return cleaned
+            
+        loaded.sort(key=sort_key)
+        CITIES_LIST = loaded
+        logger.info(f"Successfully loaded {len(CITIES_LIST)} unique cities.")
+    except Exception as e:
+        logger.error(f"Failed to load cities list: {e}")
+        CITIES_LIST = []
+
+@app.on_event("startup")
+async def startup_event():
+    load_cities_list()
+
+@api_router.get("/cities")
+async def get_cities():
+    return CITIES_LIST
+
 # Include the router in the main app
 app.include_router(api_router)
 
@@ -1584,6 +1954,11 @@ app.add_middleware(
     allow_origins=os.environ.get('CORS_ORIGINS', '*').split(','),
     allow_methods=["*"],
     allow_headers=["*"],
+)
+
+app.add_middleware(
+    GZipMiddleware,
+    minimum_size=1000
 )
 
 @app.on_event("shutdown")

@@ -64,6 +64,7 @@ const AdminDashboard = () => {
     }
     fetchBlogs();
     fetchReports();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token, navigate]);
 
   const fetchReports = async () => {
