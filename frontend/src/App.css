@@ -168,3 +168,23 @@ section[id] {
 .text-\[11px\] {
   font-size: 12.5px !important;  /* Scale up from 11px to 12.5px */
 }
+
+/* Global Font Color & Weight Upgrades for High Contrast Readability */
+.text-\[\#6E5D53\] {
+  color: #3C2A21 !important; /* Upgrade to high-contrast brand dark */
+}
+.text-\[\#5C4D43\] {
+  color: #1E110A !important; /* Upgrade to solid dark brown/black */
+}
+.text-\[\#6E5D53\]\/60 {
+  color: rgba(60, 42, 33, 0.85) !important; /* Upgrade transparency to high visibility */
+}
+.text-\[\#6E5D53\]\/85 {
+  color: rgba(60, 42, 33, 0.95) !important;
+}
+.text-\[\#6E5D53\]\/70 {
+  color: rgba(60, 42, 33, 0.9) !important;
+}
+.font-light {
+  font-weight: 500 !important; /* Upgrade light/thin font-weight to medium-bold globally */
+}

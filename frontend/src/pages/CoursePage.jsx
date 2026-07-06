@@ -137,7 +137,7 @@ const CoursePage = () => {
               <p className="text-[#B38B36] italic font-medium mb-6">{data.subtitle}</p>
             )}
             
-            <div className="text-stone-500 text-sm leading-relaxed mb-8 space-y-4 font-light">
+            <div className="text-[#3C2A21] text-sm leading-relaxed mb-8 space-y-4 font-medium">
               {data.paragraphs.map((p, i) => (
                 <p key={i}>{p}</p>
               ))}
@@ -218,7 +218,7 @@ const CoursePage = () => {
              initial={{ opacity: 0, y: 10 }}
              animate={{ opacity: 1, y: 0 }}
              transition={{ duration: 0.4 }}
-             className="text-stone-500 text-sm leading-relaxed max-w-4xl mx-auto space-y-4 font-light text-center"
+             className="text-[#3C2A21] text-sm leading-relaxed max-w-4xl mx-auto space-y-4 font-medium text-center"
            >
               {activeTab === 'description' && (
                 <>
