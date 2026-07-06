@@ -687,7 +687,7 @@ const PanchangPage = () => {
                 </div>
 
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
-                  {auspHuhurats[muhuratCategoryTab].slice(0, muhuratMonthsLimit).map((item, index) => (
+                  {auspMuhurats[muhuratCategoryTab].slice(0, muhuratMonthsLimit).map((item, index) => (
                     <div key={index} className="bg-white border border-[#E5E1D8] p-5 rounded-2xl shadow-sm hover:border-[#B38B36]/30 transition-all duration-300">
                       <span className="text-[10px] uppercase tracking-wider text-stone-400 font-extrabold block mb-2">{item.month}</span>
                       <div className="flex flex-wrap gap-1.5">
