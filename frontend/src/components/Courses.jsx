@@ -70,7 +70,7 @@ const Courses = () => {
                 <img
                   src={c.image}
                   alt={c.title}
-                  className="w-full h-full object-cover transform scale-[1.0] transition-transform duration-700 group-hover:scale-[1.10]"
+                  className="w-full h-full object-cover transform scale-[1.10] transition-transform duration-700 group-hover:scale-[1.20]"
                   onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&q=80" }}
                 />
                 <div className="absolute top-4 left-4 text-[10px] tracking-[0.25em] uppercase bg-white/80 backdrop-blur px-3 py-1.5 rounded-full text-[#B38B36] border border-[#B38B36]/20 font-bold">
