@@ -172,7 +172,7 @@ const BookingModal = ({ service, open, onClose }) => {
                 </div>
 
                 {!isVastu ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
                     {Object.entries(CONSULTATION_TYPES).map(([key, item]) => {
                       const isSelected = consultationType === key;
                       return (

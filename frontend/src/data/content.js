@@ -74,7 +74,7 @@ export const SERVICES = [
     desc: "We combine time-honored techniques with contemporary insights to provide you with personalized interpretations and actionable guidance.",
     image: "https://gitikasharma.in/wp-content/uploads/2024/03/1-3.png",
     duration: "45 min",
-    price: 7500,
+    price: 5100,
   },
   {
     id: "kundali-making",
@@ -82,7 +82,7 @@ export const SERVICES = [
     desc: "We meticulously craft your personalized birth chart, offering profound insights into the unique cosmic influences shaping your journey.",
     image: "https://gitikasharma.in/wp-content/uploads/2024/03/2-3.png",
     duration: "45 min",
-    price: 7500,
+    price: 5100,
   },
   {
     id: "match-making",
@@ -90,7 +90,7 @@ export const SERVICES = [
     desc: "Discover the magic of cosmic connection, embark on a journey of discovery, and let the stars align your path to enduring love.",
     image: "https://gitikasharma.in/wp-content/uploads/2024/03/3-2.png",
     duration: "45 min",
-    price: 7500,
+    price: 5100,
   },
   {
     id: "numerology-analysis",
@@ -98,7 +98,7 @@ export const SERVICES = [
     desc: "Unveil the mysteries of your destiny and embark on a transformative journey of self-discovery through the wisdom of numbers.",
     image: "https://gitikasharma.in/wp-content/uploads/2024/03/4-2.png",
     duration: "45 min",
-    price: 7500,
+    price: 5100,
   },
   {
     id: "vastu-consultation",
@@ -114,7 +114,7 @@ export const SERVICES = [
     desc: "Honor the whispers of your soul and embark on a quest to live a life of purpose, passion, and authenticity.",
     image: "/soul-purpose.jpg",
     duration: "45 min",
-    price: 7500,
+    price: 5100,
   },
 ];
 
@@ -513,11 +513,16 @@ export const COURSES_PAGE_DATA = {
 
 export const CONSULTATION_TYPES = {
   normal: {
+    label: "Normal Consultation",
+    wait: "7 - 10 days wait time",
+    price: 5100
+  },
+  simple_emergency: {
     label: "Simple emergency consultation",
     wait: "9 AM to 6 PM",
     price: 7500
   },
-  urgent: {
+  emergency: {
     label: "Emergency consultation",
     wait: "9 PM to 5 AM",
     price: 11000
