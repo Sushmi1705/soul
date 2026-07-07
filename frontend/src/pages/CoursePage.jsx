@@ -115,7 +115,7 @@ const CoursePage = () => {
                   <img
                     src={data.mainImage}
                     alt={data.title}
-                    className="w-full h-[350px] md:h-[480px] object-cover transform scale-[1.25] group-hover:scale-[1.35] transition-transform duration-1000"
+                    className="w-full h-[350px] md:h-[480px] course-detail-image"
                     onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&q=80" }}
                   />
                   

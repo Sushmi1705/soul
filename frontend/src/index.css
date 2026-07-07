@@ -73,3 +73,25 @@ code {
     display: contents !important;
   }
 }
+
+/* Course card custom image scaling to crop out internal gold/brown borders */
+.course-card-image {
+  transform: scale(1.36) !important;
+  transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  object-fit: cover !important;
+}
+
+.group:hover .course-card-image {
+  transform: scale(1.46) !important;
+}
+
+/* Course detail tarot-style image scaling to crop out internal gold/brown borders */
+.course-detail-image {
+  transform: scale(1.36) !important;
+  transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  object-fit: cover !important;
+}
+
+.group:hover .course-detail-image {
+  transform: scale(1.46) !important;
+}

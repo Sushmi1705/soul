@@ -106,7 +106,7 @@ const Header = () => {
           >
             <span className="relative z-10 flex items-center gap-2 whitespace-nowrap">
               <span className="w-4 h-[1px] bg-[#D4AF37]/50 group-hover/btn:w-2 transition-all duration-500"></span>
-              Connect Now
+              Contact Us
               <span className="w-4 h-[1px] bg-[#D4AF37]/50 group-hover/btn:w-2 transition-all duration-500"></span>
             </span>
             <div className="absolute inset-0 bg-gradient-to-r from-[#6A1E2F] to-[#4A0E1B] opacity-0 group-hover/btn:opacity-100 transition-opacity duration-500"></div>
@@ -158,7 +158,7 @@ const Header = () => {
               className="mt-8 block text-center py-4 bg-gradient-to-r from-[#BF953F] via-[#FCF6BA] to-[#B38728] text-[#3C2A21] shadow-xl text-xs tracking-[0.2em] uppercase font-bold"
               onClick={() => setMobileMenuOpen(false)}
             >
-              Connect Now
+              Contact Us
             </Link>
           </nav>
         </div>
