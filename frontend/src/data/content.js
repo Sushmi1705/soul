@@ -123,14 +123,14 @@ export const COURSES = [
     title: "Akashic Records",
     category: "Certification Course",
     price: 15999,
-    image: "https://gitikasharma.in/wp-content/uploads/2024/03/7-5.png",
+    image: "/courses/akashic-records.jpg",
   },
   {
     id: "bhrigu-nandi-nadi",
     title: "Bhrigu Nandi Nadi",
     category: "Advanced Course",
     price: 27999,
-    image: "https://gitikasharma.in/wp-content/uploads/2024/03/2-7.png",
+    image: "/courses/bhrigu-nandi-nadi.jpg",
   },
   {
     id: "lal-kitab-astrology",
@@ -144,28 +144,28 @@ export const COURSES = [
     title: "Numerology",
     category: "Foundation Course",
     price: 9240,
-    image: "https://gitikasharma.in/wp-content/uploads/2024/03/3-5.png",
+    image: "/courses/numerology-course.jpg",
   },
   {
     id: "palmistry",
     title: "Palmistry",
     category: "Foundation Course",
     price: 9240,
-    image: "https://gitikasharma.in/wp-content/uploads/2024/03/4-5.png",
+    image: "/courses/palmistry.jpg",
   },
   {
     id: "vastu-shastra-course",
     title: "Vastu Shastra Course",
     category: "Master Program",
     price: 27999,
-    image: "https://gitikasharma.in/wp-content/uploads/2024/03/6-7.png",
+    image: "/courses/vastu-shastra-course.jpg",
   },
   {
     id: "vedic-astrology",
     title: "Vedic Astrology",
     category: "Services",
     price: 27999,
-    image: "https://gitikasharma.in/wp-content/uploads/2024/02/1-2.png",
+    image: "/courses/vedic-astrology.jpg",
   }
 ];
 
@@ -430,7 +430,7 @@ export const COURSES_PAGE_DATA = {
     category: "Foundation Course",
     price: 9240,
     bannerImage: "https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&q=80",
-    mainImage: "https://gitikasharma.in/wp-content/uploads/2024/03/4-5.png",
+    mainImage: "/courses/palmistry.jpg",
     paragraphs: [
       "Embark on an illuminating journey into the ancient arts of palmistry and astrology with our comprehensive 15+ hours course on Palmistry Astrology. Explore the fascinating interplay between the lines and mounts of the palm and the cosmic influences of the stars and planets, and unlock the hidden insights of your destiny.",
       "Enroll now and unlock the secrets of Palmistry Astrology. Gain profound insights into yourself and others, and empower yourself to navigate life's journey with clarity, confidence, and wisdom."
@@ -442,7 +442,7 @@ export const COURSES_PAGE_DATA = {
     category: "Services",
     price: 27999,
     bannerImage: "https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&q=80",
-    mainImage: "https://gitikasharma.in/wp-content/uploads/2024/02/1-2.png",
+    mainImage: "/courses/vedic-astrology.jpg",
     paragraphs: [
       "Embark on a transformative journey into the ancient wisdom of Vedic Astrology with our comprehensive 45+ hours course. Dive deep into the mystical realms of the cosmos, explore the intricate interplay of planetary energies, and unlock the secrets of your destiny.",
       "Enroll now and embark on a transformative journey into the fascinating world of Vedic Astrology. Uncover the mysteries of the cosmos, decode the secrets of your destiny, and empower yourself to navigate life's journey with wisdom and insight."
@@ -454,7 +454,7 @@ export const COURSES_PAGE_DATA = {
     category: "Certification Course",
     price: 15999,
     bannerImage: "https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&q=80",
-    mainImage: "https://gitikasharma.in/wp-content/uploads/2024/03/7-5.png",
+    mainImage: "/courses/akashic-records.jpg",
     paragraphs: [
       "Welcome to our transformative 10+ hours course on Akashic Records. Delve into the boundless wisdom and profound insights of the Akashic Records, and unlock the secrets of your soul's journey across lifetimes.",
       "Enroll now and embark on a profound journey of self-discovery and spiritual awakening through the Akashic Records. Gain clarity, healing, and empowerment as you connect with the infinite wisdom and love of the universe."
@@ -478,7 +478,7 @@ export const COURSES_PAGE_DATA = {
     category: "Advanced Course",
     price: 27999,
     bannerImage: "https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&q=80",
-    mainImage: "https://gitikasharma.in/wp-content/uploads/2024/03/2-7.png",
+    mainImage: "/courses/bhrigu-nandi-nadi.jpg",
     paragraphs: [
       "Embark on an enlightening journey into the ancient wisdom of Bhrigu Nandi Nadi astrology with our comprehensive 45+ hours course. Dive deep into the sacred texts and teachings of this profound astrological tradition, unraveling the mysteries of karma, destiny, and spiritual evolution.",
       "Enroll now and unlock the profound wisdom of Bhrigu Nandi Nadi astrology. Transform your understanding of karma, destiny, and spiritual evolution, and empower yourself to navigate life's journey with clarity, insight, and purpose."
@@ -490,7 +490,7 @@ export const COURSES_PAGE_DATA = {
     category: "Master Program",
     price: 27999,
     bannerImage: "https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&q=80",
-    mainImage: "https://gitikasharma.in/wp-content/uploads/2024/03/6-7.png",
+    mainImage: "/courses/vastu-shastra-course.jpg",
     paragraphs: [
       "Embark on an immersive journey into the ancient science of Vastu Shastra with our comprehensive 45+ hours course on Vastu Consultant. Dive deep into the principles, techniques, and practical applications of Vastu Shastra, and become a certified Vastu Consultant capable of transforming spaces and enhancing the lives of others.",
       "Enroll now and embark on a transformative journey into the ancient science of Vastu Shastra. Become a certified Vastu Consultant and empower yourself to create harmonious and auspicious living and working environments that promote health, happiness, and prosperity."
@@ -502,7 +502,7 @@ export const COURSES_PAGE_DATA = {
     category: "Foundation Course",
     price: 9240,
     bannerImage: "https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&q=80",
-    mainImage: "https://gitikasharma.in/wp-content/uploads/2024/03/3-5.png",
+    mainImage: "/courses/numerology-course.jpg",
     paragraphs: [
       "Embark on a transformative journey into the mystical realm of numbers with our comprehensive 20+ hours course on Numerology Analysis. Discover the profound insights and practical tools of numerology, and learn how to decode the hidden meanings behind numbers to enhance your life and empower others.",
       "Enroll now and embark on a transformative journey into the world of numerology. Unlock the secrets of numbers, gain profound insights into yourself and others, and empower yourself to create a life filled with purpose, abundance, and fulfillment."

@@ -115,7 +115,11 @@ const CoursePage = () => {
                   <img
                     src={data.mainImage}
                     alt={data.title}
-                    className="w-full h-[350px] md:h-[480px] course-detail-image"
+                    className={`w-full h-[350px] md:h-[480px] ${
+                      slug === "lal-kitab-astrology"
+                        ? "course-detail-image-bordered"
+                        : "course-detail-image-borderless"
+                    }`}
                     onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&q=80" }}
                   />
                   

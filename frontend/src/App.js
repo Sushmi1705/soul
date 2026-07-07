@@ -18,6 +18,7 @@ import Journal from "@/components/Journal";
 import Footer from "@/components/Footer";
 import CartDrawer from "@/components/CartDrawer";
 import MobileBottomNav from "@/components/MobileBottomNav";
+import WhatsAppWidget from "@/components/WhatsAppWidget";
 import AboutUs from "@/pages/AboutUs";
 import { DesignProvider } from "@/context/DesignContext";
 import AstroSolutionPage from "@/pages/AstroSolutionPage";
@@ -72,6 +73,7 @@ const Layout = ({ children }) => {
       <Footer />
       <CartDrawer />
       <MobileBottomNav />
+      <WhatsAppWidget />
     </div>
   );
 };

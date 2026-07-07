@@ -74,24 +74,59 @@ code {
   }
 }
 
-/* Course card custom image scaling to crop out internal gold/brown borders */
-.course-card-image {
-  transform: scale(1.36) !important;
+/* Custom scale for bordered course graphics */
+.course-card-image-bordered {
+  transform: scale(1.25) !important;
   transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1) !important;
   object-fit: cover !important;
 }
-
-.group:hover .course-card-image {
-  transform: scale(1.46) !important;
+.group:hover .course-card-image-bordered {
+  transform: scale(1.35) !important;
 }
 
-/* Course detail tarot-style image scaling to crop out internal gold/brown borders */
-.course-detail-image {
-  transform: scale(1.36) !important;
+/* Custom scale for borderless course graphics */
+.course-card-image-borderless {
+  transform: scale(1.0) !important;
+  transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  object-fit: cover !important;
+}
+.group:hover .course-card-image-borderless {
+  transform: scale(1.10) !important;
+}
+
+/* Course detail tarot-style scale for bordered graphics */
+.course-detail-image-bordered {
+  transform: scale(1.25) !important;
   transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1) !important;
   object-fit: cover !important;
 }
+.group:hover .course-detail-image-bordered {
+  transform: scale(1.35) !important;
+}
 
-.group:hover .course-detail-image {
-  transform: scale(1.46) !important;
+/* Course detail tarot-style scale for borderless graphics */
+.course-detail-image-borderless {
+  transform: scale(1.0) !important;
+  transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  object-fit: cover !important;
+}
+.group:hover .course-detail-image-borderless {
+  transform: scale(1.10) !important;
+}
+
+/* WhatsApp Support floating widget animations */
+.whatsapp-pulse {
+  animation: whatsapp-subtle-pulse 3s infinite;
+}
+
+@keyframes whatsapp-subtle-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.45), 0 4px 16px rgba(37, 211, 102, 0.2);
+  }
+  70% {
+    box-shadow: 0 0 0 15px rgba(37, 211, 102, 0), 0 4px 16px rgba(37, 211, 102, 0.2);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(37, 211, 102, 0), 0 4px 16px rgba(37, 211, 102, 0.2);
+  }
 }
