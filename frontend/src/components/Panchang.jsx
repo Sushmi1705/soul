@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { MapPin, RefreshCw, Sparkles, AlertCircle, HelpCircle, X, Compass, Calendar, Clock, ShieldAlert, Award, Search, Globe, Sun, Moon, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
@@ -19,6 +19,60 @@ const Panchang = () => {
   const [modalSearch, setModalSearch] = useState("");
   const [visibleLimit, setVisibleLimit] = useState(150);
   const [choghadiyaTab, setChoghadiyaTab] = useState("day");
+
+  // Searchable Dropdown States
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
+  const [highlightedIndex, setHighlightedIndex] = useState(0);
+  const dropdownRef = useRef(null);
+
+  // Filter cities for search dropdown
+  const dropdownCities = useMemo(() => {
+    if (!searchQuery) return apiCities;
+    const query = searchQuery.toLowerCase().trim();
+    return apiCities.filter((c) => 
+      c.name.toLowerCase().includes(query) || 
+      c.formatted.toLowerCase().includes(query)
+    );
+  }, [apiCities, searchQuery]);
+
+  const displayedCities = useMemo(() => {
+    return dropdownCities.slice(0, 100);
+  }, [dropdownCities]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+        setSearchQuery("");
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleKeyDown = (e) => {
+    if (!isOpen) return;
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setHighlightedIndex((prev) => 
+        prev < displayedCities.length - 1 ? prev + 1 : prev
+      );
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setHighlightedIndex((prev) => (prev > 0 ? prev - 1 : 0));
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      if (displayedCities[highlightedIndex]) {
+        setCity(displayedCities[highlightedIndex].formatted);
+        setIsOpen(false);
+        setSearchQuery("");
+      }
+    } else if (e.key === "Escape") {
+      setIsOpen(false);
+      setSearchQuery("");
+    }
+  };
 
   const fetchPanchang = async (cityName) => {
     setLoading(true);
@@ -65,11 +119,9 @@ const Panchang = () => {
   }, [city]);
 
   useEffect(() => {
-    if (isModalOpen) {
-      fetchCities();
-    }
+    fetchCities();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isModalOpen]);
+  }, []);
 
   const handleRefresh = () => {
     fetchPanchang(city);
@@ -204,23 +256,107 @@ const Panchang = () => {
             )}
 
             <div className="flex flex-wrap gap-4 mb-8">
-              <div className="flex-1 min-w-[180px] relative">
-                <select 
-                  value={city}
-                  onChange={(e) => setCity(e.target.value)}
-                  className="w-full bg-white border border-[#E5E1D8] px-4 py-3 rounded-lg text-sm text-[#3C2A21] appearance-none focus:outline-none focus:border-[#B38B36] transition-colors cursor-pointer shadow-sm"
-                >
-                  <option value="New Delhi">New Delhi</option>
-                  <option value="Mumbai">Mumbai</option>
-                  <option value="Bangalore">Bangalore</option>
-                  <option value="London">London</option>
-                  <option value="New York">New York</option>
-                  
-                  {!["new delhi", "mumbai", "bangalore", "london", "new york"].includes(city.toLowerCase()) && (
-                    <option value={city}>{city}</option>
+              <div className="flex-1 min-w-[240px] relative" ref={dropdownRef}>
+                <div className="relative">
+                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#B38B36]">
+                    <Search className="w-4 h-4" />
+                  </span>
+                  <input
+                    type="text"
+                    value={isOpen ? searchQuery : city}
+                    onChange={(e) => {
+                      setSearchQuery(e.target.value);
+                      setIsOpen(true);
+                      setHighlightedIndex(0);
+                    }}
+                    onFocus={() => {
+                      setIsOpen(true);
+                      fetchCities();
+                    }}
+                    onKeyDown={handleKeyDown}
+                    placeholder="Search city..."
+                    className="w-full bg-white border border-[#E5E1D8] pl-10 pr-10 py-3 rounded-lg text-sm text-[#3C2A21] focus:outline-none focus:border-[#B38B36] transition-colors cursor-text shadow-sm"
+                  />
+                  <div className="absolute right-3.5 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
+                    {isOpen && searchQuery && (
+                      <button
+                        onClick={() => setSearchQuery("")}
+                        className="text-stone-400 hover:text-stone-600 p-0.5"
+                        type="button"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                    <MapPin className="w-4 h-4 text-[#B38B36]" />
+                  </div>
+                </div>
+
+                <AnimatePresence>
+                  {isOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 5 }}
+                      transition={{ duration: 0.15 }}
+                      className="absolute left-0 right-0 mt-1.5 max-h-60 overflow-y-auto bg-white border border-[#E5E1D8] rounded-xl shadow-xl z-50 scrollbar-thin"
+                    >
+                      {apiLoading ? (
+                        <div className="flex items-center justify-center py-6 gap-2 text-stone-500 text-xs">
+                          <RefreshCw className="w-4 h-4 animate-spin text-[#B38B36]" />
+                          <span>Loading cities...</span>
+                        </div>
+                      ) : apiError ? (
+                        <div className="py-4 px-4 text-center text-red-500 text-xs">
+                          <p>Failed to load cities.</p>
+                          <button
+                            onClick={fetchCities}
+                            className="mt-1 text-xs text-[#B38B36] underline hover:text-[#9A752B]"
+                            type="button"
+                          >
+                            Retry
+                          </button>
+                        </div>
+                      ) : displayedCities.length === 0 ? (
+                        <div className="py-4 px-4 text-center text-stone-400 text-xs italic">
+                          No matching cities found.
+                        </div>
+                      ) : (
+                        <div className="p-1.5 space-y-0.5">
+                          {displayedCities.map((c, idx) => {
+                            const isSelected = city.toLowerCase() === c.formatted.toLowerCase();
+                            const isHighlighted = idx === highlightedIndex;
+                            return (
+                              <button
+                                key={`${c.name}-${c.country}-${idx}`}
+                                onClick={() => {
+                                  setCity(c.formatted);
+                                  setIsOpen(false);
+                                  setSearchQuery("");
+                                }}
+                                onMouseEnter={() => setHighlightedIndex(idx)}
+                                className={`w-full text-left px-3 py-2.5 rounded-lg text-xs transition-colors flex justify-between items-center ${
+                                  isSelected
+                                    ? "bg-[#FAF6EE] text-[#B38B36] font-bold"
+                                    : isHighlighted
+                                    ? "bg-stone-50 text-[#3C2A21]"
+                                    : "text-[#3C2A21] hover:bg-stone-50"
+                                }`}
+                                type="button"
+                              >
+                                <span className="truncate pr-4">{c.formatted}</span>
+                                {isSelected && (
+                                  <span className="text-[9px] text-[#B38B36] font-semibold shrink-0">
+                                    ✦ Selected
+                                  </span>
+                                )}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </motion.div>
                   )}
-                </select>
-                <MapPin className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#B38B36] pointer-events-none" />
+                </AnimatePresence>
               </div>
               <button 
                 onClick={handleRefresh}
@@ -228,13 +364,6 @@ const Panchang = () => {
               >
                 <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
                 Refresh Data
-              </button>
-              <button 
-                onClick={() => setIsModalOpen(true)}
-                className="flex items-center gap-2 bg-[#FBF6EC] border border-[#E5E1D8] px-6 py-3 rounded-lg text-sm text-[#3C2A21] hover:bg-white hover:border-[#B38B36]/50 transition-colors active:scale-95 transform cursor-pointer shadow-sm font-semibold"
-              >
-                <Globe className="w-4 h-4 text-[#B38B36]" />
-                View More
               </button>
             </div>
 

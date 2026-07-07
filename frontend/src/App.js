@@ -15,6 +15,7 @@ import Services from "@/components/Services";
 import Courses from "@/components/Courses";
 import Testimonials from "@/components/Testimonials";
 import Journal from "@/components/Journal";
+import InstagramFeed from "@/components/InstagramFeed";
 import Footer from "@/components/Footer";
 import CartDrawer from "@/components/CartDrawer";
 import MobileBottomNav from "@/components/MobileBottomNav";
@@ -92,6 +93,7 @@ const Home = () => {
       <Calculators />
       <Testimonials />
       <Journal />
+      <InstagramFeed />
     </>
   );
 };

@@ -215,7 +215,7 @@ const Footer = () => {
         </div>
 
         {/* Footer Sub-Bar: Navigation & Copyright */}
-        <div className="pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] tracking-[0.2em] text-stone-500 uppercase relative z-10 font-bold">
+        <div className="pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] tracking-[0.2em] text-stone-500 uppercase relative z-10 font-bold lg:pr-24">
           <p className="text-center md:text-left select-none text-stone-500/80">
             Copyright © {new Date().getFullYear()} AstroPower24. All rights reserved. Designed for Cosmic Alignment.
           </p>

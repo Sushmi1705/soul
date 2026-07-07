@@ -352,7 +352,7 @@ export const SERVICES_PAGE_DATA = {
     title: "Soul Purpose",
     subtitle: "Soul Purpose",
     bannerImage: "https://gitikasharma.in/wp-content/uploads/2024/03/14.png",
-    mainImage: "/soul-purpose.jpg",
+    mainImage: "/soul-purpose-new.jpg",
     paragraphs: [
       "Welcome to our Soul Purpose services, where the journey of self-discovery unfolds and the true essence of your being is revealed. Your soul's purpose is the guiding light that illuminates your path, ignites your passions, and empowers you to live a life of meaning and fulfillment. At our Soul Purpose services, we offer a transformative journey of exploration, introspection, and alignment with your deepest aspirations and desires. Through personalized sessions, workshops, and guided practices, we delve into the depths of your inner wisdom, helping you uncover the unique gifts, talents, and potentialities that lie within. Our experienced facilitators and coaches provide gentle guidance, profound insights, and practical tools to support you on your path of self-discovery and self-realization. Whether you're seeking clarity on your life's purpose, yearning for deeper connections with yourself and others, or striving to live authentically in alignment with your true essence, our Soul Purpose services offer a sacred space for growth, healing, and transformation. Embrace the journey of self-discovery, honor the whispers of your soul, and embark on a quest to live a life of purpose, passion, and authenticity with our Soul Purpose services."
     ]
@@ -361,7 +361,7 @@ export const SERVICES_PAGE_DATA = {
     title: "Match Making",
     subtitle: "Match Making",
     bannerImage: "https://gitikasharma.in/wp-content/uploads/2024/03/11.png",
-    mainImage: "https://gitikasharma.in/wp-content/uploads/2024/03/3-2.png",
+    mainImage: "/match-making-new.jpg",
     paragraphs: [
       "\"Marriages are made in Heaven\". It is very important to make sure that your kundali matches with the one you are about to marry. Kundali Matching age-old tradition in India and it is something that must not be over looked. Gitika Sharma, meticulously examine the fundamental elements of each individual's Kundali, illuminating compatibility markers, shared goals, and potential challenges. We believe that understanding the cosmic resonance between two individuals is key to fostering lasting love and companionship.",
       "Whether you're seeking a life partner, a soulmate, or a kindred spirit, our Match Making service offers personalized insights and guidance to help you navigate the journey of love with confidence and clarity.",
@@ -372,7 +372,7 @@ export const SERVICES_PAGE_DATA = {
     title: "Kundali Making",
     subtitle: "Kundali Making",
     bannerImage: "https://gitikasharma.in/wp-content/uploads/2024/03/10.png",
-    mainImage: "https://gitikasharma.in/wp-content/uploads/2024/03/2-3.png",
+    mainImage: "/kundali-making-new.jpg",
     paragraphs: [
       "Welcome to our Kundali Making services, where the cosmic map of your life unfolds and the mysteries of your destiny are revealed. Your Kundali, also known as a birth chart, is a sacred blueprint that captures the celestial configurations at the moment of your birth. At our Kundali Making services, we meticulously craft your personalized birth chart, offering profound insights into the unique cosmic influences shaping your journey through life. Through the precise positioning of planets, houses, and celestial bodies, your Kundali serves as a roadmap, guiding you through the diverse landscapes of your existence. We employ time-honored techniques and ancient wisdom to interpret the intricate patterns and symbols embedded within your Kundali. Whether you seek clarity on your strengths and weaknesses, guidance on relationships, career, health, or spirituality, our Kundali Making services provide invaluable insights and perspectives to illuminate your path. Embrace the wisdom of the stars, honor the legacy of ancient knowledge, and embark on a journey of self-discovery and empowerment with our Kundali Making services."
     ]
@@ -381,7 +381,7 @@ export const SERVICES_PAGE_DATA = {
     title: "Kundali Analysis",
     subtitle: "Kundali Analysis",
     bannerImage: "https://gitikasharma.in/wp-content/uploads/2024/03/9-1.png",
-    mainImage: "https://gitikasharma.in/wp-content/uploads/2024/03/1-3.png",
+    mainImage: "/kundali-analysis-new.jpg",
     paragraphs: [
       "At our platform, we delve deep into the layers of your Kundali to unravel the mysteries of your personality, relationships, career, health, and more. Through meticulous examination of planetary placements, house configurations, yogas, and doshas, we unveil the cosmic influences shaping your destiny.",
       "We combine time-honored techniques with contemporary insights to provide you with personalized interpretations and actionable guidance. Whether you seek clarity on life's challenges, opportunities for growth, or a deeper understanding of your path, our Kundali analysis offers profound insights and invaluable perspectives.",
@@ -392,7 +392,7 @@ export const SERVICES_PAGE_DATA = {
     title: "Vastu Consultation",
     subtitle: "Vastu Consultation",
     bannerImage: "https://gitikasharma.in/wp-content/uploads/2024/03/13.png",
-    mainImage: "/vastu.jpg",
+    mainImage: "/vastu-new.jpg",
     paragraphs: [
       "Welcome to our Vastu Consultation services, where ancient principles of harmonious living meet modern lifestyles. Vastu Shastra is the ancient Indian science of architecture and design, rooted in the belief that the spatial arrangement of our surroundings profoundly influences our well-being and prosperity.",
       "At our Vastu Consultation service, we offer personalized guidance and practical solutions to harmonize your living spaces, workplaces, factories and environments. Drawing upon the timeless wisdom of Vastu Shastra, Gitika Sharma analyze the energy flow, orientation, and layout of your space to optimize positive vibrations and enhance overall harmony.",
@@ -404,7 +404,7 @@ export const SERVICES_PAGE_DATA = {
     title: "Numerology Analysis",
     subtitle: "Numerology Analysis",
     bannerImage: "https://gitikasharma.in/wp-content/uploads/2024/03/12.png",
-    mainImage: "https://gitikasharma.in/wp-content/uploads/2024/03/4-2.png",
+    mainImage: "/numerology-analysis-new.png",
     paragraphs: [
       "Welcome to our Numerology Analysis services, where we decode the hidden meanings behind the numbers in your life. Numerology is the ancient study of numbers and their profound mystical significance in shaping our destiny. Through a comprehensive analysis of your birth date and name, we uncover your Life Path number, Expression number, and Soul Urge number. These unique numerical vibrations provide deep insights into your personality traits, innate talents, and potential challenges.",
       "Whether you are seeking clarity on your career path, relationship compatibility, or major life decisions, our numerology consultation offers practical guidance to help you align with your true purpose and maximize your potential."
@@ -414,7 +414,7 @@ export const SERVICES_PAGE_DATA = {
     title: "Business Name & Logo",
     subtitle: "Business Name & Logo",
     bannerImage: "https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&q=80",
-    mainImage: "https://images.unsplash.com/photo-1432888622747-4eb9a8efeb07?auto=format&fit=crop&q=80", // Branding
+    mainImage: "/business-name-logo-new.jpg", // Branding
     paragraphs: [
       "Welcome to our Business Name & Logo Consultation services. In the competitive business world, the energetic vibration of your brand's name and visual identity plays a crucial role in attracting success, prosperity, and the right clientele.",
       "Using the principles of Numerology and Vastu Shastra, we analyze and suggest powerful business names that align with your birth chart and the specific industry you are entering. We ensure the numerical vibration of your brand name resonates with abundance and growth.",

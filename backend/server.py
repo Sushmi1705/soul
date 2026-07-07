@@ -2150,6 +2150,121 @@ async def startup_event():
 async def get_cities():
     return CITIES_LIST
 
+INSTAGRAM_CACHE = {
+    "data": None,
+    "expires_at": None
+}
+
+MOCK_INSTAGRAM_FEED = [
+    {
+        "id": "mock_post_1",
+        "caption": "Saturn Transit 2026: The Great Teacher Moves! 🪐 Discover how the movement of Saturn will affect your zodiac sign over the next 2.5 years. Align your karma and embrace the cosmic lessons. #saturn #astrology #karma #vedicastrology",
+        "media_type": "IMAGE",
+        "media_url": "https://images.unsplash.com/photo-1614730321146-b6fa6a46bcb4?auto=format&fit=crop&w=800&q=80",
+        "permalink": "https://www.instagram.com/soulkarmabygitikasharma/",
+        "timestamp": "2026-07-05T12:00:00Z",
+        "like_count": 342,
+        "comments_count": 28
+    },
+    {
+        "id": "mock_post_2",
+        "caption": "Is your home entrance blocking positive energy? 🏡 Simple Vastu Shastra remedies to invite abundance, wealth, and peace into your living spaces. Check the direction of your main door today! #vastu #homedecor #energy #abundance",
+        "media_type": "IMAGE",
+        "media_url": "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80",
+        "permalink": "https://www.instagram.com/soulkarmabygitikasharma/",
+        "timestamp": "2026-07-03T09:30:00Z",
+        "like_count": 215,
+        "comments_count": 14
+    },
+    {
+        "id": "mock_post_3",
+        "caption": "Unlocking your soul's blueprint through the Akashic Records. ✨ Every thought, action, and emotion across lifetimes is written in the cosmic library. Deep dive into your soul purpose. #akashicrecords #soulpurpose #spiritualjourney #healing",
+        "media_type": "IMAGE",
+        "media_url": "https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?auto=format&fit=crop&w=800&q=80",
+        "permalink": "https://www.instagram.com/soulkarmabygitikasharma/",
+        "timestamp": "2026-07-01T15:45:00Z",
+        "like_count": 489,
+        "comments_count": 45
+    },
+    {
+        "id": "mock_post_4",
+        "caption": "Angel Number 1111: A portal of manifestation is open! 🌌 When you see this sequence, the universe is confirming that your thoughts are turning into reality. Focus on your highest desires. #numerology #1111 #angelnumbers #manifestation",
+        "media_type": "IMAGE",
+        "media_url": "https://images.unsplash.com/photo-1502134249126-9f3755a50d78?auto=format&fit=crop&w=800&q=80",
+        "permalink": "https://www.instagram.com/soulkarmabygitikasharma/",
+        "timestamp": "2026-06-29T10:15:00Z",
+        "like_count": 512,
+        "comments_count": 39
+    },
+    {
+        "id": "mock_post_5",
+        "caption": "Choosing the right gemstone for success and clarity. 💎 Yellow Sapphire (Pukhraj) vs. Blue Sapphire (Neelam) — how planetary alignments dictate which gemstone aligns with your birth chart. #gemstones #astrologytips #crystals #pukhraj",
+        "media_type": "IMAGE",
+        "media_url": "https://images.unsplash.com/photo-1599707367072-cd6ada2bc375?auto=format&fit=crop&w=800&q=80",
+        "permalink": "https://www.instagram.com/soulkarmabygitikasharma/",
+        "timestamp": "2026-06-27T08:00:00Z",
+        "like_count": 298,
+        "comments_count": 19
+    },
+    {
+        "id": "mock_post_6",
+        "caption": "Aligning your Chakras: The path to holistic wellness and stress relief. 🧘‍♀️ Practical tips to balance your Root Chakra and stay grounded amidst daily chaos. #chakrabalancing #yoga #meditation #wellness",
+        "media_type": "IMAGE",
+        "media_url": "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&w=800&q=80",
+        "permalink": "https://www.instagram.com/soulkarmabygitikasharma/",
+        "timestamp": "2026-06-25T14:20:00Z",
+        "like_count": 423,
+        "comments_count": 31
+    }
+]
+
+@api_router.get("/instagram-feed")
+async def get_instagram_feed():
+    global INSTAGRAM_CACHE
+    token = os.environ.get("INSTAGRAM_ACCESS_TOKEN")
+    
+    if not token:
+        return MOCK_INSTAGRAM_FEED
+
+    now = datetime.now(timezone.utc)
+    if INSTAGRAM_CACHE["data"] and INSTAGRAM_CACHE["expires_at"] and now < INSTAGRAM_CACHE["expires_at"]:
+        return INSTAGRAM_CACHE["data"]
+
+    try:
+        url = f"https://graph.instagram.com/me/media?fields=id,caption,media_type,media_url,permalink,timestamp,username,like_count,comments_count&access_token={token}"
+        res = requests.get(url, timeout=10)
+        
+        if res.status_code != 200:
+            url = f"https://graph.instagram.com/me/media?fields=id,caption,media_type,media_url,permalink,timestamp,username&access_token={token}"
+            res = requests.get(url, timeout=10)
+
+        if res.status_code == 200:
+            posts = res.json().get("data", [])
+            feed_data = []
+            for post in posts[:6]:
+                feed_data.append({
+                    "id": post.get("id"),
+                    "caption": post.get("caption", ""),
+                    "media_type": post.get("media_type", "IMAGE"),
+                    "media_url": post.get("media_url"),
+                    "permalink": post.get("permalink", "https://www.instagram.com/soulkarmabygitikasharma/"),
+                    "timestamp": post.get("timestamp"),
+                    "like_count": post.get("like_count", random.randint(150, 600)),
+                    "comments_count": post.get("comments_count", random.randint(10, 50))
+                })
+            
+            INSTAGRAM_CACHE["data"] = feed_data
+            INSTAGRAM_CACHE["expires_at"] = now + timedelta(hours=1)
+            return feed_data
+        else:
+            if INSTAGRAM_CACHE["data"]:
+                return INSTAGRAM_CACHE["data"]
+            return MOCK_INSTAGRAM_FEED
+    except Exception as e:
+        if INSTAGRAM_CACHE["data"]:
+            return INSTAGRAM_CACHE["data"]
+        return MOCK_INSTAGRAM_FEED
+
 # Include the router in the main app
 app.include_router(api_router)
 
