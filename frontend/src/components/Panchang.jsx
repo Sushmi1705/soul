@@ -241,16 +241,8 @@ const Panchang = () => {
             {data && !loading && (
               <div className="flex flex-col gap-4 items-start">
                 <button 
-                  onClick={() => setShowDetailedModal(true)}
-                  className="inline-flex items-center gap-2 text-[10px] tracking-[0.3em] uppercase font-bold text-[#3C2A21] border-b border-[#3C2A21]/20 pb-1 hover:text-[#B38B36] hover:border-[#B38B36] hover:gap-3 transition-all duration-300 transform cursor-pointer bg-transparent"
-                >
-                  <span>View detailed panchang</span>
-                  <span>✦</span>
-                </button>
-                
-                <button 
                   onClick={() => navigate("/panchang")}
-                  className="mt-2 bg-[#B38B36] hover:bg-[#8E6B23] text-white px-8 py-3.5 rounded-full text-[10px] tracking-widest uppercase font-extrabold shadow-md hover:shadow-lg transition-all active:scale-95 transform cursor-pointer border border-[#E5C06A]/30 flex items-center gap-2"
+                  className="bg-[#B38B36] hover:bg-[#8E6B23] text-white px-8 py-3.5 rounded-full text-[10px] tracking-widest uppercase font-extrabold shadow-md hover:shadow-lg transition-all active:scale-95 transform cursor-pointer border border-[#E5C06A]/30 flex items-center gap-2"
                 >
                   <Sparkles className="w-3.5 h-3.5" />
                   View More Details
@@ -261,55 +253,80 @@ const Panchang = () => {
           </div>
 
           <div className="relative flex justify-center lg:justify-end">
-            <div className="relative w-full max-w-[450px] aspect-square bg-[#FDFBF7] border border-[#E5E1D8] rounded-2xl p-12 flex flex-col items-center justify-center shadow-md">
-              <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
-                <circle cx="50" cy="50" r="40" fill="transparent" stroke="#1E293B" strokeWidth="12" />
-                {data && !loading && (
-                  <>
-                    <circle 
-                      cx="50" 
-                      cy="50" 
-                      r="40" 
-                      fill="transparent" 
-                      stroke="#E67E22" 
-                      strokeWidth="12" 
-                      strokeDasharray={`${(data.day_length_decimal / 24.0) * circumference} ${circumference}`}
-                      strokeDashoffset={-(data.sunrise_decimal / 24.0) * circumference}
-                      className="transition-all duration-1000 ease-out"
-                    />
-                    <circle 
-                      cx="50" 
-                      cy="50" 
-                      r="40" 
-                      fill="transparent" 
-                      stroke="#84CC16" 
-                      strokeWidth="14" 
-                      strokeDasharray={`${(0.8 / 24.0) * circumference} ${circumference}`}
-                      strokeDashoffset={-(data.abhijit.start_decimal / 24.0) * circumference}
-                      className="transition-all duration-1000 ease-out"
-                    />
-                    <circle 
-                      cx="50" 
-                      cy="50" 
-                      r="40" 
-                      fill="transparent" 
-                      stroke="#C2410C" 
-                      strokeWidth="14" 
-                      strokeDasharray={`${(data.rahu_kaal.length_decimal / 24.0) * circumference} ${circumference}`}
-                      strokeDashoffset={-(data.rahu_kaal.start_decimal / 24.0) * circumference}
-                      className="transition-all duration-1000 ease-out"
-                    />
-                  </>
-                )}
-              </svg>
+            <div className="relative w-full max-w-[450px] bg-[#FDFBF7] border border-[#E5E1D8] rounded-2xl p-8 flex flex-col items-center justify-center shadow-md">
+              <div className="relative w-full aspect-square flex items-center justify-center">
+                <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
+                  <circle cx="50" cy="50" r="40" fill="transparent" stroke="#1E293B" strokeWidth="12" />
+                  {data && !loading && (
+                    <>
+                      <circle 
+                        cx="50" 
+                        cy="50" 
+                        r="40" 
+                        fill="transparent" 
+                        stroke="#E67E22" 
+                        strokeWidth="12" 
+                        strokeDasharray={`${(data.day_length_decimal / 24.0) * circumference} ${circumference}`}
+                        strokeDashoffset={-(data.sunrise_decimal / 24.0) * circumference}
+                        className="transition-all duration-1000 ease-out"
+                      />
+                      <circle 
+                        cx="50" 
+                        cy="50" 
+                        r="40" 
+                        fill="transparent" 
+                        stroke="#84CC16" 
+                        strokeWidth="14" 
+                        strokeDasharray={`${(0.8 / 24.0) * circumference} ${circumference}`}
+                        strokeDashoffset={-(data.abhijit.start_decimal / 24.0) * circumference}
+                        className="transition-all duration-1000 ease-out"
+                      />
+                      <circle 
+                        cx="50" 
+                        cy="50" 
+                        r="40" 
+                        fill="transparent" 
+                        stroke="#C2410C" 
+                        strokeWidth="14" 
+                        strokeDasharray={`${(data.rahu_kaal.length_decimal / 24.0) * circumference} ${circumference}`}
+                        strokeDashoffset={-(data.rahu_kaal.start_decimal / 24.0) * circumference}
+                        className="transition-all duration-1000 ease-out"
+                      />
+                    </>
+                  )}
+                </svg>
 
-              <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-                <div className="text-[10px] tracking-[0.3em] uppercase text-[#725D46] mb-1">Now in</div>
-                <div className="font-serif text-2xl text-[#3C2A21] font-bold">{city.split(',')[0]}</div>
-                {data && !loading && (
-                  <div className="text-xs text-stone-500 font-mono mt-1 font-semibold">{data.local_time}</div>
-                )}
+                <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+                  <div className="text-[10px] tracking-[0.3em] uppercase text-[#725D46] mb-1">Now in</div>
+                  <div className="font-serif text-2xl text-[#3C2A21] font-bold">{city.split(',')[0]}</div>
+                  {data && !loading && (
+                    <div className="text-xs text-stone-500 font-mono mt-1 font-semibold">{data.local_time}</div>
+                  )}
+                </div>
               </div>
+
+              {/* Legend Grid Displaying Percentages */}
+              {data && !loading && data.percentages && (
+                <div className="grid grid-cols-2 gap-x-6 gap-y-3 mt-6 w-full max-w-[340px] border-t border-[#E5E1D8]/60 pt-5 text-stone-700 text-xs font-semibold text-left">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#E67E22] shrink-0" />
+                    <span>Day Time ({Math.round(data.percentages.day_time)}%)</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#1E293B] shrink-0" />
+                    <span>Night Time ({Math.round(data.percentages.night_time)}%)</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#C2410C] shrink-0" />
+                    <span>Rahu Kaal ({Math.round(data.percentages.rahu_kaal)}%)</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#84CC16] shrink-0" />
+                    <span>Abhijit ({Math.round(data.percentages.abhijit)}%)</span>
+                  </div>
+                </div>
+              )}
+
             </div>
           </div>
           

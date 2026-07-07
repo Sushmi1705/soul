@@ -47,7 +47,7 @@ const Services = () => {
                 <img
                   src={item.image}
                   alt={item.title}
-                  className="w-full h-full object-cover transform scale-[1.05] transition-transform duration-700 group-hover:scale-[1.15]"
+                  className="w-full h-full object-cover transform scale-[1.25] transition-transform duration-700 group-hover:scale-[1.35]"
                   onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&q=80" }}
                 />
                 <div className="absolute top-4 left-4 text-[10px] tracking-[0.25em] uppercase bg-white/80 backdrop-blur px-3 py-1.5 rounded-full text-[#B38B36] border border-[#B38B36]/20 font-bold flex items-center gap-1">

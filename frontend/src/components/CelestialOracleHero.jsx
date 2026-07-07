@@ -372,8 +372,8 @@ const CelestialOracleHero = () => {
                 </span>
               </div>
 
-              <h1 className="font-serif text-[#3C2A21] text-4xl md:text-6xl lg:text-[4.8rem] leading-[1.1] tracking-tight mb-8 animate-reveal opacity-0" style={{ animationDelay: '0.4s' }}>
-                Do You Know How Your Day Will <span className="italic font-light text-[#8E6B23] block sm:inline">Unfold Today?</span>
+              <h1 className="font-serif text-[#3C2A21] text-4xl md:text-5xl lg:text-[3.2rem] xl:text-[3.8rem] leading-[1.15] tracking-tight mb-8 animate-reveal opacity-0" style={{ animationDelay: '0.4s' }}>
+                Unlock the Karma That <span className="italic font-light text-[#8E6B23] inline">Shapes Your Future.</span>
               </h1>
 
               <div className="max-w-lg space-y-8 animate-reveal opacity-0" style={{ animationDelay: '0.6s' }}>

@@ -73,8 +73,8 @@ export const SERVICES = [
     title: "Kundali Analysis",
     desc: "We combine time-honored techniques with contemporary insights to provide you with personalized interpretations and actionable guidance.",
     image: "https://gitikasharma.in/wp-content/uploads/2024/03/1-3.png",
-    duration: "60 min",
-    price: 5100,
+    duration: "45 min",
+    price: 7500,
   },
   {
     id: "kundali-making",
@@ -82,30 +82,30 @@ export const SERVICES = [
     desc: "We meticulously craft your personalized birth chart, offering profound insights into the unique cosmic influences shaping your journey.",
     image: "https://gitikasharma.in/wp-content/uploads/2024/03/2-3.png",
     duration: "45 min",
-    price: 5100,
+    price: 7500,
   },
   {
     id: "match-making",
     title: "Match Making",
     desc: "Discover the magic of cosmic connection, embark on a journey of discovery, and let the stars align your path to enduring love.",
     image: "https://gitikasharma.in/wp-content/uploads/2024/03/3-2.png",
-    duration: "75 min",
-    price: 5100,
+    duration: "45 min",
+    price: 7500,
   },
   {
     id: "numerology-analysis",
     title: "Numerology Analysis",
     desc: "Unveil the mysteries of your destiny and embark on a transformative journey of self-discovery through the wisdom of numbers.",
     image: "https://gitikasharma.in/wp-content/uploads/2024/03/4-2.png",
-    duration: "60 min",
-    price: 5100,
+    duration: "45 min",
+    price: 7500,
   },
   {
     id: "vastu-consultation",
     title: "Vastu Consultation",
     desc: "Create a balanced environment for your home or workspace with insightful recommendations tailored to your specific needs.",
     image: "/vastu.jpg",
-    duration: "90 min",
+    duration: "45 min",
     price: 51000,
   },
   {
@@ -113,8 +113,8 @@ export const SERVICES = [
     title: "Soul Purpose",
     desc: "Honor the whispers of your soul and embark on a quest to live a life of purpose, passion, and authenticity.",
     image: "/soul-purpose.jpg",
-    duration: "60 min",
-    price: 5100,
+    duration: "45 min",
+    price: 7500,
   },
 ];
 
@@ -513,13 +513,13 @@ export const COURSES_PAGE_DATA = {
 
 export const CONSULTATION_TYPES = {
   normal: {
-    label: "Normal Consultation",
-    wait: "7 - 10 days wait time",
-    price: 5100
+    label: "Simple emergency consultation",
+    wait: "9 AM to 6 PM",
+    price: 7500
   },
   urgent: {
-    label: "Urgent Consultation",
-    wait: "within 72 hours",
+    label: "Emergency consultation",
+    wait: "9 PM to 5 AM",
     price: 11000
   }
 };

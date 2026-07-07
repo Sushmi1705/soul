@@ -92,6 +92,199 @@ const NAKSHATRA_INDICES = {
   moola: 19, purva_ashadha: 20, uttara_ashadha: 21, shravana: 22, dhanishta: 23, shatabhisha: 24, purva_bhadrapada: 25, uttara_bhadrapada: 26, revati: 27
 };
 
+const SIGNS_LIST = [
+  "Aries", "Taurus", "Gemini", "Cancer",
+  "Leo", "Virgo", "Libra", "Scorpio",
+  "Sagittarius", "Capricorn", "Aquarius", "Pisces"
+];
+
+const NAKSHATRAS_LIST = [
+  "Ashwini", "Bharani", "Krittika", "Rohini", "Mrigashira", "Ardra", "Punarvasu",
+  "Pushya", "Ashlesha", "Magha", "Purva Phalguni", "Uttara Phalguni", "Hasta", "Chitra",
+  "Swati", "Vishakha", "Anuradha", "Jyeshtha", "Moola", "Purva Ashadha", "Uttara Ashadha",
+  "Shravana", "Dhanishta", "Shatabhisha", "Purva Bhadrapada", "Uttara Bhadrapada", "Revati"
+];
+
+const getNakshatraForPlanet = (signName, degree) => {
+  const signIdx = getSignIdx(signName);
+  const longitude = signIdx * 30.0 + degree;
+  const nakIdx = Math.floor(longitude / 13.33333);
+  return NAKSHATRAS_LIST[Math.min(Math.max(nakIdx, 0), 26)];
+};
+
+const PLANET_ABBREVIATIONS = {
+  Sun: "Su",
+  Moon: "Mo",
+  Mars: "Ma",
+  Mercury: "Me",
+  Jupiter: "Ju",
+  Venus: "Ve",
+  Saturn: "Sa",
+  Rahu: "Ra",
+  Ketu: "Ke"
+};
+
+const getSignIdx = (signStr) => {
+  if (!signStr) return 0;
+  const clean = signStr.split(" ")[0].replace("(", "").replace(")", "").trim().toLowerCase();
+  const idx = SIGNS_LIST.findIndex(s => s.toLowerCase() === clean);
+  return idx === -1 ? 0 : idx;
+};
+
+// Deterministic degree generator
+const getDeterministicDegree = (planetName, dob, tob) => {
+  const seedStr = `${planetName}_${dob || "1990-01-01"}_${tob || "12:00"}`;
+  let hash = 0;
+  for (let i = 0; i < seedStr.length; i++) {
+    hash = seedStr.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return Math.abs(hash % 3000) / 100.0;
+};
+
+// Navamsa calculator
+const getNavamsaSignName = (signName, degree) => {
+  const signIdx = getSignIdx(signName);
+  const navIdx = Math.floor(degree / 3.33333);
+  
+  let startSignIdx = 0;
+  const element = signIdx % 4;
+  if (element === 0) startSignIdx = 0; // Fire
+  else if (element === 1) startSignIdx = 9; // Earth
+  else if (element === 2) startSignIdx = 6; // Air
+  else if (element === 3) startSignIdx = 3; // Water
+  
+  const navSignIdx = (startSignIdx + navIdx) % 12;
+  return SIGNS_LIST[navSignIdx];
+};
+
+const HOUSE_COORDINATES = [
+  { planetsX: 50, planetsY: 18, numX: 50, numY: 33 }, // House 1
+  { planetsX: 25, planetsY: 14, numX: 36, numY: 22 }, // House 2
+  { planetsX: 14, planetsY: 25, numX: 22, numY: 36 }, // House 3
+  { planetsX: 22, planetsY: 50, numX: 36, numY: 52 }, // House 4
+  { planetsX: 14, planetsY: 75, numX: 22, numY: 66 }, // House 5
+  { planetsX: 25, planetsY: 86, numX: 36, numY: 78 }, // House 6
+  { planetsX: 50, planetsY: 82, numX: 50, numY: 67 }, // House 7
+  { planetsX: 75, planetsY: 86, numX: 64, numY: 78 }, // House 8
+  { planetsX: 86, planetsY: 75, numX: 78, numY: 66 }, // House 9
+  { planetsX: 78, planetsY: 50, numX: 64, numY: 52 }, // House 10
+  { planetsX: 86, planetsY: 25, numX: 78, numY: 36 }, // House 11
+  { planetsX: 75, planetsY: 14, numX: 64, numY: 22 }  // House 12
+];
+
+const calculateChartData = (lagnaSignStr, planetaryPositions) => {
+  const lagnaIdx = getSignIdx(lagnaSignStr);
+  const data = [];
+  
+  for (let h = 0; h < 12; h++) {
+    const signNum = ((lagnaIdx + h) % 12) + 1;
+    const planets = [];
+    
+    // Add Lagna itself to House 1
+    if (h === 0) {
+      planets.push("As");
+    }
+    
+    if (planetaryPositions) {
+      Object.entries(planetaryPositions).forEach(([planet, signStr]) => {
+        const pSignIdx = getSignIdx(signStr);
+        const houseIdx = (pSignIdx - lagnaIdx + 12) % 12;
+        if (houseIdx === h) {
+          planets.push(PLANET_ABBREVIATIONS[planet] || planet.substring(0, 2));
+        }
+      });
+    }
+    
+    data.push({
+      ...HOUSE_COORDINATES[h],
+      signNum,
+      planets
+    });
+  }
+  return data;
+};
+
+const calculateNavamsaData = (lagnaSignStr, planetaryPositions, dob, tob) => {
+  const ascDegree = getDeterministicDegree("Lagna", dob, tob);
+  const navAscSignName = getNavamsaSignName(lagnaSignStr, ascDegree);
+  const navAscSignIdx = getSignIdx(navAscSignName);
+  
+  const data = [];
+  
+  for (let h = 0; h < 12; h++) {
+    const signNum = ((navAscSignIdx + h) % 12) + 1;
+    const planets = [];
+    
+    // Add Lagna (Ascendant) to House 1
+    if (h === 0) {
+      planets.push("As");
+    }
+    
+    if (planetaryPositions) {
+      Object.entries(planetaryPositions).forEach(([planet, signStr]) => {
+        const pDegree = getDeterministicDegree(planet, dob, tob);
+        const pNavSignName = getNavamsaSignName(signStr, pDegree);
+        const pNavSignIdx = getSignIdx(pNavSignName);
+        const houseIdx = (pNavSignIdx - navAscSignIdx + 12) % 12;
+        if (houseIdx === h) {
+          planets.push(PLANET_ABBREVIATIONS[planet] || planet.substring(0, 2));
+        }
+      });
+    }
+    
+    data.push({
+      ...HOUSE_COORDINATES[h],
+      signNum,
+      planets
+    });
+  }
+  return data;
+};
+
+const KundliSvg = ({ chartData }) => {
+  return (
+    <svg viewBox="0 0 100 100" className="w-full h-full">
+      {/* Outer Border */}
+      <rect x="0" y="0" width="100" height="100" fill="none" stroke="#B38B36" strokeWidth="1.2" />
+      
+      {/* Diagonals */}
+      <line x1="0" y1="0" x2="100" y2="100" stroke="#B38B36" strokeWidth="0.8" />
+      <line x1="100" y1="0" x2="0" y2="100" stroke="#B38B36" strokeWidth="0.8" />
+      
+      {/* Inner Diamond */}
+      <line x1="50" y1="0" x2="100" y2="50" stroke="#B38B36" strokeWidth="0.8" />
+      <line x1="100" y1="50" x2="50" y2="100" stroke="#B38B36" strokeWidth="0.8" />
+      <line x1="50" y1="100" x2="0" y2="50" stroke="#B38B36" strokeWidth="0.8" />
+      <line x1="0" y1="50" x2="50" y2="0" stroke="#B38B36" strokeWidth="0.8" />
+      
+      {/* Render each house content */}
+      {chartData.map((house, idx) => (
+        <g key={idx}>
+          {/* Planets list text */}
+          <text 
+            x={house.planetsX} 
+            y={house.planetsY} 
+            textAnchor="middle" 
+            className="text-[4px] font-sans font-extrabold fill-blue-800 tracking-tight"
+          >
+            {house.planets.join(" ")}
+          </text>
+          
+          {/* Zodiac sign number text */}
+          <text 
+            x={house.numX} 
+            y={house.numY} 
+            textAnchor="middle" 
+            className="text-[6px] font-serif font-bold fill-red-600"
+          >
+            {house.signNum}
+          </text>
+        </g>
+      ))}
+    </svg>
+  );
+};
+
 const getVarna = (rasi) => {
   if (!rasi) return 1;
   const clean = rasi.split(" ")[0].trim().toLowerCase();
@@ -411,6 +604,111 @@ const CalculatorPage = () => {
     partnerTob: "",
     partnerPob: ""
   });
+
+  // Calculate Numerology values dynamically
+  const getNumerologyData = () => {
+    if (!formData.dob) return null;
+    const [year, month, day] = formData.dob.split("-").map(Number);
+    
+    const sumDigits = (num) => {
+      let str = String(num);
+      let sum = 0;
+      for (let char of str) {
+        if (char >= '0' && char <= '9') {
+          sum += Number(char);
+        }
+      }
+      return sum;
+    };
+    
+    const reduceToSingleDigit = (num) => {
+      let val = num;
+      while (val > 9) {
+        val = sumDigits(val);
+      }
+      return val;
+    };
+
+    const mulank = reduceToSingleDigit(day);
+    const bhagyank = reduceToSingleDigit(sumDigits(day) + sumDigits(month) + sumDigits(year));
+    const successNumber = reduceToSingleDigit(sumDigits(day) + sumDigits(month));
+    
+    const yearSum = reduceToSingleDigit(year);
+    const kuaMale = reduceToSingleDigit(11 - yearSum === 0 ? 9 : 11 - yearSum);
+    const kuaFemale = reduceToSingleDigit(4 + yearSum);
+
+    const chaldeanValues = {
+      a:1, i:1, j:1, q:1, y:1,
+      b:2, k:2, r:2,
+      c:3, g:3, l:3, s:3,
+      d:4, m:4, t:4,
+      e:5, h:5, n:5, x:5,
+      u:6, v:6, w:6,
+      o:7, z:7,
+      f:8, p:8
+    };
+
+    const getChaldeanSum = (str) => {
+      let sum = 0;
+      for (let char of str.toLowerCase()) {
+        if (chaldeanValues[char]) {
+          sum += chaldeanValues[char];
+        }
+      }
+      return sum;
+    };
+
+    const nameNumber = reduceToSingleDigit(getChaldeanSum(formData.name || "Seeker"));
+
+    const getVowelSum = (str) => {
+      let sum = 0;
+      const vowels = "aeiou";
+      for (let char of str.toLowerCase()) {
+        if (vowels.includes(char) && chaldeanValues[char]) {
+          sum += chaldeanValues[char];
+        }
+      }
+      return sum;
+    };
+
+    const soulUrge = reduceToSingleDigit(getVowelSum(formData.name || "Seeker") || 3);
+
+    const luckyNumbersMap = {
+      1: [1, 2, 3, 9],
+      2: [1, 2, 5, 7],
+      3: [1, 2, 3, 5, 7, 9],
+      4: [1, 5, 6, 7],
+      5: [1, 2, 3, 5, 6],
+      6: [3, 5, 6, 9],
+      7: [1, 3, 4, 5],
+      8: [1, 3, 5, 6, 7],
+      9: [1, 2, 3, 5, 6, 9]
+    };
+
+    const enemyNumbersMap = {
+      1: [4, 6, 8],
+      2: [8, 9],
+      3: [6, 8],
+      4: [2, 4, 8],
+      5: [9],
+      6: [1, 2, 8],
+      7: [8, 9],
+      8: [2, 4, 8],
+      9: [4, 7, 8]
+    };
+
+    return {
+      mulank,
+      bhagyank,
+      nameNumber,
+      kuaMale,
+      kuaFemale,
+      successNumber,
+      soulUrge,
+      luckyNumbers: luckyNumbersMap[mulank] || [1, 2, 3],
+      enemyNumbers: enemyNumbersMap[mulank] || [8]
+    };
+  };
 
   const [countries, setCountries] = useState([]);
   const [states, setStates] = useState([]);
@@ -1224,7 +1522,7 @@ const CalculatorPage = () => {
               <div>
                 <span className="text-[9px] tracking-[0.25em] text-[#8E6B23] uppercase font-black block mb-1">Calculation Complete</span>
                 <h3 className="font-serif text-3xl text-[#3C2A21] font-semibold tracking-wide">
-                  {result.isFlames ? "Relationship Alignment" : result.isKundli ? "Kundli Matching Harmony" : "Your Cosmic Coordinates"}
+                  {result.isFlames ? "Relationship Alignment" : result.isKundli ? "Kundli Matching Harmony" : id === "numerology" ? "Your Numerology Report" : id === "rahu-ketu" ? "Rahu & Ketu Details" : "Your Cosmic Coordinates"}
                 </h3>
               </div>
 
@@ -1343,8 +1641,402 @@ const CalculatorPage = () => {
               )}
 
               {/* ==================== 3. SINGLE-PERSON CALCULATORS RESULTS VIEW ==================== */}
-              {result.isSingle && (
+              {result.isSingle && id === "numerology" ? (
+                <div className="space-y-8 text-center">
+                  
+                  {/* Intro subtitle */}
+                  <p className="text-xs text-[#725D46] font-light max-w-xl mx-auto -mt-2">
+                    Unlock your divine numeric blueprint. Your birthdate and name carry distinct vibrational frequencies that outline your destiny path.
+                  </p>
+
+                  {/* Report Grid */}
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-5 max-w-3xl mx-auto text-left">
+                    
+                    {/* Mulank Card */}
+                    <div className="bg-white/70 border border-[#B38B36]/20 hover:border-[#B38B36]/50 hover:shadow-md transition-all duration-300 rounded-2xl p-5 flex flex-col items-center justify-between min-h-[140px] shadow-sm relative text-center">
+                      <div className="absolute top-2.5 right-3 text-[#B38B36]/10 text-xl font-serif">01</div>
+                      <span className="text-[10px] uppercase tracking-wider text-stone-400 font-extrabold block mb-3">Mulank (Driver)</span>
+                      <div className="w-12 h-12 rounded-full border-2 border-[#B38B36] flex items-center justify-center text-[#B38B36] font-serif font-black text-xl bg-[#FBF6EC] shadow-sm">
+                        {(() => {
+                          const nd = getNumerologyData();
+                          return nd ? nd.mulank : "-";
+                        })()}
+                      </div>
+                      <span className="text-[9px] text-[#725D46] font-light italic mt-2">Driver of your personality</span>
+                    </div>
+
+                    {/* Bhagyank Card */}
+                    <div className="bg-white/70 border border-[#B38B36]/20 hover:border-[#B38B36]/50 hover:shadow-md transition-all duration-300 rounded-2xl p-5 flex flex-col items-center justify-between min-h-[140px] shadow-sm relative text-center">
+                      <div className="absolute top-2.5 right-3 text-[#B38B36]/10 text-xl font-serif">02</div>
+                      <span className="text-[10px] uppercase tracking-wider text-stone-400 font-extrabold block mb-3">Bhagyank (Conductor)</span>
+                      <div className="w-12 h-12 rounded-full border-2 border-[#B38B36] flex items-center justify-center text-[#B38B36] font-serif font-black text-xl bg-[#FBF6EC] shadow-sm">
+                        {(() => {
+                          const nd = getNumerologyData();
+                          return nd ? nd.bhagyank : "-";
+                        })()}
+                      </div>
+                      <span className="text-[9px] text-[#725D46] font-light italic mt-2">Conductor of your life path</span>
+                    </div>
+
+                    {/* Name Number Card */}
+                    <div className="bg-white/70 border border-[#B38B36]/20 hover:border-[#B38B36]/50 hover:shadow-md transition-all duration-300 rounded-2xl p-5 flex flex-col items-center justify-between min-h-[140px] shadow-sm relative text-center">
+                      <div className="absolute top-2.5 right-3 text-[#B38B36]/10 text-xl font-serif">03</div>
+                      <span className="text-[10px] uppercase tracking-wider text-stone-400 font-extrabold block mb-3">Name Number</span>
+                      <div className="w-12 h-12 rounded-full border-2 border-[#B38B36] flex items-center justify-center text-[#B38B36] font-serif font-black text-xl bg-[#FBF6EC] shadow-sm">
+                        {(() => {
+                          const nd = getNumerologyData();
+                          return nd ? nd.nameNumber : "-";
+                        })()}
+                      </div>
+                      <span className="text-[9px] text-[#725D46] font-light italic mt-2">Vibration of your name</span>
+                    </div>
+
+                    {/* Kua Number Card */}
+                    <div className="bg-white/70 border border-[#B38B36]/20 hover:border-[#B38B36]/50 hover:shadow-md transition-all duration-300 rounded-2xl p-5 flex flex-col items-center justify-between min-h-[140px] shadow-sm relative text-center">
+                      <div className="absolute top-2.5 right-3 text-[#B38B36]/10 text-xl font-serif">04</div>
+                      <span className="text-[10px] uppercase tracking-wider text-stone-400 font-extrabold block mb-3">Kua Number</span>
+                      {(() => {
+                        const nd = getNumerologyData();
+                        return nd ? (
+                          <div className="flex gap-3 mt-1">
+                            <div className="flex flex-col items-center">
+                              <div className="w-10 h-10 rounded-full border border-[#B38B36] flex items-center justify-center text-[#B38B36] font-serif font-bold text-sm bg-white">
+                                {nd.kuaMale}
+                              </div>
+                              <span className="text-[8px] text-stone-400 font-bold uppercase mt-1">Male</span>
+                            </div>
+                            <div className="flex flex-col items-center">
+                              <div className="w-10 h-10 rounded-full border border-[#B38B36] flex items-center justify-center text-[#B38B36] font-serif font-bold text-sm bg-white">
+                                {nd.kuaFemale}
+                              </div>
+                              <span className="text-[8px] text-stone-400 font-bold uppercase mt-1">Female</span>
+                            </div>
+                          </div>
+                        ) : null;
+                      })()}
+                      <span className="text-[9px] text-[#725D46] font-light italic mt-2">Cosmic energy index</span>
+                    </div>
+
+                    {/* Success Number Card */}
+                    <div className="bg-white/70 border border-[#B38B36]/20 hover:border-[#B38B36]/50 hover:shadow-md transition-all duration-300 rounded-2xl p-5 flex flex-col items-center justify-between min-h-[140px] shadow-sm relative text-center">
+                      <div className="absolute top-2.5 right-3 text-[#B38B36]/10 text-xl font-serif">05</div>
+                      <span className="text-[10px] uppercase tracking-wider text-stone-400 font-extrabold block mb-3">Success Number</span>
+                      <div className="w-12 h-12 rounded-full border-2 border-[#B38B36] flex items-center justify-center text-[#B38B36] font-serif font-black text-xl bg-[#FBF6EC] shadow-sm">
+                        {(() => {
+                          const nd = getNumerologyData();
+                          return nd ? nd.successNumber : "-";
+                        })()}
+                      </div>
+                      <span className="text-[9px] text-[#725D46] font-light italic mt-2">Key to material progress</span>
+                    </div>
+
+                    {/* Soul Urge Number Card */}
+                    <div className="bg-white/70 border border-[#B38B36]/20 hover:border-[#B38B36]/50 hover:shadow-md transition-all duration-300 rounded-2xl p-5 flex flex-col items-center justify-between min-h-[140px] shadow-sm relative text-center">
+                      <div className="absolute top-2.5 right-3 text-[#B38B36]/10 text-xl font-serif">06</div>
+                      <span className="text-[10px] uppercase tracking-wider text-stone-400 font-extrabold block mb-3">Soul Urge Number</span>
+                      <div className="w-12 h-12 rounded-full border-2 border-[#B38B36] flex items-center justify-center text-[#B38B36] font-serif font-black text-xl bg-[#FBF6EC] shadow-sm">
+                        {(() => {
+                          const nd = getNumerologyData();
+                          return nd ? nd.soulUrge : "-";
+                        })()}
+                      </div>
+                      <span className="text-[9px] text-[#725D46] font-light italic mt-2">Your deepest inner desire</span>
+                    </div>
+
+                    {/* Lucky Numbers Card */}
+                    <div className="bg-white/70 border border-[#B38B36]/20 hover:border-[#B38B36]/50 hover:shadow-md transition-all duration-300 rounded-2xl p-5 flex flex-col items-center justify-between min-h-[140px] shadow-sm relative col-span-2 md:col-span-1 text-center">
+                      <div className="absolute top-2.5 right-3 text-[#B38B36]/10 text-xl font-serif">07</div>
+                      <span className="text-[10px] uppercase tracking-wider text-stone-400 font-extrabold block mb-2">Lucky Numbers</span>
+                      <div className="flex flex-wrap justify-center gap-1.5 mt-1">
+                        {(() => {
+                          const nd = getNumerologyData();
+                          return nd ? nd.luckyNumbers.map((num) => (
+                            <span key={num} className="w-8 h-8 rounded-full border border-green-200 bg-green-50 flex items-center justify-center text-green-700 font-serif font-black text-xs shadow-sm">
+                              {num}
+                            </span>
+                          )) : null;
+                        })()}
+                      </div>
+                      <span className="text-[9px] text-green-600 font-bold uppercase mt-2">Auspicious Harmony</span>
+                    </div>
+
+                    {/* Enemy Numbers Card */}
+                    <div className="bg-white/70 border border-[#B38B36]/20 hover:border-[#B38B36]/50 hover:shadow-md transition-all duration-300 rounded-2xl p-5 flex flex-col items-center justify-between min-h-[140px] shadow-sm relative col-span-2 text-center">
+                      <div className="absolute top-2.5 right-3 text-[#B38B36]/10 text-xl font-serif">08</div>
+                      <span className="text-[10px] uppercase tracking-wider text-stone-400 font-extrabold block mb-2">Enemy Numbers</span>
+                      <div className="flex flex-wrap justify-center gap-1.5 mt-1">
+                        {(() => {
+                          const nd = getNumerologyData();
+                          return nd ? nd.enemyNumbers.map((num) => (
+                            <span key={num} className="w-8 h-8 rounded-full border border-red-200 bg-red-50 flex items-center justify-center text-red-700 font-serif font-black text-xs shadow-sm">
+                              {num}
+                            </span>
+                          )) : null;
+                        })()}
+                      </div>
+                      <span className="text-[9px] text-red-600 font-bold uppercase mt-2">Hostile Resonance - Avoid</span>
+                    </div>
+
+                  </div>
+
+                  {/* PREMIUM ASTROLOGY DIVIDER */}
+                  <div className="flex items-center justify-center gap-4 my-8 max-w-2xl mx-auto">
+                    <span className="h-[1px] flex-1 bg-gradient-to-r from-transparent to-[#B38B36]/30"></span>
+                    <span className="text-[#8E6B23] font-serif text-[10px] uppercase tracking-widest font-extrabold flex items-center gap-2">
+                      <Sparkles className="w-3.5 h-3.5 text-[#B38B36]" />
+                      Vedic Astrology Blueprint
+                    </span>
+                    <span className="h-[1px] flex-1 bg-gradient-to-l from-transparent to-[#B38B36]/30"></span>
+                  </div>
+
+                  {/* Description & Birth Chart Details */}
+                  <div className="space-y-6">
+                    <div className="bg-gradient-to-b from-[#FFFDF9] to-[#FAF6EE]/85 border border-[#B38B36]/20 rounded-2xl p-5 md:p-6 text-left text-xs md:text-sm text-stone-700 leading-relaxed max-w-2xl mx-auto shadow-[0_8px_30px_rgba(179,139,54,0.03),inset_0_1px_2px_rgba(255,255,255,0.9)] relative">
+                      <div className="absolute inset-1 border border-[#B38B36]/10 rounded-xl pointer-events-none" />
+                      <p className="first-letter:text-4xl first-letter:font-serif first-letter:font-bold first-letter:text-[#8E6B23] first-letter:mr-2.5 first-letter:float-left first-letter:leading-[0.8] first-letter:pt-1 font-light text-stone-600">
+                        {result.description}
+                      </p>
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-2.5 md:gap-3.5 max-w-2xl mx-auto">
+                      <div className="bg-white/50 backdrop-blur-sm border border-[#B38B36]/20 hover:border-[#B38B36]/50 hover:shadow-[0_8px_25px_rgba(179,139,54,0.08)] hover:-translate-y-0.5 transition-all duration-300 rounded-xl p-3 text-left flex items-center gap-2 md:gap-3">
+                        <div className="p-1.5 bg-[#B38B36]/10 rounded-lg text-[#8E6B23] shrink-0 border border-[#B38B36]/10">
+                          <Moon className="w-4 h-4" />
+                        </div>
+                        <div>
+                          <span className="text-[8px] uppercase tracking-widest text-[#8E6B23] block mb-0.5 font-bold">Moon Sign</span>
+                          <span className="text-xs text-[#3C2A21] font-serif font-bold">{result.rasi?.split(" ")[0]}</span>
+                        </div>
+                      </div>
+                      
+                      <div className="bg-white/50 backdrop-blur-sm border border-[#B38B36]/20 hover:border-[#B38B36]/50 hover:shadow-[0_8px_25px_rgba(179,139,54,0.08)] hover:-translate-y-0.5 transition-all duration-300 rounded-xl p-3 text-left flex items-center gap-2 md:gap-3">
+                        <div className="p-1.5 bg-[#B38B36]/10 rounded-lg text-[#8E6B23] shrink-0 border border-[#B38B36]/10">
+                          <Sparkles className="w-4 h-4" />
+                        </div>
+                        <div>
+                          <span className="text-[8px] uppercase tracking-widest text-[#8E6B23] block mb-0.5 font-bold">Nakshatra</span>
+                          <span className="text-xs text-[#3C2A21] font-serif font-bold">{result.nakshatra}</span>
+                        </div>
+                      </div>
+                      
+                      <div className="bg-white/50 backdrop-blur-sm border border-[#B38B36]/20 hover:border-[#B38B36]/50 hover:shadow-[0_8px_25px_rgba(179,139,54,0.08)] hover:-translate-y-0.5 transition-all duration-300 rounded-xl p-3 text-left flex items-center gap-2 md:gap-3">
+                        <div className="p-1.5 bg-[#B38B36]/10 rounded-lg text-[#8E6B23] shrink-0 border border-[#B38B36]/10">
+                          <TrendingUp className="w-4 h-4" />
+                        </div>
+                        <div>
+                          <span className="text-[8px] uppercase tracking-widest text-[#8E6B23] block mb-0.5 font-bold">Rising Sign</span>
+                          <span className="text-xs text-[#3C2A21] font-serif font-bold">{result.lagna?.split(" ")[0]}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {result.planetaryPositions && (
+                      <div className="max-w-2xl mx-auto space-y-3 text-left">
+                        <h5 className="font-serif text-[#8E6B23] text-[10px] uppercase tracking-widest text-center font-bold flex items-center justify-center gap-3">
+                          <span className="w-6 h-[1px] bg-[#B38B36]/30"></span>
+                          Planetary Positions (Graha Sthiti)
+                          <span className="w-6 h-[1px] bg-[#B38B36]/30"></span>
+                        </h5>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 md:gap-3">
+                          {Object.entries(result.planetaryPositions).map(([planet, sign]) => (
+                            <div key={planet} className="bg-white/40 border border-[#B38B36]/15 hover:border-[#B38B36]/35 rounded-xl p-2 md:p-2.5 flex items-center justify-between text-xs transition-all hover:bg-white/60 shadow-[0_2px_8px_rgba(179,139,54,0.01)]">
+                              <span className="text-[#8E6B23] font-serif font-semibold">{planet}</span>
+                              <span className="text-[#3C2A21] font-light bg-[#B38B36]/5 border border-[#B38B36]/10 px-2 py-0.5 rounded-lg text-[11px]">{sign}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                </div>
+              ) : result.isSingle && id === "rahu-ketu" ? (() => {
+                const lagnaIdx = getSignIdx(result.lagna);
+                
+                const rahuSign = result.planetaryPositions?.Rahu || "Aries";
+                const rahuDeg = getDeterministicDegree("Rahu", formData.dob, formData.tob);
+                const rahuNak = getNakshatraForPlanet(rahuSign, rahuDeg);
+                const rahuHouse = ((getSignIdx(rahuSign) - lagnaIdx + 12) % 12) + 1;
+
+                const ketuSign = result.planetaryPositions?.Ketu || "Libra";
+                const ketuDeg = getDeterministicDegree("Ketu", formData.dob, formData.tob);
+                const ketuNak = getNakshatraForPlanet(ketuSign, ketuDeg);
+                const ketuHouse = ((getSignIdx(ketuSign) - lagnaIdx + 12) % 12) + 1;
+
+                return (
+                  <div className="space-y-8 text-center">
+                    
+                    {/* Intro subtitle */}
+                    <p className="text-xs text-[#725D46] font-light max-w-xl mx-auto -mt-2">
+                      Discover the placements of Rahu (North Node) and Ketu (South Node) in your birth chart, representing your karmic desires, pending debts, and spiritual destiny.
+                    </p>
+
+                    {/* Report Grid */}
+                    <div className="grid md:grid-cols-2 gap-6 max-w-2xl mx-auto text-left animate-fadeIn">
+                      
+                      {/* Rahu Card */}
+                      <div className="bg-gradient-to-b from-[#FFFDF9] to-[#FFFDF5] border-2 border-amber-200/50 hover:border-amber-300 rounded-3xl p-6 shadow-sm hover:shadow transition-all relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-24 h-24 bg-[#B38B36]/5 rounded-full blur-lg pointer-events-none" />
+                        <h4 className="font-serif text-2xl font-black text-[#8E6B23] mb-4 border-b border-stone-200 pb-2">Rahu</h4>
+                        
+                        <div className="space-y-3 text-xs text-[#3C2A21]">
+                          <div className="flex justify-between items-center py-1.5 border-b border-stone-100">
+                            <span className="font-bold text-stone-500">Rashi (Sign)</span>
+                            <span className="font-serif font-extrabold text-[#3C2A21] bg-white border border-[#E5E1D8] px-3.5 py-1 rounded-xl shadow-sm">
+                              {rahuSign}
+                            </span>
+                          </div>
+                          
+                          <div className="flex justify-between items-center py-1.5 border-b border-stone-100">
+                            <span className="font-bold text-stone-500">Nakshatra</span>
+                            <span className="font-serif font-extrabold text-[#3C2A21] bg-white border border-[#E5E1D8] px-3.5 py-1 rounded-xl shadow-sm">
+                              {rahuNak}
+                            </span>
+                          </div>
+                          
+                          <div className="flex justify-between items-center py-1.5">
+                            <span className="font-bold text-stone-500">House</span>
+                            <span className="font-serif font-extrabold text-[#3C2A21] bg-white border border-[#E5E1D8] px-3.5 py-1 rounded-xl shadow-sm">
+                              House {rahuHouse}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Ketu Card */}
+                      <div className="bg-gradient-to-b from-[#FFFDF9] to-[#FFFDF5] border-2 border-amber-200/50 hover:border-amber-300 rounded-3xl p-6 shadow-sm hover:shadow transition-all relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-24 h-24 bg-[#B38B36]/5 rounded-full blur-lg pointer-events-none" />
+                        <h4 className="font-serif text-2xl font-black text-[#8E6B23] mb-4 border-b border-stone-200 pb-2">Ketu</h4>
+                        
+                        <div className="space-y-3 text-xs text-[#3C2A21]">
+                          <div className="flex justify-between items-center py-1.5 border-b border-stone-100">
+                            <span className="font-bold text-stone-500">Rashi (Sign)</span>
+                            <span className="font-serif font-extrabold text-[#3C2A21] bg-white border border-[#E5E1D8] px-3.5 py-1 rounded-xl shadow-sm">
+                              {ketuSign}
+                            </span>
+                          </div>
+                          
+                          <div className="flex justify-between items-center py-1.5 border-b border-stone-100">
+                            <span className="font-bold text-stone-500">Nakshatra</span>
+                            <span className="font-serif font-extrabold text-[#3C2A21] bg-white border border-[#E5E1D8] px-3.5 py-1 rounded-xl shadow-sm">
+                              {ketuNak}
+                            </span>
+                          </div>
+                          
+                          <div className="flex justify-between items-center py-1.5">
+                            <span className="font-bold text-stone-500">House</span>
+                            <span className="font-serif font-extrabold text-[#3C2A21] bg-white border border-[#E5E1D8] px-3.5 py-1 rounded-xl shadow-sm">
+                              House {ketuHouse}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                    </div>
+
+                    {/* PREMIUM ASTROLOGY DIVIDER */}
+                    <div className="flex items-center justify-center gap-4 my-8 max-w-2xl mx-auto">
+                      <span className="h-[1px] flex-1 bg-gradient-to-r from-transparent to-[#B38B36]/30"></span>
+                      <span className="text-[#8E6B23] font-serif text-[10px] uppercase tracking-widest font-extrabold flex items-center gap-2">
+                        <Sparkles className="w-3.5 h-3.5 text-[#B38B36]" />
+                        Vedic Astrology Blueprint
+                      </span>
+                      <span className="h-[1px] flex-1 bg-gradient-to-l from-transparent to-[#B38B36]/30"></span>
+                    </div>
+
+                    {/* Description & Birth Chart Details */}
+                    <div className="space-y-6">
+                      <div className="bg-gradient-to-b from-[#FFFDF9] to-[#FAF6EE]/85 border border-[#B38B36]/20 rounded-2xl p-5 md:p-6 text-left text-xs md:text-sm text-stone-700 leading-relaxed max-w-2xl mx-auto shadow-[0_8px_30px_rgba(179,139,54,0.03),inset_0_1px_2px_rgba(255,255,255,0.9)] relative">
+                        <div className="absolute inset-1 border border-[#B38B36]/10 rounded-xl pointer-events-none" />
+                        <p className="first-letter:text-4xl first-letter:font-serif first-letter:font-bold first-letter:text-[#8E6B23] first-letter:mr-2.5 first-letter:float-left first-letter:leading-[0.8] first-letter:pt-1 font-light text-stone-600">
+                          {result.description}
+                        </p>
+                      </div>
+
+                      <div className="grid grid-cols-3 gap-2.5 md:gap-3.5 max-w-2xl mx-auto text-left">
+                        <div className="bg-white/50 backdrop-blur-sm border border-[#B38B36]/20 hover:border-[#B38B36]/50 hover:shadow-[0_8px_25px_rgba(179,139,54,0.08)] hover:-translate-y-0.5 transition-all duration-300 rounded-xl p-3 text-left flex items-center gap-2 md:gap-3">
+                          <div className="p-1.5 bg-[#B38B36]/10 rounded-lg text-[#8E6B23] shrink-0 border border-[#B38B36]/10">
+                            <Moon className="w-4 h-4" />
+                          </div>
+                          <div>
+                            <span className="text-[8px] uppercase tracking-widest text-[#8E6B23] block mb-0.5 font-bold">Moon Sign</span>
+                            <span className="text-xs text-[#3C2A21] font-serif font-bold">{result.rasi?.split(" ")[0]}</span>
+                          </div>
+                        </div>
+                        
+                        <div className="bg-white/50 backdrop-blur-sm border border-[#B38B36]/20 hover:border-[#B38B36]/50 hover:shadow-[0_8px_25px_rgba(179,139,54,0.08)] hover:-translate-y-0.5 transition-all duration-300 rounded-xl p-3 text-left flex items-center gap-2 md:gap-3">
+                          <div className="p-1.5 bg-[#B38B36]/10 rounded-lg text-[#8E6B23] shrink-0 border border-[#B38B36]/10">
+                            <Sparkles className="w-4 h-4" />
+                          </div>
+                          <div>
+                            <span className="text-[8px] uppercase tracking-widest text-[#8E6B23] block mb-0.5 font-bold">Nakshatra</span>
+                            <span className="text-xs text-[#3C2A21] font-serif font-bold">{result.nakshatra}</span>
+                          </div>
+                        </div>
+                        
+                        <div className="bg-white/50 backdrop-blur-sm border border-[#B38B36]/20 hover:border-[#B38B36]/50 hover:shadow-[0_8px_25px_rgba(179,139,54,0.08)] hover:-translate-y-0.5 transition-all duration-300 rounded-xl p-3 text-left flex items-center gap-2 md:gap-3">
+                          <div className="p-1.5 bg-[#B38B36]/10 rounded-lg text-[#8E6B23] shrink-0 border border-[#B38B36]/10">
+                            <TrendingUp className="w-4 h-4" />
+                          </div>
+                          <div>
+                            <span className="text-[8px] uppercase tracking-widest text-[#8E6B23] block mb-0.5 font-bold">Rising Sign</span>
+                            <span className="text-xs text-[#3C2A21] font-serif font-bold">{result.lagna?.split(" ")[0]}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {result.planetaryPositions && (
+                        <div className="max-w-2xl mx-auto space-y-3 text-left">
+                          <h5 className="font-serif text-[#8E6B23] text-[10px] uppercase tracking-widest text-center font-bold flex items-center justify-center gap-3">
+                            <span className="w-6 h-[1px] bg-[#B38B36]/30"></span>
+                            Planetary Positions (Graha Sthiti)
+                            <span className="w-6 h-[1px] bg-[#B38B36]/30"></span>
+                          </h5>
+                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 md:gap-3">
+                            {Object.entries(result.planetaryPositions).map(([planet, sign]) => (
+                              <div key={planet} className="bg-white/40 border border-[#B38B36]/15 hover:border-[#B38B36]/35 rounded-xl p-2 md:p-2.5 flex items-center justify-between text-xs transition-all hover:bg-white/60 shadow-[0_2px_8px_rgba(179,139,54,0.01)]">
+                                <span className="text-[#8E6B23] font-serif font-semibold">{planet}</span>
+                                <span className="text-[#3C2A21] font-light bg-[#B38B36]/5 border border-[#B38B36]/10 px-2 py-0.5 rounded-lg text-[11px]">{sign}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                  </div>
+                );
+              })() : result.isSingle && (
                 <div className="space-y-6">
+                  {/* If Lagna Calculator, render Lagna & Navamsa Charts side by side */}
+                  {id === "lagna" && (() => {
+                    const lagnaChartData = calculateChartData(result.lagna, result.planetaryPositions);
+                    const navamsaChartData = calculateNavamsaData(result.lagna, result.planetaryPositions, formData.dob, formData.tob);
+                    return (
+                      <div className="space-y-8">
+                        <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto text-left">
+                          
+                          {/* Lagna Chart Card */}
+                          <div className="bg-[#FFFDF9]/60 border border-[#B38B36]/25 rounded-2xl p-5 text-center shadow-sm">
+                            <h4 className="font-serif text-sm font-bold text-[#3C2A21] uppercase tracking-wider mb-4">Lagna Chart</h4>
+                            <div className="w-full max-w-[280px] aspect-square mx-auto">
+                              <KundliSvg chartData={lagnaChartData} />
+                            </div>
+                          </div>
+
+                          {/* Navamsa Chart Card */}
+                          <div className="bg-[#FFFDF9]/60 border border-[#B38B36]/25 rounded-2xl p-5 text-center shadow-sm">
+                            <h4 className="font-serif text-sm font-bold text-[#3C2A21] uppercase tracking-wider mb-4">Navamsa Chart</h4>
+                            <div className="w-full max-w-[280px] aspect-square mx-auto">
+                              <KundliSvg chartData={navamsaChartData} />
+                            </div>
+                          </div>
+
+                        </div>
+                      </div>
+                    );
+                  })()}
+
                   {/* Calculated Value Glowing Badge */}
                   <div className="inline-block bg-gradient-to-b from-[#FFFDF9] to-[#FAF5EB] border border-[#B38B36]/30 px-6 py-2.5 rounded-2xl shadow-[0_4px_12px_rgba(179,139,54,0.08)]">
                     <span className="text-[9px] uppercase tracking-[0.25em] text-[#8E6B23] font-bold block mb-1">Result Placements</span>
