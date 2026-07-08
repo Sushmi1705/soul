@@ -128,11 +128,11 @@ const AboutUs = () => {
             <div className="relative z-10 p-3 bg-white shadow-2xl rounded-t-[12rem] rounded-b-3xl border border-[#E5E1D8] overflow-hidden">
               <div className="overflow-hidden rounded-t-[12rem] rounded-b-2xl relative">
                 <img
-                  src="https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&q=80"
-                  alt="Gitika Sharma Reading"
+                  src="/about-img-1.jpg"
+                  alt="Gitika Sharma – Founder and Astrologer"
+                  loading="lazy"
                   className="w-full h-[450px] md:h-[520px] object-cover group-hover:scale-105 transition-transform duration-1000"
                 />
-                <div className="absolute inset-0 bg-[#B38B36]/5 mix-blend-overlay" />
               </div>
             </div>
           </div>

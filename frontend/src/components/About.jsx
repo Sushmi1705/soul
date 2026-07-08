@@ -37,7 +37,7 @@ const About = () => {
           <div className="lg:col-span-5 relative">
             <div className="relative aspect-[3/4] overflow-hidden shadow-2xl">
               <img 
-                src="https://gitikasharma.in/wp-content/uploads/2024/02/about-img-1.png" 
+                src="/about-img-1.jpg" 
                 alt="Oracle" 
                 className="w-full h-full object-cover" 
               />

@@ -23,7 +23,10 @@ import {
   User,
   Calendar,
   Clock,
-  MapPin
+  MapPin,
+  MessageSquare,
+  Phone,
+  Mail
 } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
@@ -396,21 +399,11 @@ const PaymentPage = () => {
               </a>
             ) : (
               <button
-                onClick={handlePayment}
-                disabled={processingPayment}
+                onClick={(e) => e.preventDefault()}
                 className="px-8 py-4 bg-gradient-to-r from-[#BF953F] via-[#FCF6BA] to-[#B38728] hover:brightness-[1.12] text-[#1E110A] font-serif font-bold text-xs tracking-[0.2em] uppercase rounded-full transition-all duration-500 flex items-center gap-2.5 shadow-[0_4px_15px_rgba(179,139,54,0.35)] hover:scale-[1.02] cursor-pointer border border-[#FCF6BA]/40"
               >
-                {processingPayment ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin text-[#1E110A]" />
-                    <span>Processing...</span>
-                  </>
-                ) : (
-                  <>
-                    <Unlock className="w-4 h-4 text-[#1E110A] stroke-[2.5px]" />
-                    <span>Unlock Full Report - ₹499</span>
-                  </>
-                )}
+                <MessageSquare className="w-4 h-4 text-[#1E110A]" />
+                <span>Connect with Gitika Sharma</span>
               </button>
             )}
           </div>
@@ -518,40 +511,22 @@ const PaymentPage = () => {
                 
                 <div className="text-center mb-6 relative z-10">
                   <div className="w-12 h-12 rounded-full bg-[#B38B36]/10 border border-[#B38B36]/35 flex items-center justify-center mx-auto mb-3 text-[#B38B36] shadow-sm relative">
-                    <CreditCard className="w-5 h-5 text-[#B38B36]" />
+                    <Sparkles className="w-5 h-5 text-[#B38B36] animate-pulse" />
                   </div>
-                  <h2 className="font-serif text-2xl font-semibold text-[#3C2A21]">Unlock Premium Access</h2>
-                  <p className="text-[10px] text-[#6E5D53] mt-2 font-light max-w-xs mx-auto">Complete the authorization via Razorpay to instantly decrypt all destiny sections.</p>
-                </div>
-
-                {/* Price block */}
-                <div className="relative z-10 border border-[#B38B36]/15 bg-white/70 shadow-inner rounded-xl p-4 flex items-center justify-between text-sm mb-6">
-                  <div>
-                    <span className="font-serif font-bold text-[#3C2A21]">Personalized Destiny Report</span>
-                    <span className="text-[8px] text-[#6E5D53] uppercase tracking-wider font-light">Complete PDF + Lifetime Dashboard</span>
-                  </div>
-                  <div className="text-right">
-                    <span className="text-[#8E6B23] font-serif text-2xl font-bold">₹499</span>
-                  </div>
+                  <span className="text-[9px] uppercase tracking-[0.25em] font-extrabold text-[#B38B36] block mb-1">Professional Astrology Consultation</span>
+                  <h2 className="font-serif text-2xl font-semibold text-[#3C2A21]">Connect with Gitika Sharma</h2>
+                  <p className="text-xs text-[#6E5D53] mt-3 font-light leading-relaxed max-w-xs mx-auto">
+                    Need personalized guidance regarding your report? Connect directly with Gitika Sharma for expert astrology consultation and receive personalized insights based on your birth details.
+                  </p>
                 </div>
 
                 <button
-                  onClick={handlePayment}
-                  disabled={processingPayment}
+                  onClick={(e) => e.preventDefault()}
                   className="relative z-10 w-full py-4 bg-gradient-to-r from-[#BF953F] via-[#FCF6BA] to-[#B38728] hover:brightness-[1.12] text-[#1E110A] font-sans font-bold text-xs uppercase tracking-widest rounded-xl transition-all duration-500 shadow-[0_4px_15px_rgba(179,139,54,0.35)] hover:scale-[1.01] flex items-center justify-center gap-2 cursor-pointer border border-[#FCF6BA]/40"
                 >
-                  {processingPayment ? (
-                    <Loader2 className="w-4 h-4 animate-spin text-[#1E110A]" />
-                  ) : (
-                    <Unlock className="w-4 h-4 text-[#1E110A] stroke-[2.5px]" />
-                  )}
-                  <span>Pay Securely with Razorpay</span>
+                  <MessageSquare className="w-4 h-4 text-[#1E110A]" />
+                  <span>Connect with Gitika Sharma</span>
                 </button>
-
-                <div className="relative z-10 text-[9px] text-[#6E5D53]/85 text-center leading-relaxed mt-4 flex items-center justify-center gap-1.5 border-t border-[#B38B36]/10 pt-4">
-                  <AlertCircle className="w-3.5 h-3.5 text-[#B38B36] shrink-0" />
-                  <span>Secured by Razorpay. High-grade signature authorization.</span>
-                </div>
               </div>
             )}
 
@@ -913,17 +888,16 @@ const PaymentPage = () => {
                       <Lock className="w-4 h-4 text-[#8E6B23] relative z-10 animate-pulse" />
                     </div>
                     
-                    <h5 className="font-serif text-xl text-[#3C2A21] mb-2 font-bold tracking-wide">Your Destiny Blueprint Awaits</h5>
+                    <h5 className="font-serif text-xl text-[#3C2A21] mb-2 font-bold tracking-wide">Connect with Gitika Sharma</h5>
                     <p className="text-[11px] text-[#6E5D53] leading-relaxed mb-6 font-light max-w-xs mx-auto">
-                      Reveal the planetary transits mapping your Career milestones, Marriage timelines, Financial windows, and Spiritual Karma.
+                      Have questions about your astrology report or need personalized guidance? Connect directly with Gitika Sharma for expert consultation and assistance.
                     </p>
                     <button
-                      onClick={handlePayment}
-                      disabled={processingPayment}
+                      onClick={(e) => e.preventDefault()}
                       className="w-full py-4 bg-gradient-to-r from-[#BF953F] via-[#FCF6BA] to-[#B38728] hover:brightness-[1.08] text-[#1E110A] font-sans font-bold text-xs uppercase tracking-widest rounded-xl transition-all duration-500 shadow-[0_4px_15px_rgba(179,139,54,0.35)] hover:scale-[1.02] flex items-center justify-center gap-2 cursor-pointer border border-[#FCF6BA]/30"
                     >
                       <Unlock className="w-3.5 h-3.5 stroke-[2.5px]" />
-                      <span>Unlock Destiny Report</span>
+                      <span>Connect with Gitika Sharma</span>
                     </button>
                   </div>
                 </div>
