@@ -215,21 +215,10 @@ const Footer = () => {
         </div>
 
         {/* Footer Sub-Bar: Navigation & Copyright */}
-        <div className="pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] tracking-[0.2em] text-stone-500 uppercase relative z-10 font-bold lg:pr-24">
-          <p className="text-center md:text-left select-none text-stone-500/80">
+        <div className="pt-8 text-center text-[10px] tracking-[0.2em] text-stone-500 uppercase relative z-10 font-bold border-t border-[#3C2A21]/10 select-none">
+          <p className="text-stone-500/80">
             Copyright © {new Date().getFullYear()} AstroPower24. All rights reserved. Designed for Cosmic Alignment.
           </p>
-          <div className="flex flex-wrap gap-x-6 gap-y-2 justify-center">
-            <Link to="/about-us" className="hover:text-[#B38B36] transition-colors text-stone-500">About Us</Link>
-            <span className="text-[#B38B36] select-none opacity-40">•</span>
-            <Link to="/blog" className="hover:text-[#B38B36] transition-colors text-stone-500">Blog</Link>
-            <span className="text-[#B38B36] select-none opacity-40">•</span>
-            <Link to="/contact" className="hover:text-[#B38B36] transition-colors text-stone-500">Contact</Link>
-            <span className="text-[#B38B36] select-none opacity-40">•</span>
-            <a href="#" className="hover:text-[#B38B36] transition-colors text-stone-500">Privacy Policy</a>
-            <span className="text-[#B38B36] select-none opacity-40">•</span>
-            <a href="#" className="hover:text-[#B38B36] transition-colors text-stone-500">Terms of Service</a>
-          </div>
         </div>
 
       </div>

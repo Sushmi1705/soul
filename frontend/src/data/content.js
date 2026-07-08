@@ -230,7 +230,44 @@ export const TESTIMONIALS = [
   },
 ];
 
-export const JOURNAL = [];
+export const JOURNAL = [
+  {
+    id: "saturnian-crucible",
+    title: "The Saturnian Crucible: Navigating Your Sade Sati Journey",
+    category: "Astro Guidance",
+    date: "July 08, 2026",
+    excerpt: "Discover the deep karmic lessons of the Saturn transit. Learn how to transform this period of intense trials into a journey of profound self-mastery and destiny alignment.",
+    image: "https://images.unsplash.com/photo-1614730321146-b6fa6a46bcb4?auto=format&fit=crop&q=80",
+    content: "The transit of Saturn, particularly the seven-and-a-half-year period known as Sade Sati, is often met with apprehension. However, in the Vedic tradition, Saturn (Shani) is not a malevolent force, but the cosmic taskmaster of karma.\n\n[HIGHLIGHT: Sade Sati is not a punishment, but a spiritual alignment cycle designed to burn away superficial desires and anchor your soul in truth.]\n\n### The Three Phases of the Crucible\nThe transit occurs in three distinct phases, each targeting a different dimension of your life:\n1. The Rising Phase: Affects your mental peace, prompting introspection and shifting relationships.\n2. The Peak Phase: Directly impacts physical health, career status, and financial structures.\n3. The Setting Phase: Focuses on settling pending debts and guiding you toward your new baseline.\n\n[INFO: During Sade Sati, charity, discipline, and ego-surrender are the most potent remedies. Saturn rewards integrity and humbles pride.]\n\n### Simple Remedies for Saturnian Alignment\n* Pranayama & Meditation: Calm the nervous system to navigate Saturnian delays.\n* Saturday Charity: Feed crows or donate dark grains to align with Saturnian energies.\n* Mantra Japa: Recite the Shani Gayatri or Maha Mrityunjaya mantra to invoke inner strength."
+  },
+  {
+    id: "sacred-geometry",
+    title: "Sacred Geometry: The Mystical Blueprint of Numerology",
+    category: "Sacred Numbers",
+    date: "July 04, 2026",
+    excerpt: "Numbers are not merely symbols of quantity, but the geometric vibrations of the cosmos. Explore how your birth numbers outline your soul's blueprint.",
+    image: "https://images.unsplash.com/photo-1509228468518-180dd4864904?auto=format&fit=crop&q=80",
+    content: "From the spiral of a galaxy to the arrangement of seeds in a sunflower, the universe is governed by mathematical harmony. Numerology is the art of decoding this geometric language.\n\n[HIGHLIGHT: Your Life Path Number is the cosmic vibration that outlines your primary curriculum in this incarnation.]\n\n### The Power of Single Digits\nEach cardinal number possesses a distinct energetic vibration:\n* Number 1: The Pioneer — Initiator, leader, and independent force.\n* Number 5: The Voyager — Catalyst for change, freedom-seeker, and explorer.\n* Number 7: The Sage — Seeker of hidden truths, mystical researcher, and philosopher.\n\n[DID YOU KNOW?: Master Numbers 11, 22, and 33 are highly charged vibrational pathways representing double the potential and double the responsibility.]\n\n### Calculating Your Destiny Pathway\nTo compute your Life Path Number, reduce each unit of your birth date (day, month, year) to a single digit or a master number, then sum them and reduce once more."
+  },
+  {
+    id: "vastu-shastra-harmony",
+    title: "Vastu Shastra: Restoring Spatial Harmony to Your Abode",
+    category: "Vastu & Space",
+    date: "June 29, 2026",
+    excerpt: "Your living space is an extension of your energy body. Learn the principles of directional placement to invite wealth, health, and relationship harmony.",
+    image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80",
+    content: "Your home is not a static structure; it is a breathing energetic ecosystem. Vastu Shastra is the ancient Vedic science of architecture that aligns your dwelling with the five primal elements (Pancha Bhootas).\n\n[HIGHLIGHT: When a home is aligned with the cosmic directions, the resident experiences effortless flow, sound health, and abundance.]\n\n### The Five Core Elements & Directions\n* Northeast (Water): The portal of spiritual influx. Keep it light, clean, and open for meditation.\n* Southeast (Fire): The kitchen zone. Keeps health and financial vigor active.\n* Southwest (Earth): The master bedroom. Enhances stability and family relationships.\n\n[WARNING: Avoid placing heavy storage or restrooms in the Northeast zone. This blocks the incoming flow of positive cosmic energy (Jaivik Urja).]"
+  },
+  {
+    id: "nakshatras-mansions",
+    title: "Nakshatras: The 27 Mansions of the Lunar Soul",
+    category: "Vedic Astrology",
+    date: "June 22, 2026",
+    excerpt: "Beyond your zodiac sign lies the Nakshatras—the lunar constellations that govern your subconscious blueprint and ultimate destiny.",
+    image: "https://images.unsplash.com/photo-1462331940025-496dfbfc7564?auto=format&fit=crop&q=80",
+    content: "While Western astrology focuses heavily on the solar path, Vedic astrology centers on the Nakshatras—the 27 stellar mansions of the Moon. These constellations reveal the deepest layers of your subconscious mind and soul path.\n\n[HIGHLIGHT: Your Nakshatra (birth star) holds the keys to your psychological archetypes and spiritual gifts.]\n\n### The Three Universal Gunas in Nakshatras\nThe 27 Nakshatras are divided into three groups of nine, each vibrating with a specific Guna:\n1. Deva (Divine): Nakshatras that promote compassion, purity, and spiritual progress.\n2. Manushya (Human): Nakshatras focused on worldly action, creation, and relationships.\n3. Rakshasa (Demonic): Nakshatras representing transformation, intense energy, and boundaries."
+  }
+];
 
 export const formatINR = (n) =>
   new Intl.NumberFormat("en-IN", {

@@ -13,7 +13,11 @@ import {
   ArrowRight,
   Sparkles,
   Bookmark,
-  ChevronRight
+  ChevronRight,
+  Info,
+  AlertTriangle,
+  Award,
+  BookOpen
 } from "lucide-react";
 import { JOURNAL } from "@/data/content";
 
@@ -45,7 +49,6 @@ const BlogDetailPage = () => {
     fetchBlogs();
   }, []);
 
-  // Find current post
   const post = allBlogs.find((b) => String(b.id) === String(id));
 
   // Dynamic document title update (SEO)
@@ -59,7 +62,7 @@ const BlogDetailPage = () => {
     return (
       <div className="min-h-screen bg-[#FAF9F5] pt-32 pb-20 flex flex-col items-center justify-center text-[#725D46]">
         <div className="border-4 border-[#B38B36] border-t-transparent w-10 h-10 rounded-full animate-spin mb-4"></div>
-        <p className="text-sm tracking-wider uppercase font-semibold">Loading cosmic details...</p>
+        <p className="text-sm tracking-wider uppercase font-semibold">Loading editorial details...</p>
       </div>
     );
   }
@@ -83,7 +86,7 @@ const BlogDetailPage = () => {
     );
   }
 
-  // Calculate dynamic reading time (200 words per minute average)
+  // Calculate dynamic reading time
   const wordCount = post.content ? post.content.split(/\s+/).length : 100;
   const readingTime = Math.max(1, Math.ceil(wordCount / 200)) + " min read";
 
@@ -92,7 +95,7 @@ const BlogDetailPage = () => {
   const prevPost = currentIndex > 0 ? allBlogs[currentIndex - 1] : null;
   const nextPost = currentIndex < allBlogs.length - 1 ? allBlogs[currentIndex + 1] : null;
 
-  // Get related posts (up to 3, matching category or just other latest)
+  // Get related posts
   const relatedPosts = allBlogs
     .filter((b) => String(b.id) !== String(id))
     .sort((a, b) => {
@@ -102,7 +105,6 @@ const BlogDetailPage = () => {
     })
     .slice(0, 3);
 
-  // Social sharing handlers
   const shareUrl = window.location.href;
   const shareTitle = encodeURIComponent(post.title);
 
@@ -112,325 +114,475 @@ const BlogDetailPage = () => {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  return (
-    <div className="pt-28 pb-24 bg-[#FAF9F5] min-h-screen relative overflow-hidden">
+  // Custom Editorial Block Parser
+  const parseContent = (content) => {
+    if (!content) return [];
+    
+    const clean = content.replace(/\\n/g, '\n');
+    const lines = clean.split('\n');
+    const blocks = [];
+    let currentList = null;
+    
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i].trim();
+      if (!line) {
+        if (currentList) {
+          blocks.push(currentList);
+          currentList = null;
+        }
+        continue;
+      }
       
-      {/* Background celestial design highlights */}
-      <div className="absolute top-0 right-[-10%] w-[600px] h-[600px] rounded-full bg-[radial-gradient(circle,rgba(229,192,106,0.1),transparent_60%)] pointer-events-none" />
-      <div className="absolute top-1/2 left-[-10%] w-[500px] h-[500px] rounded-full bg-[radial-gradient(circle,rgba(179,139,54,0.06),transparent_60%)] pointer-events-none" />
-      <div className="absolute bottom-0 right-[-5%] w-[450px] h-[450px] rounded-full bg-[radial-gradient(circle,rgba(229,192,106,0.08),transparent_60%)] pointer-events-none" />
+      // Headings
+      if (line.startsWith('###')) {
+        if (currentList) { blocks.push(currentList); currentList = null; }
+        blocks.push({ type: 'h3', text: line.replace(/^###\s*/, '') });
+        continue;
+      }
+      if (line.startsWith('##')) {
+        if (currentList) { blocks.push(currentList); currentList = null; }
+        blocks.push({ type: 'h2', text: line.replace(/^##\s*/, '') });
+        continue;
+      }
+      
+      // Custom tags
+      if (line.startsWith('[HIGHLIGHT:') && line.endsWith(']')) {
+        if (currentList) { blocks.push(currentList); currentList = null; }
+        blocks.push({ type: 'highlight', text: line.substring(11, line.length - 1) });
+        continue;
+      }
+      if (line.startsWith('[INFO:') && line.endsWith(']')) {
+        if (currentList) { blocks.push(currentList); currentList = null; }
+        blocks.push({ type: 'info', text: line.substring(6, line.length - 1) });
+        continue;
+      }
+      if (line.startsWith('[DID YOU KNOW?:') && line.endsWith(']')) {
+        if (currentList) { blocks.push(currentList); currentList = null; }
+        blocks.push({ type: 'did-you-know', text: line.substring(15, line.length - 1) });
+        continue;
+      }
+      if (line.startsWith('[WARNING:') && line.endsWith(']')) {
+        if (currentList) { blocks.push(currentList); currentList = null; }
+        blocks.push({ type: 'warning', text: line.substring(9, line.length - 1) });
+        continue;
+      }
+      if (line.startsWith('[QUOTE:') && line.endsWith(']')) {
+        if (currentList) { blocks.push(currentList); currentList = null; }
+        blocks.push({ type: 'quote', text: line.substring(7, line.length - 1) });
+        continue;
+      }
 
-      {/* Decorative Orbits */}
-      <div className="absolute top-10 right-10 w-[450px] h-[450px] rounded-full border border-[#B38B36]/10 border-dashed animate-[spinSlow_120s_linear_infinite] pointer-events-none" />
-      <div className="absolute bottom-20 left-10 w-[350px] h-[350px] rounded-full border border-[#B38B36]/8 border-dotted animate-[spinSlowReverse_90s_linear_infinite] pointer-events-none" />
+      // Bullet List items
+      if (line.startsWith('*') || line.startsWith('•') || line.startsWith('-')) {
+        const itemText = line.replace(/^[*•\-]\s*/, '');
+        if (currentList && currentList.type === 'bullet') {
+          currentList.items.push(itemText);
+        } else {
+          if (currentList) { blocks.push(currentList); }
+          currentList = { type: 'bullet', items: [itemText] };
+        }
+        continue;
+      }
 
-      <div className="max-w-7xl mx-auto px-6 lg:px-12 relative z-20">
+      // Numbered List items
+      if (/^\d+\.\s/.test(line)) {
+        const itemText = line.replace(/^\d+\.\s*/, '');
+        if (currentList && currentList.type === 'number') {
+          currentList.items.push(itemText);
+        } else {
+          if (currentList) { blocks.push(currentList); }
+          currentList = { type: 'number', items: [itemText] };
+        }
+        continue;
+      }
+      
+      // Default paragraphs
+      if (currentList) { blocks.push(currentList); currentList = null; }
+      blocks.push({ type: 'paragraph', text: line });
+    }
+    
+    if (currentList) {
+      blocks.push(currentList);
+    }
+    
+    return blocks;
+  };
+
+  const parsedBlocks = parseContent(post.content);
+
+  return (
+    <div className="pt-24 pb-24 bg-[#FDFBF7] min-h-screen relative overflow-hidden">
+      
+      {/* Background radial overlays */}
+      <div className="absolute top-0 right-[-10%] w-[600px] h-[600px] bg-[radial-gradient(circle,rgba(229,192,106,0.06),transparent_60%)] pointer-events-none" />
+      <div className="absolute top-1/2 left-[-10%] w-[500px] h-[500px] bg-[radial-gradient(circle,rgba(74,14,27,0.03),transparent_60%)] pointer-events-none" />
+
+      <div className="max-w-5xl mx-auto px-6 lg:px-12 relative z-20">
         
-        {/* Navigation Breadcrumbs & Back Button */}
+        {/* Breadcrumb & Navigation */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-[#E5E1D8]/60 pb-6 mb-12">
-          {/* Breadcrumbs */}
-          <nav className="text-[10px] tracking-[0.15em] text-[#725D46] uppercase font-bold flex items-center gap-1.5">
+          <nav className="text-[10px] tracking-[0.2em] text-[#725D46] uppercase font-bold flex flex-wrap items-center gap-1.5">
             <Link to="/" className="hover:text-[#B38B36] transition-colors">Home</Link>
             <ChevronRight className="w-3 h-3 text-[#B38B36]/50" />
             <Link to="/blog" className="hover:text-[#B38B36] transition-colors">Blog</Link>
             <ChevronRight className="w-3 h-3 text-[#B38B36]/50" />
-            <span className="text-[#3C2A21] truncate max-w-[220px] inline-block">{post.title}</span>
+            <span className="text-[#3C2A21] truncate max-w-[200px] inline-block font-extrabold">{post.title}</span>
           </nav>
           
-          {/* Minimalist Back Button */}
           <button 
-            onClick={() => navigate(-1)}
+            onClick={() => navigate("/blog")}
             className="group inline-flex items-center gap-2 self-start text-[11px] tracking-[0.2em] font-extrabold text-[#3C2A21] hover:text-[#B38B36] uppercase transition-colors"
           >
-            <ArrowLeft className="w-3.5 h-3.5 transform group-hover:-translate-x-1.5 transition-transform duration-300" />
-            Back to Articles
+            <ArrowLeft className="w-3.5 h-3.5 transform group-hover:-translate-x-1 transition-transform" />
+            Back to Journal
           </button>
         </div>
 
-        {/* Hero Area: Premium Editorial Split */}
-        <div className="grid lg:grid-cols-12 gap-10 lg:gap-16 items-center mb-16">
-          {/* Left: Featured Image Banner */}
-          <div className="lg:col-span-7">
-            <div className="relative aspect-[16/10] overflow-hidden rounded-[2rem] border border-[#B38B36]/20 shadow-[0_30px_70px_rgba(179,139,54,0.15)] bg-white group">
-              <div className="absolute inset-0 bg-[#B38B36]/5 mix-blend-overlay z-10" />
-              <img 
-                src={post.image} 
-                alt={post.title} 
-                className="w-full h-full object-cover transition-transform duration-1000 ease-out group-hover:scale-103"
-                loading="lazy"
+        {/* HERO SECTION */}
+        <header className="space-y-6 mb-12 text-left">
+          <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#B38B36]/10 border border-[#B38B36]/20 text-[#B38B36] text-[10px] tracking-[0.2em] uppercase font-black">
+            <Bookmark className="w-3 h-3" />
+            {post.category}
+          </span>
+
+          <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl font-bold text-[#3C2A21] leading-[1.1] tracking-tight">
+            {post.title}
+          </h1>
+
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 border-y border-[#E5E1D8]/60 py-6">
+            
+            {/* Author details */}
+            <div className="flex items-center gap-3.5">
+              <img
+                src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80"
+                alt="Gitika Sharma"
+                className="w-11 h-11 rounded-full object-cover border border-[#B38B36]/20"
               />
+              <div className="text-left">
+                <div className="text-xs font-bold text-[#3C2A21] uppercase tracking-wider">Gitika Sharma</div>
+                <div className="flex items-center gap-3 text-[10px] text-stone-500 font-medium tracking-wide mt-0.5">
+                  <span className="flex items-center gap-1">
+                    <Calendar className="w-3 h-3" />
+                    {post.date}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Clock className="w-3 h-3" />
+                    {readingTime}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Share Controls */}
+            <div className="flex items-center gap-2">
+              <span className="text-[9px] tracking-wider uppercase text-stone-400 font-bold mr-1">Share:</span>
+              <a 
+                href={`https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-9 h-9 rounded-full border border-[#E5E1D8] flex items-center justify-center text-stone-600 hover:text-white hover:bg-[#3b5998] hover:border-[#3b5998] transition-all"
+                title="Facebook"
+              >
+                <Facebook className="w-3.5 h-3.5" />
+              </a>
+              <a 
+                href={`https://twitter.com/intent/tweet?url=${shareUrl}&text=${shareTitle}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-9 h-9 rounded-full border border-[#E5E1D8] flex items-center justify-center text-stone-600 hover:text-white hover:bg-black hover:border-black transition-all"
+                title="X"
+              >
+                <Twitter className="w-3.5 h-3.5" />
+              </a>
+              <a 
+                href={`https://www.linkedin.com/shareArticle?mini=true&url=${shareUrl}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-9 h-9 rounded-full border border-[#E5E1D8] flex items-center justify-center text-stone-600 hover:text-white hover:bg-[#0077b5] hover:border-[#0077b5] transition-all"
+                title="LinkedIn"
+              >
+                <Linkedin className="w-3.5 h-3.5" />
+              </a>
+              <button 
+                onClick={handleCopyLink}
+                className="w-9 h-9 rounded-full border border-[#E5E1D8] flex items-center justify-center text-stone-600 hover:text-[#B38B36] hover:border-[#B38B36] transition-all bg-white relative"
+                title="Copy Link"
+              >
+                <Link2 className="w-3.5 h-3.5" />
+                {copied && (
+                  <span className="absolute -top-9 left-1/2 -translate-x-1/2 bg-stone-900 text-white text-[8px] px-2 py-0.5 rounded shadow uppercase font-bold tracking-wider">
+                    Copied
+                  </span>
+                )}
+              </button>
             </div>
           </div>
+        </header>
 
-          {/* Right: Premium Article Header Details */}
-          <div className="lg:col-span-5 space-y-6 text-left">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#B38B36]/10 border border-[#B38B36]/20 text-[#B38B36] text-[10px] tracking-[0.2em] uppercase font-black shadow-sm">
-              <Bookmark className="w-3 h-3 text-[#B38B36]" />
-              {post.category}
-            </div>
-
-            <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl text-[#3C2A21] font-bold leading-tight tracking-wide">
-              {post.title}
-            </h1>
-
-            {/* Metadata Section */}
-            <div className="flex flex-wrap items-center gap-y-3 gap-x-6 text-xs text-[#725D46] border-y border-[#E5E1D8]/60 py-5 font-normal tracking-wide">
-              <div className="flex items-center gap-2">
-                <Calendar className="w-4 h-4 text-[#B38B36]" />
-                <span>{post.date}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Clock className="w-4 h-4 text-[#B38B36]" />
-                <span>{readingTime}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <User className="w-4 h-4 text-[#B38B36]" />
-                <span className="font-semibold text-[#3C2A21]">Gitika Sharma</span>
-              </div>
-            </div>
-
-            {/* Social Share Controls */}
-            <div className="space-y-3 text-left pt-2">
-              <span className="text-[10px] tracking-widest uppercase font-bold text-[#725D46]/70 block">Share Cosmic Insight</span>
-              <div className="flex items-center gap-3">
-                <a 
-                  href={`https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-10 h-10 rounded-full border border-[#E5E1D8] flex items-center justify-center text-stone-600 hover:text-white hover:bg-[#3b5998] hover:border-[#3b5998] transition-all duration-300 hover:scale-105 shadow-sm"
-                  title="Share on Facebook"
-                >
-                  <Facebook className="w-4 h-4" />
-                </a>
-                <a 
-                  href={`https://twitter.com/intent/tweet?url=${shareUrl}&text=${shareTitle}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-10 h-10 rounded-full border border-[#E5E1D8] flex items-center justify-center text-stone-600 hover:text-white hover:bg-black hover:border-black transition-all duration-300 hover:scale-105 shadow-sm"
-                  title="Share on X"
-                >
-                  <Twitter className="w-4 h-4" />
-                </a>
-                <a 
-                  href={`https://www.linkedin.com/shareArticle?mini=true&url=${shareUrl}&title=${shareTitle}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-10 h-10 rounded-full border border-[#E5E1D8] flex items-center justify-center text-stone-600 hover:text-white hover:bg-[#0077b5] hover:border-[#0077b5] transition-all duration-300 hover:scale-105 shadow-sm"
-                  title="Share on LinkedIn"
-                >
-                  <Linkedin className="w-4 h-4" />
-                </a>
-                <a 
-                  href={`https://api.whatsapp.com/send?text=${shareTitle}%20${shareUrl}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-10 h-10 rounded-full border border-[#E5E1D8] flex items-center justify-center text-stone-600 hover:text-white hover:bg-[#25D366] hover:border-[#25D366] transition-all duration-300 hover:scale-105 shadow-sm"
-                  title="Share on WhatsApp"
-                >
-                  <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M17.472 14.382c-.022-.08-.124-.12-.228-.168-.104-.047-.61-.3-1.05-.515-.436-.217-.61-.2-.828.028-.217.228-.756.985-.928 1.15-.17.169-.344.185-.572.08-.228-.1-.963-.354-1.836-1.134-.68-.607-1.138-1.355-1.27-1.583-.133-.228-.014-.351.1-.464.1-.1.228-.268.344-.4.116-.134.156-.228.228-.38.076-.153.036-.285-.02-.4-.055-.117-.507-1.22-.693-1.67-.184-.447-.367-.387-.507-.394-.13-.005-.28-.007-.43-.007-.15 0-.394.056-.6.282-.207.228-.79.774-.79 1.888s.81 2.2 1.925 2.35c.115.015 2.186 3.34 5.295 4.68.74.32 1.317.51 1.768.653.744.238 1.42.203 1.954.122.597-.09 1.837-.75 2.095-1.438.258-.687.258-1.275.18-1.385zM12.016 2.006c-5.503 0-10 4.496-10 10 0 1.758.46 3.47 1.333 4.98L2 22l5.23-1.37c1.47.8 3.11 1.22 4.786 1.22 5.5 0 10-4.496 10-10 0-5.504-4.5-10-10-10z"/>
-                  </svg>
-                </a>
-                <button 
-                  onClick={handleCopyLink}
-                  className="w-10 h-10 rounded-full border border-[#E5E1D8] flex items-center justify-center text-stone-600 hover:text-[#B38B36] hover:border-[#B38B36] transition-all duration-300 hover:scale-105 bg-white relative shadow-sm"
-                  title="Copy Article Link"
-                >
-                  <Link2 className="w-4 h-4" />
-                  {copied && (
-                    <span className="absolute -top-9 left-1/2 -translate-x-1/2 bg-stone-900 text-white text-[9px] px-2.5 py-1 rounded shadow-md uppercase tracking-wider font-extrabold">
-                      Copied
-                    </span>
-                  )}
-                </button>
-              </div>
-            </div>
-          </div>
+        {/* Large Featured Image */}
+        <div className="relative aspect-[21/9] overflow-hidden rounded-[2.5rem] shadow-[0_20px_50px_rgba(179,139,54,0.08)] border border-[#E5E1D8] mb-12">
+          <img 
+            src={post.image} 
+            alt={post.title} 
+            className="w-full h-full object-cover"
+            loading="lazy"
+          />
         </div>
 
-        {/* Floating Luxury Article Content Card Container */}
-        <div className="max-w-4xl mx-auto bg-white border border-[#E5E1D8]/60 shadow-[0_20px_50px_rgba(179,139,54,0.06)] rounded-[2.5rem] p-8 md:p-14 mb-16 relative z-10 text-left">
+        {/* CONTENT AREA */}
+        <div className="max-w-3xl mx-auto text-left">
           
-          {/* Excerpt Lead Block */}
+          {/* Excerpt Lead paragraph */}
           {post.excerpt && (
-            <div className="border-l-4 border-[#B38B36] pl-6 italic text-[#4A3B32] mb-10 text-lg md:text-xl leading-[1.7] font-medium text-left">
+            <p className="font-serif text-lg md:text-xl text-[#3C2A21] italic leading-relaxed border-l-2 border-[#B38B36] pl-5 mb-10 text-[#4A3C31] font-medium">
               {post.excerpt}
-            </div>
+            </p>
           )}
 
-          {/* Main Body Prose parsed paragraphs */}
-          <div className="prose prose-stone max-w-none text-[16px] md:text-[18px] text-[#3C2A21] leading-[1.85] font-normal tracking-wide space-y-6">
-            {(() => {
-              const cleanContent = post.content.replace(/\\n/g, '\n');
-              const paragraphs = cleanContent.includes('\n\n')
-                ? cleanContent.split(/\n\n+/)
-                : cleanContent.includes('\n')
-                  ? cleanContent.split(/\n+/)
-                  : [cleanContent];
-
-              return paragraphs.map((p, idx) => {
-                const pStr = p.trim();
-                if (!pStr) return null;
-
-                // Bulleted list item
-                if (pStr.startsWith('•') || pStr.startsWith('-')) {
-                  const items = pStr.split(/\n+/).map(item => item.replace(/^[•\-]\s*/, '').trim()).filter(Boolean);
+          {/* Main prose */}
+          <div className="prose prose-stone max-w-none text-base md:text-lg text-[#3C2A21]/90 leading-[1.8] tracking-normal font-sans space-y-6">
+            {parsedBlocks.map((block, idx) => {
+              switch (block.type) {
+                
+                case "paragraph":
+                  return <p key={idx} className="mb-6">{block.text}</p>;
+                
+                case "h2":
                   return (
-                    <ul key={idx} className="list-disc pl-6 mb-6 space-y-2.5 text-[#3C2A21] font-medium">
-                      {items.map((item, i) => <li key={i}>{item}</li>)}
-                    </ul>
+                    <h2 key={idx} className="font-serif text-2xl md:text-3xl text-[#3C2A21] mt-10 mb-4 font-bold tracking-wide leading-tight">
+                      {block.text}
+                    </h2>
                   );
-                }
 
-                // Numbered list item
-                if (/^\d+\.\s/.test(pStr)) {
-                  const items = pStr.split(/\n+/).map(item => item.replace(/^\d+\.\s*/, '').trim()).filter(Boolean);
+                case "h3":
                   return (
-                    <ol key={idx} className="list-decimal pl-6 mb-6 space-y-2.5 text-[#3C2A21] font-medium">
-                      {items.map((item, i) => <li key={i}>{item}</li>)}
-                    </ol>
+                    <h3 key={idx} className="font-serif text-xl md:text-2xl text-[#3C2A21] mt-8 mb-3 font-bold tracking-wide leading-tight">
+                      {block.text}
+                    </h3>
                   );
-                }
 
-                // Blockquote / Quote detection
-                if (pStr.startsWith('\"') && pStr.endsWith('\"')) {
+                case "highlight":
                   return (
-                    <blockquote key={idx} className="bg-[#FAF9F5] border-l-4 border-[#B38B36] p-6 rounded-r-xl italic my-8 text-stone-600 pl-8 leading-[1.8] font-light shadow-sm">
-                      {pStr}
+                    <div 
+                      key={idx} 
+                      className="bg-[#B38B36]/5 border-l-4 border-[#B38B36] p-6 rounded-r-2xl my-8 font-serif text-base md:text-lg text-[#3C2A21] leading-relaxed italic shadow-sm"
+                    >
+                      {block.text}
+                    </div>
+                  );
+
+                case "info":
+                  return (
+                    <div 
+                      key={idx} 
+                      className="bg-[#4A0E1B]/5 border-l-4 border-[#4A0E1B] p-6 rounded-r-2xl my-8 text-sm text-[#3C2A21]/95 leading-relaxed flex gap-3.5 shadow-sm"
+                    >
+                      <Info className="w-5 h-5 text-[#4A0E1B] shrink-0 mt-0.5" />
+                      <div>{block.text}</div>
+                    </div>
+                  );
+
+                case "did-you-know":
+                  return (
+                    <div 
+                      key={idx} 
+                      className="bg-[#E5C06A]/10 border border-[#E5C06A]/30 p-6 rounded-2xl my-8 text-sm text-[#3C2A21]/95 leading-relaxed flex gap-3.5 shadow-sm"
+                    >
+                      <Sparkles className="w-5 h-5 text-[#B38B36] shrink-0 mt-0.5 animate-pulse" />
+                      <div>
+                        <strong className="text-[#B38B36] block mb-1 uppercase font-bold tracking-wider text-[10px]">Did you know?</strong>
+                        {block.text}
+                      </div>
+                    </div>
+                  );
+
+                case "warning":
+                  return (
+                    <div 
+                      key={idx} 
+                      className="bg-red-50/60 border-l-4 border-red-500/70 p-6 rounded-r-2xl my-8 text-sm text-red-950 leading-relaxed flex gap-3.5 shadow-sm"
+                    >
+                      <AlertTriangle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
+                      <div>
+                        <strong className="text-red-800 block mb-1 uppercase font-bold tracking-wider text-[10px]">Important Note</strong>
+                        {block.text}
+                      </div>
+                    </div>
+                  );
+
+                case "quote":
+                  return (
+                    <blockquote 
+                      key={idx} 
+                      className="relative py-8 px-10 border-t border-b border-[#B38B36]/20 my-10 text-center font-serif text-lg md:text-xl text-[#3C2A21] italic leading-relaxed"
+                    >
+                      <div className="absolute top-1 left-4 text-[#B38B36]/15 font-serif text-8xl select-none leading-none">“</div>
+                      <p className="relative z-10">{block.text}</p>
                     </blockquote>
                   );
-                }
 
-                // Heading detection
-                const isHeading = pStr.length < 90 && !pStr.endsWith('.') && !/^[•\-]\s*/.test(pStr) && !/^\d+\.\s/.test(pStr);
-                if (isHeading) {
+                case "bullet":
                   return (
-                    <h4 key={idx} className="font-serif text-2xl md:text-3xl text-[#3C2A21] mt-12 mb-6 font-bold tracking-wide leading-snug border-b border-[#E5E1D8]/40 pb-2">
-                      {pStr}
-                    </h4>
+                    <ul key={idx} className="list-none pl-1 mb-6 space-y-3 font-medium">
+                      {block.items.map((item, i) => (
+                        <li key={i} className="flex items-start gap-3 text-sm sm:text-base">
+                          <span className="text-[#B38B36] mt-1 text-xs select-none">✦</span>
+                          <span className="text-[#3C2A21]/90">{item}</span>
+                        </li>
+                      ))}
+                    </ul>
                   );
-                }
 
-                // Normal paragraph
-                return (
-                  <p key={idx} className="text-[#3C2A21]/95 mb-6 leading-relaxed">
-                    {pStr}
-                  </p>
-                );
-              });
-            })()}
+                case "number":
+                  return (
+                    <ol key={idx} className="list-none pl-1 mb-6 space-y-3 font-medium">
+                      {block.items.map((item, i) => (
+                        <li key={i} className="flex items-start gap-3.5 text-sm sm:text-base">
+                          <span className="w-5 h-5 rounded-full bg-[#B38B36]/10 text-[#B38B36] border border-[#B38B36]/20 flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5">
+                            {i + 1}
+                          </span>
+                          <span className="text-[#3C2A21]/90">{item}</span>
+                        </li>
+                      ))}
+                    </ol>
+                  );
+
+                default:
+                  return null;
+              }
+            })}
           </div>
+
+          {/* AUTHOR SECTION */}
+          <div className="bg-white border border-[#E5E1D8] rounded-[2.5rem] p-8 sm:p-10 my-16 shadow-[0_15px_40px_rgba(179,139,54,0.05)] relative overflow-hidden flex flex-col md:flex-row gap-8 items-start md:items-center">
+            {/* Ambient glows */}
+            <div className="absolute top-0 right-0 w-24 h-24 bg-[#B38B36]/5 rounded-full blur-xl pointer-events-none" />
+
+            <div className="shrink-0 flex flex-col items-center gap-3">
+              <img
+                src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80"
+                alt="Gitika Sharma"
+                className="w-24 h-24 rounded-full object-cover border-2 border-[#B38B36]/20"
+              />
+              <div className="inline-flex items-center gap-1 bg-[#B38B36]/10 border border-[#B38B36]/20 px-2.5 py-0.5 rounded-full text-[9px] tracking-wider uppercase font-extrabold text-[#B38B36]">
+                <Award className="w-3 h-3 text-[#B38B36]" />
+                15+ Yrs Exp
+              </div>
+            </div>
+
+            <div className="space-y-4 flex-1 text-left">
+              <div>
+                <h4 className="font-serif text-xl font-bold text-[#3C2A21]">Gitika Sharma</h4>
+                <p className="text-xs text-[#B38B36] uppercase tracking-wider font-semibold mt-0.5">Vastu Acharya & Vedic Astrologer</p>
+              </div>
+              <p className="text-xs text-stone-500 leading-relaxed font-light">
+                Gitika Sharma is the principal mentor at AstroPower24 Vedic Academy. She integrates astrological matrices, numerology coordinates, and spatial Vastu configurations to enable absolute life alignment and harmony.
+              </p>
+              
+              <div className="flex flex-wrap gap-1.5 pt-1">
+                {["Vedic Astrology", "Vastu Shastra", "Numerology", "Karmic Remedies"].map((pill) => (
+                  <span key={pill} className="bg-[#FAF9F5] border border-[#E5E1D8]/80 text-[#725D46] px-2.5 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-wider">
+                    {pill}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* CALL TO ACTION */}
+          <div className="bg-[#3C2A21] rounded-[2.5rem] p-8 sm:p-12 text-center text-white relative overflow-hidden border border-[#B38B36]/20 shadow-xl mb-16">
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full border border-white/5 opacity-20 pointer-events-none" />
+            <div className="relative z-10 space-y-6">
+              <span className="text-[10px] tracking-[0.4em] uppercase text-[#E5C06A] font-bold block">One-on-One Session</span>
+              <h3 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold max-w-lg mx-auto leading-snug">
+                Still Looking for Personalized Guidance?
+              </h3>
+              <p className="text-stone-300 text-xs sm:text-sm max-w-md mx-auto leading-relaxed font-light">
+                Unlock custom cosmic blueprints, Vastu mapping, and career destiny keys in a private online consultation with Gitika Sharma.
+              </p>
+              <Link
+                to="/payment"
+                className="inline-flex items-center justify-center px-8 py-3.5 bg-gradient-to-r from-[#BF953F] via-[#FCF6BA] to-[#B38728] text-[#3C2A21] text-xs tracking-widest uppercase font-bold rounded-full hover:shadow-lg transition-all"
+              >
+                Book Session Now
+              </Link>
+            </div>
+          </div>
+
+          {/* Adjacent Article Links */}
+          <div className="border-t border-b border-[#E5E1D8]/60 py-6 mb-16 flex justify-between items-center gap-6 text-xs font-bold uppercase tracking-wider text-stone-500">
+            <div>
+              {prevPost ? (
+                <Link to={`/blog/${prevPost.id}`} className="hover:text-[#B38B36] transition-colors flex items-center gap-1.5">
+                  <ArrowLeft className="w-3.5 h-3.5" /> Previous
+                </Link>
+              ) : (
+                <span className="opacity-30 cursor-not-allowed flex items-center gap-1.5">
+                  <ArrowLeft className="w-3.5 h-3.5" /> First
+                </span>
+              )}
+            </div>
+            <div className="h-4 w-px bg-[#E5E1D8]/60 shrink-0" />
+            <div>
+              {nextPost ? (
+                <Link to={`/blog/${nextPost.id}`} className="hover:text-[#B38B36] transition-colors flex items-center gap-1.5">
+                  Next <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
+              ) : (
+                <span className="opacity-30 cursor-not-allowed flex items-center gap-1.5">
+                  Latest <ArrowRight className="w-3.5 h-3.5" />
+                </span>
+              )}
+            </div>
+          </div>
+
         </div>
 
-        {/* Adjacent Navigation (Prev / Next Article) */}
-        <div className="max-w-4xl mx-auto border-t border-b border-[#E5E1D8]/60 py-8 mb-20 flex justify-between items-center gap-6">
-          <div>
-            {prevPost ? (
-              <Link 
-                to={`/blog/${prevPost.id}`}
-                className="group flex flex-col gap-1.5 text-left"
-              >
-                <span className="text-[10px] tracking-widest uppercase text-[#725D46]/70 font-extrabold flex items-center gap-1.5 group-hover:text-[#B38B36] transition-colors duration-300">
-                  <ArrowLeft className="w-3 h-3 transform group-hover:-translate-x-0.5 transition-transform" /> Previous Article
-                </span>
-                <span className="font-serif text-sm md:text-base text-[#3C2A21] font-bold group-hover:text-[#B38B36] transition-colors duration-300 line-clamp-1 max-w-[250px] md:max-w-[320px]">
-                  {prevPost.title}
-                </span>
-              </Link>
-            ) : (
-              <div className="opacity-30 flex flex-col gap-1.5 text-left select-none">
-                <span className="text-[10px] tracking-widest uppercase text-[#725D46]/70 font-bold flex items-center gap-1.5">
-                  <ArrowLeft className="w-3 h-3" /> First Article
-                </span>
-                <span className="font-serif text-sm md:text-base text-[#3C2A21] font-bold line-clamp-1">
-                  Beginner's Threshold
-                </span>
-              </div>
-            )}
-          </div>
-
-          <div className="h-10 w-px bg-[#E5E1D8]/60 shrink-0" />
-
-          <div>
-            {nextPost ? (
-              <Link 
-                to={`/blog/${nextPost.id}`}
-                className="group flex flex-col gap-1.5 text-right items-end"
-              >
-                <span className="text-[10px] tracking-widest uppercase text-[#725D46]/70 font-extrabold flex items-center gap-1.5 group-hover:text-[#B38B36] transition-colors duration-300">
-                  Next Article <ArrowRight className="w-3 h-3 transform group-hover:translate-x-0.5 transition-transform" />
-                </span>
-                <span className="font-serif text-sm md:text-base text-[#3C2A21] font-bold group-hover:text-[#B38B36] transition-colors duration-300 line-clamp-1 max-w-[250px] md:max-w-[320px]">
-                  {nextPost.title}
-                </span>
-              </Link>
-            ) : (
-              <div className="opacity-30 flex flex-col gap-1.5 text-right items-end select-none">
-                <span className="text-[10px] tracking-widest uppercase text-[#725D46]/70 font-bold flex items-center gap-1.5">
-                  Latest Article <ArrowRight className="w-3 h-3" />
-                </span>
-                <span className="font-serif text-sm md:text-base text-[#3C2A21] font-bold line-clamp-1">
-                  Reached the Zenith
-                </span>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Premium Related Blogs Section */}
+        {/* RELATED CONTENT */}
         {relatedPosts.length > 0 && (
           <div className="border-t border-[#E5E1D8]/60 pt-16">
             <div className="flex items-center gap-3 mb-4">
               <span className="h-px w-10 bg-[#B38B36]" />
-              <span className="text-[11px] tracking-[0.4em] uppercase text-[#725D46] font-bold">
-                Related Wisdom
-              </span>
+              <span className="text-[10px] tracking-[0.4em] uppercase text-[#725D46] font-bold">Related Wisdom</span>
             </div>
             
-            <h2 className="font-serif text-3xl text-[#3C2A21] font-bold mb-12 text-left">
-              Writings of similar alignment
+            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-[#3C2A21] mb-12 text-left">
+              Continue reading
             </h2>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {relatedPosts.map((rel) => {
-                const dateObj = new Date(rel.date);
-                const day = isNaN(dateObj.getTime()) ? "08" : String(dateObj.getDate()).padStart(2, '0');
-                const month = isNaN(dateObj.getTime()) ? "Jun" : dateObj.toLocaleString('default', { month: 'short' });
-
                 return (
                   <Link 
                     key={rel.id}
                     to={`/blog/${rel.id}`}
-                    className="group bg-white border border-[#E5E1D8] rounded-2xl overflow-hidden hover:-translate-y-1.5 hover:shadow-[0_20px_50px_-20px_rgba(179,139,54,0.15)] hover:border-[#B38B36]/30 transition-all duration-500 flex flex-col justify-between"
+                    className="group bg-white border border-[#E5E1D8] rounded-2xl overflow-hidden hover:-translate-y-1 hover:shadow-[0_15px_30px_rgba(179,139,54,0.06)] hover:border-[#B38B36]/30 transition-all duration-500 flex flex-col justify-between"
                   >
                     <div>
-                      <div className="relative overflow-hidden h-52">
-                        {/* Date Box */}
-                        <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-sm z-10 px-3 py-1.5 text-center shadow-md border border-[#E5E1D8]/50">
-                          <span className="block text-lg font-bold text-[#3C2A21] leading-none">{day}</span>
-                          <span className="block text-[10px] uppercase tracking-wider text-[#725D46] mt-0.5">{month}</span>
-                        </div>
+                      <div className="relative aspect-[16/10] overflow-hidden bg-stone-100 border-b border-[#E5E1D8]/60">
                         <img
                           src={rel.image}
                           alt={rel.title}
-                          className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-103"
+                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-103"
                           loading="lazy"
                         />
+                        <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-2.5 py-0.5 rounded-full text-[8px] tracking-wider uppercase font-black text-[#B38B36] border border-[#E5E1D8]/40">
+                          {rel.category}
+                        </div>
                       </div>
-                      <div className="p-6 text-left">
-                        <span className="text-[9px] uppercase tracking-widest text-[#B38B36] font-extrabold block mb-2">{rel.category}</span>
-                        <h3 className="font-serif text-lg text-[#3C2A21] mb-3 leading-snug group-hover:text-[#B38B36] transition-colors line-clamp-2 font-bold">
+                      <div className="p-5 text-left">
+                        <h3 className="font-serif text-base text-[#3C2A21] mb-2 leading-snug group-hover:text-[#B38B36] transition-colors line-clamp-2 font-bold">
                           {rel.title}
                         </h3>
-                        <p className="text-xs text-[#725D46] leading-relaxed line-clamp-3 font-light">
+                        <p className="text-xs text-stone-500 leading-relaxed line-clamp-3 font-light">
                           {rel.excerpt}
                         </p>
                       </div>
                     </div>
-                    <div className="p-6 pt-0 text-left">
-                      <div className="inline-flex items-center gap-2 text-[10px] tracking-[0.25em] uppercase text-[#B38B36] font-bold">
-                        Read article
-                        <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />
+                    <div className="p-5 pt-0 text-left">
+                      <div className="inline-flex items-center gap-1.5 text-[9px] tracking-[0.25em] uppercase text-[#B38B36] font-bold">
+                        Read story
+                        <ArrowRight className="w-3 h-3 transform group-hover:translate-x-0.5 transition-transform" />
                       </div>
                     </div>
                   </Link>

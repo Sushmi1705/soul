@@ -19,6 +19,19 @@ const Panchang = () => {
   const [modalSearch, setModalSearch] = useState("");
   const [visibleLimit, setVisibleLimit] = useState(150);
   const [choghadiyaTab, setChoghadiyaTab] = useState("day");
+  const [activeTooltip, setActiveTooltip] = useState(null);
+
+  const parseLocalTimeToDecimal = (timeStr) => {
+    if (!timeStr) return 0;
+    const match = timeStr.match(/(\d+):(\d+)\s*(AM|PM)/i);
+    if (!match) return 0;
+    let hrs = parseInt(match[1], 10);
+    const mins = parseInt(match[2], 10);
+    const period = match[3].toUpperCase();
+    if (period === "PM" && hrs !== 12) hrs += 12;
+    if (period === "AM" && hrs === 12) hrs = 0;
+    return hrs + mins / 60.0;
+  };
 
   // Searchable Dropdown States
   const [searchQuery, setSearchQuery] = useState("");
@@ -160,6 +173,7 @@ const Panchang = () => {
   const statusStyle = data ? getStatusStyle(data.status.color) : getStatusStyle("yellow");
 
   const circumference = 251.32;
+  const innerCircumference = 188.5;
 
   // Filter cities for search
   const filteredCities = useMemo(() => {
@@ -170,6 +184,46 @@ const Panchang = () => {
       c.formatted.toLowerCase().includes(query)
     );
   }, [apiCities, modalSearch]);
+
+  const dialElements = useMemo(() => {
+    if (!data || loading) return null;
+    
+    // Parse time
+    const currentTimeDec = parseLocalTimeToDecimal(data.local_time);
+    const timeRad = (currentTimeDec / 24.0) * 2 * Math.PI - Math.PI / 2;
+    const timeDot = {
+      x: 50 + 30 * Math.cos(timeRad),
+      y: 50 + 30 * Math.sin(timeRad)
+    };
+
+    // Abhijit start and end angles
+    const abhijitStartDec = data.abhijit.start_decimal;
+    const abhijitEndDec = abhijitStartDec + 0.8;
+    const abhijitStartRad = (abhijitStartDec / 24.0) * 2 * Math.PI - Math.PI / 2;
+    const abhijitEndRad = (abhijitEndDec / 24.0) * 2 * Math.PI - Math.PI / 2;
+
+    // Rahu start and end angles
+    const rahuStartDec = data.rahu_kaal.start_decimal;
+    const rahuEndDec = rahuStartDec + data.rahu_kaal.length_decimal;
+    const rahuStartRad = (rahuStartDec / 24.0) * 2 * Math.PI - Math.PI / 2;
+    const rahuEndRad = (rahuEndDec / 24.0) * 2 * Math.PI - Math.PI / 2;
+
+    return {
+      timeDot,
+      abhijit: {
+        startX: 50 + 30 * Math.cos(abhijitStartRad),
+        startY: 50 + 30 * Math.sin(abhijitStartRad),
+        endX: 50 + 30 * Math.cos(abhijitEndRad),
+        endY: 50 + 30 * Math.sin(abhijitEndRad)
+      },
+      rahu: {
+        startX: 50 + 30 * Math.cos(rahuStartRad),
+        startY: 50 + 30 * Math.sin(rahuStartRad),
+        endX: 50 + 30 * Math.cos(rahuEndRad),
+        endY: 50 + 30 * Math.sin(rahuEndRad)
+      }
+    };
+  }, [data, loading]);
 
   const handleScroll = (e) => {
     const { scrollTop, scrollHeight, clientHeight } = e.target;
@@ -370,7 +424,10 @@ const Panchang = () => {
             {data && !loading && (
               <div className="flex flex-col gap-4 items-start">
                 <button 
-                  onClick={() => navigate("/panchang")}
+                  onClick={() => {
+                    const todayStr = new Date().toISOString().split('T')[0];
+                    navigate(`/panchang?city=${encodeURIComponent(city)}&date=${todayStr}`);
+                  }}
                   className="bg-[#B38B36] hover:bg-[#8E6B23] text-white px-8 py-3.5 rounded-full text-[10px] tracking-widest uppercase font-extrabold shadow-md hover:shadow-lg transition-all active:scale-95 transform cursor-pointer border border-[#E5C06A]/30 flex items-center gap-2"
                 >
                   <Sparkles className="w-3.5 h-3.5" />
@@ -385,47 +442,24 @@ const Panchang = () => {
             <div className="relative w-full max-w-[450px] bg-[#FDFBF7] border border-[#E5E1D8] rounded-2xl p-8 flex flex-col items-center justify-center shadow-md">
               <div className="relative w-full aspect-square flex items-center justify-center">
                 <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
+                  {/* Outer Ring: Day/Night Cycle */}
                   <circle cx="50" cy="50" r="40" fill="transparent" stroke="#1E293B" strokeWidth="12" />
                   {data && !loading && (
-                    <>
-                      <circle 
-                        cx="50" 
-                        cy="50" 
-                        r="40" 
-                        fill="transparent" 
-                        stroke="#E67E22" 
-                        strokeWidth="12" 
-                        strokeDasharray={`${(data.day_length_decimal / 24.0) * circumference} ${circumference}`}
-                        strokeDashoffset={-(data.sunrise_decimal / 24.0) * circumference}
-                        className="transition-all duration-1000 ease-out"
-                      />
-                      <circle 
-                        cx="50" 
-                        cy="50" 
-                        r="40" 
-                        fill="transparent" 
-                        stroke="#84CC16" 
-                        strokeWidth="14" 
-                        strokeDasharray={`${(0.8 / 24.0) * circumference} ${circumference}`}
-                        strokeDashoffset={-(data.abhijit.start_decimal / 24.0) * circumference}
-                        className="transition-all duration-1000 ease-out"
-                      />
-                      <circle 
-                        cx="50" 
-                        cy="50" 
-                        r="40" 
-                        fill="transparent" 
-                        stroke="#C2410C" 
-                        strokeWidth="14" 
-                        strokeDasharray={`${(data.rahu_kaal.length_decimal / 24.0) * circumference} ${circumference}`}
-                        strokeDashoffset={-(data.rahu_kaal.start_decimal / 24.0) * circumference}
-                        className="transition-all duration-1000 ease-out"
-                      />
-                    </>
+                    <circle 
+                      cx="50" 
+                      cy="50" 
+                      r="40" 
+                      fill="transparent" 
+                      stroke="#E67E22" 
+                      strokeWidth="12" 
+                      strokeDasharray={`${(data.day_length_decimal / 24.0) * circumference} ${circumference}`}
+                      strokeDashoffset={-(data.sunrise_decimal / 24.0) * circumference}
+                      className="transition-all duration-1000 ease-out"
+                    />
                   )}
                 </svg>
 
-                <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+                <div className="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none">
                   <div className="text-[10px] tracking-[0.3em] uppercase text-[#725D46] mb-1">Now in</div>
                   <div className="font-serif text-2xl text-[#3C2A21] font-bold">{city.split(',')[0]}</div>
                   {data && !loading && (
@@ -436,31 +470,30 @@ const Panchang = () => {
 
               {/* Legend Grid Displaying Percentages */}
               {data && !loading && data.percentages && (
-                <div className="grid grid-cols-2 gap-x-6 gap-y-3 mt-6 w-full max-w-[340px] border-t border-[#E5E1D8]/60 pt-5 text-stone-700 text-xs font-semibold text-left">
-                  <div className="flex items-center gap-2">
-                    <span className="w-2.5 h-2.5 rounded-full bg-[#E67E22] shrink-0" />
-                    <span>Day Time ({Math.round(data.percentages.day_time)}%)</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="w-2.5 h-2.5 rounded-full bg-[#1E293B] shrink-0" />
-                    <span>Night Time ({Math.round(data.percentages.night_time)}%)</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="w-2.5 h-2.5 rounded-full bg-[#C2410C] shrink-0" />
-                    <span>Rahu Kaal ({Math.round(data.percentages.rahu_kaal)}%)</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="w-2.5 h-2.5 rounded-full bg-[#84CC16] shrink-0" />
-                    <span>Abhijit ({Math.round(data.percentages.abhijit)}%)</span>
+                <div className="mt-8 w-full max-w-[360px] border-t border-[#E5E1D8]/65 pt-6 text-[#3C2A21] text-[11px] font-medium leading-normal">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="flex items-center gap-2.5 bg-[#FAF6EE] border border-[#E5E1D8]/30 px-3 py-2.5 rounded-xl">
+                      <span className="w-3 h-3 rounded-full bg-[#E67E22] shrink-0 shadow-sm" />
+                      <div className="text-left">
+                        <span className="text-[#3C2A21] font-bold block text-xs">Day Time</span>
+                        <span className="text-[10px] text-stone-500 font-mono font-semibold">{Math.round(data.percentages.day_time)}% of day</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2.5 bg-stone-100/50 border border-stone-200/40 px-3 py-2.5 rounded-xl">
+                      <span className="w-3 h-3 rounded-full bg-[#1E293B] shrink-0 shadow-sm" />
+                      <div className="text-left">
+                        <span className="text-[#3C2A21] font-bold block text-xs">Night Time</span>
+                        <span className="text-[10px] text-stone-500 font-mono font-semibold">{Math.round(data.percentages.night_time)}% of day</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}
-
             </div>
           </div>
-          
+
+          </div>
         </div>
-      </div>
 
       {/* View More Modal */}
       <AnimatePresence>

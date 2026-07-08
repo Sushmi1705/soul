@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ShoppingBag, Menu, X, ChevronDown } from "lucide-react";
+import { ShoppingBag, Menu, X, ChevronDown, User } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { NAV_LINKS } from "@/data/content";
 import { Link } from "react-router-dom";
@@ -21,7 +21,7 @@ const Header = () => {
               <img 
                 src="/astropower-logo.png" 
                 alt="AstroPower 24" 
-                className="h-full w-auto object-contain transition-transform duration-300 origin-left transform scale-[1.5] translate-y-[4px] md:scale-[1.65] md:translate-y-[7px] group-hover:scale-[1.55] md:group-hover:scale-[1.7]" 
+                className="h-full w-auto object-contain transition-transform duration-300 origin-left transform scale-[1.75] translate-y-[8px] md:scale-[1.9] md:translate-y-[11px] group-hover:scale-[1.8] md:group-hover:scale-[1.95]" 
               />
           </Link>
         </div>
@@ -99,6 +99,15 @@ const Header = () => {
             )}
           </button>
 
+          {/* Profile / Orders Icon */}
+          <Link
+            to="/my-orders"
+            className="relative text-[#3C2A21] hover:text-[#D4AF37] transition-all duration-300 p-2 rounded-full hover:bg-[#D4AF37]/5 flex items-center justify-center"
+            title="My Orders"
+          >
+            <User className="w-5 h-5 md:w-6 md:h-6" strokeWidth={1.5} />
+          </Link>
+
           {/* Connect Now Button */}
           <Link
             to="/contact"
@@ -154,8 +163,15 @@ const Header = () => {
               </div>
             ))}
             <Link
+              to="/my-orders"
+              className="mt-6 block text-center py-3.5 border border-[#D4AF37]/40 text-[#3C2A21] text-xs tracking-[0.2em] uppercase font-bold hover:bg-[#D4AF37]/5"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              My Orders
+            </Link>
+            <Link
               to="/contact"
-              className="mt-8 block text-center py-4 bg-gradient-to-r from-[#BF953F] via-[#FCF6BA] to-[#B38728] text-[#3C2A21] shadow-xl text-xs tracking-[0.2em] uppercase font-bold"
+              className="mt-4 block text-center py-4 bg-gradient-to-r from-[#BF953F] via-[#FCF6BA] to-[#B38728] text-[#3C2A21] shadow-xl text-xs tracking-[0.2em] uppercase font-bold"
               onClick={() => setMobileMenuOpen(false)}
             >
               Contact Us

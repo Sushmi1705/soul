@@ -30,7 +30,7 @@ import requests
 from timezonefinder import TimezoneFinder
 import libephemeris as swe
 from report_templates import build_personalized_section
-
+from services import RazorpayService, BookingService, PaymentService
 
 # Initialize timezone finder globally
 tf_finder = TimezoneFinder()
@@ -549,6 +549,8 @@ async def import_docx(file: UploadFile = File(...), admin: str = Depends(get_cur
 
 class HoroscopeCreate(BaseModel):
     name: str = "Seeker"
+    phone: str = ""
+    email: str = ""
     dob: str
     tob: str
     pob: str
@@ -556,6 +558,13 @@ class HoroscopeCreate(BaseModel):
     tab: str = "pending-karma"
     partnerName: str = ""
     partnerDob: str = ""
+    partnerTob: str = ""
+    partnerPob: str = ""
+    industry: str = ""
+    careerFocus: str = ""
+    spiritualQuest: str = ""
+    energyLevel: str = ""
+    wellnessFocus: str = ""
 
 class HoroscopeUnlock(BaseModel):
     report_id: str
@@ -566,6 +575,15 @@ class HoroscopeUnlock(BaseModel):
 
 class OrderCreate(BaseModel):
     report_id: str
+
+class BookingOrderCreate(BaseModel):
+    consultationType: str
+    date: str
+    slot: str
+
+class BookingConfirmRequest(BaseModel):
+    booking: dict
+    payment: dict
 
 # Lists of phrases for unique paragraph building
 RASIS = ["Mesha (Aries)", "Vrishabha (Taurus)", "Mithuna (Gemini)", "Karka (Cancer)", "Simha (Leo)", "Kanya (Virgo)", "Tula (Libra)", "Vrischika (Scorpio)", "Dhanu (Sagittarius)", "Makara (Capricorn)", "Kumbha (Aquarius)", "Meena (Pisces)"]
@@ -852,7 +870,10 @@ def get_seeded_paragraph(rng, key):
     parts = [rng.choice(pool) for pool in pools]
     return "".join(parts)
 
-def generate_unique_horoscope(name: str, dob: str, tob: str, pob: str = "", tab: str = "pending-karma", partner_name: str = "", partner_dob: str = ""):
+def generate_unique_horoscope(name: str, dob: str, tob: str, pob: str = "", tab: str = "pending-karma", 
+                              partner_name: str = "", partner_dob: str = "", partner_tob: str = "", partner_pob: str = "",
+                              industry: str = "", career_focus: str = "", spiritual_quest: str = "",
+                              energy_level: str = "", wellness_focus: str = ""):
     name = name.strip() if (name and name.strip()) else "Seeker"
     # Build seed with date-based entropy so the same person gets a different report each day
     now_tag = datetime.now(timezone.utc).strftime("%Y-%m-%d-%H")
@@ -1026,17 +1047,51 @@ You must return a single, valid JSON object containing exactly the keys below. D
         persona = rng.choice(PERSONAS)
         tone = rng.choice(TONES)
         if tab == "pending-karma":
-            focus = "Uncovering unresolved past-life debts, recurring karmic cycles, ancestral patterns, and Saturn/Ketu lesson alignment."
+            focus = f"Uncovering unresolved past-life debts, recurring karmic cycles, ancestral patterns, and Saturn/Ketu lesson alignment, specifically focusing on Saturn in {planetary_positions.get('Saturn', 'Aries')} and Ketu in {planetary_positions.get('Ketu', 'Aries')}."
+            life_report_format = """
+    "karma_summary": "Detailed Pending Karma Summary (2-3 detailed paragraphs)...",
+    "karmic_lessons": "Detailed Karmic Lessons explaining how Saturn placement influences lessons (2-3 detailed paragraphs)...",
+    "past_life_influence": "Detailed Past Life Influence aspects (2-3 detailed paragraphs)...",
+    "current_karma": "Detailed Current Karma implications (2-3 detailed paragraphs)...",
+    "remedies": "Detailed Vedic Remedies and practices (2-3 detailed paragraphs)..."
+"""
         elif tab == "karmic-connections":
-            focus = f"Exploring deep spiritual and karmic relationship bonds, mutual soul agreements, and dynamic compatibility with partner {partner_name} (born {partner_dob})."
+            focus = f"Exploring deep spiritual and karmic relationship bonds, mutual soul agreements, and dynamic compatibility with partner {partner_name} (born {partner_dob}, time: {partner_tob}, place: {partner_pob}). Evaluate synastry based on their Moon signs, Ascendants, and Venus/Mars alignments."
+            life_report_format = """
+    "relationship_karma": "Detailed Relationship Karma analysis between both people (2-3 detailed paragraphs)...",
+    "soul_contract": "Detailed Soul Contract explanation (2-3 detailed paragraphs)...",
+    "karmic_bond": "Detailed Karmic Bond and connection origins (2-3 detailed paragraphs)...",
+    "emotional_compatibility": "Detailed Emotional Compatibility matching their moon signs/nakshatras (2-3 detailed paragraphs)...",
+    "lessons_together": "Detailed Lessons Together and growth path (2-3 detailed paragraphs)..."
+"""
         elif tab == "soul-purpose":
-            focus = "Discovering your true calling, life mission, and ultimate spiritual destiny."
+            focus = f"Discovering your true calling, life mission, and ultimate spiritual destiny based on spiritual quest focus '{spiritual_quest}' and 9th/10th house placements."
+            life_report_format = """
+    "soul_mission": "Detailed Soul Mission and life direction (2-3 detailed paragraphs)...",
+    "natural_gifts": "Detailed Natural Gifts from birth chart (2-3 detailed paragraphs)...",
+    "life_calling": "Detailed Life Calling (2-3 detailed paragraphs)...",
+    "purpose_challenges": "Detailed Purpose Challenges (2-3 detailed paragraphs)...",
+    "growth_path": "Detailed Growth Path (2-3 detailed paragraphs)..."
+"""
         elif tab == "soul-blueprint":
-            focus = "Examine the unique cosmic coding of your character, latent talents, and inherent cosmic strengths."
-        elif tab == "soul-alignment":
-            focus = "Aligning your daily lifestyle, actions, diet, physical/mental wellness, and energies with current planetary transits."
+            focus = f"Examine the unique cosmic blueprint of your character, career industry '{industry}', and career focus '{career_focus}' using 10th house, 2nd house (wealth), 11th house (gains), and Mercury/Sun/Mars placements."
+            life_report_format = """
+    "soul_blueprint_overview": "Detailed Soul Blueprint Overview (2-3 detailed paragraphs)...",
+    "core_soul_traits": "Detailed Core Soul Traits (2-3 detailed paragraphs)...",
+    "hidden_gifts": "Detailed Hidden Gifts (2-3 detailed paragraphs)...",
+    "life_themes": "Detailed Life Themes (2-3 detailed paragraphs)...",
+    "spiritual_blueprint": "Detailed Spiritual Blueprint (2-3 detailed paragraphs)..."
+"""
         else:
-            focus = rng.choice(FOCUS_AREAS)
+            focus = f"Aligning your physical vitality (current energy state: '{energy_level}'), wellness focus '{wellness_focus}', daily actions, and energies with current transits and the 6th house/Ascendant conditions."
+            life_report_format = """
+    "current_soul_alignment": "Detailed Current Soul Alignment (2-3 detailed paragraphs)...",
+    "energy_balance": "Detailed Energy Balance analysis (2-3 detailed paragraphs)...",
+    "spiritual_blockages": "Detailed Spiritual Blockages and solutions (2-3 detailed paragraphs)...",
+    "alignment_score": "Spiritual alignment percentage and description (e.g. Alignment Score: 85% - Your alignment is optimal) (1 detailed paragraph)...",
+    "daily_guidance": "Detailed Daily Guidance (2-3 detailed paragraphs)..."
+"""
+
         storytelling = rng.choice(STORYTELLING_FRAMES)
 
         prompt = f"""
@@ -1060,12 +1115,22 @@ Use {storytelling} as the key storytelling frame throughout the report.
 
 ### Critical Writing Requirements:
 1. Write in the exact voice, style, and vocabulary of your selected astrologer persona ({persona['name']}).
-2. Do not use generic, copy-paste horoscopes or templates. The predictions must feel specifically synthesized for this user, directly referencing their name, birth place, and combining their Rasi, Nakshatra, Lagna, and the positions of all 9 planets in creative sentences.
-3. Every single text field in the response JSON must be filled with deep, elaborate, and highly detailed paragraphs of prose. Avoid summaries, lists, bullet points, or generic platitudes.
-4. WORD COUNT REQUIREMENT: You must write a total of at least 3000+ words across all sections. 
-   - For all 18 sub-fields of 'life_report', write exactly 2-3 long paragraphs of dense, detailed astrological commentary and personalized advice, aiming for at least 150-200 words per subfield.
-   - For all 20 forecast sub-fields (today, tomorrow, weekly, monthly), write at least 1 long paragraph of 100+ words detailing cosmic transits and day-to-day/week-to-week/month-to-month strategies.
+2. Do not use generic, copy-paste horoscopes, repetitive templates, or exaggerated clickbait-style predictions. Ground all readings in a balanced, realistic, and authentic Vedic consultation tone, discussing both strengths/potentials and structural challenges/remedies.
+3. Every single text field in the response JSON must be filled with deep, elaborate, and highly detailed paragraphs of prose. Avoid summaries, raw lists, bullet points, or generic platitudes.
+4. PARAGRAPH STRUCTURE: For each sub-field of 'life_report', write exactly 2 to 3 rich, detailed paragraphs of commentary. Always separate these paragraphs with double newlines (`\n\n`) so they can be parsed cleanly.
+   - Paragraph 1 must focus on the Cosmic Overview & Core Strengths/Placements.
+   - Paragraph 2 must focus on Challenges, Lessons, or Hidden blockages.
+   - Paragraph 3 must focus on Practical Remedies, Guidance, or Recommended Actions.
 5. In your analysis, reference the planetary placements directly in the prose (e.g., explain how Rahu in {planetary_positions.get('Rahu', 'Aries')} affects their career timeline, or how Saturn in {planetary_positions.get('Saturn', 'Aries')} influences their karmic lessons).
+6. REAL ASTROLOGY ONLY: Do NOT hallucinate planetary positions or signs. You must strictly base all your commentary and interpretations on the actual calculated parameters:
+   - Moon Sign (Rasi): {rasi}
+   - Nakshatra: {nakshatra}
+   - Ascendant Sign (Lagna): {lagna}
+   - Sun Sign (Zodiac): {zodiac}
+   - Planetary Placements: {json.dumps(planetary_positions)}
+   For example, if Saturn is in {planetary_positions.get('Saturn')}, discuss its impact in exactly that sign. If Rahu is in {planetary_positions.get('Rahu')}, discuss Rahu in that sign. Do not write generic horoscope filler text.
+7. CLIENT FOCUS PERSOANLIZATION: Incorporate the seeker's optional inputs (industry: '{industry}', career focus: '{career_focus}', spiritual quest: '{spiritual_quest}', energy level: '{energy_level}', wellness focus: '{wellness_focus}') directly into your interpretations to make the reading feel custom-designed for their current life circumstances. If any of these are empty, default to general Vedic lifestyle, spiritual growth, or vocational wisdom.
+
 
 ### Output JSON Format:
 Your response must be a single, valid JSON object containing exactly the keys below. Do not wrap the JSON in comments or output anything except the parseable JSON string.
@@ -1100,37 +1165,7 @@ Your response must be a single, valid JSON object containing exactly the keys be
     "health": "Detailed monthly health/wellness forecast..."
   }},
   "life_report": {{
-    "personality": {{
-      "strengths": "Detailed strengths analysis prose...",
-      "weaknesses": "Detailed weaknesses analysis prose...",
-      "hidden_talents": "Detailed latent talents analysis prose...",
-      "emotional_nature": "Detailed emotional core analysis prose..."
-    }},
-    "career": {{
-      "growth": "Detailed career growth timeline prose...",
-      "business": "Detailed entrepreneurial potential prose...",
-      "leadership": "Detailed leadership styles prose..."
-    }},
-    "relationship": {{
-      "marriage": "Detailed marriage outlook prose...",
-      "compatibility": "Detailed compatibility analysis prose...",
-      "family": "Detailed domestic alignment prose..."
-    }},
-    "financial": {{
-      "wealth": "Detailed wealth potential prose...",
-      "habits": "Detailed spending/saving habits prose...",
-      "opportunities": "Detailed abundance windows prose..."
-    }},
-    "health": {{
-      "physical": "Detailed physical constitution prose...",
-      "mental": "Detailed mental harmony/mindfulness prose...",
-      "lifestyle": "Detailed daily routine and lifestyle roadmap..."
-    }},
-    "spiritual": {{
-      "karma": "Detailed karmic debt and lessons (Saturn) prose...",
-      "lessons": "Detailed major soul lessons prose...",
-      "purpose": "Detailed divine life purpose prose..."
-    }}
+    {life_report_format}
   }}
 }}
 """
@@ -1226,40 +1261,46 @@ Your response must be a single, valid JSON object containing exactly the keys be
         "relationship": _gen("monthly_relationship"),
         "health": _gen("monthly_health")
     }
-
-    life_report = {
-        "personality": {
-            "strengths": _gen("personality_strengths"),
-            "weaknesses": _gen("personality_weaknesses"),
-            "hidden_talents": _gen("personality_talents"),
-            "emotional_nature": _gen("personality_nature")
-        },
-        "career": {
-            "growth": _gen("career_growth"),
-            "business": _gen("career_business"),
-            "leadership": _gen("career_leadership")
-        },
-        "relationship": {
-            "marriage": _gen("relationship_marriage"),
-            "compatibility": _gen("relationship_compatibility"),
-            "family": _gen("relationship_family")
-        },
-        "financial": {
-            "wealth": _gen("financial_wealth"),
-            "habits": _gen("financial_habits"),
-            "opportunities": _gen("financial_opportunities")
-        },
-        "health": {
-            "physical": _gen("health_physical"),
-            "mental": _gen("health_mental"),
-            "lifestyle": _gen("health_lifestyle")
-        },
-        "spiritual": {
-            "karma": _gen("spiritual_karma"),
-            "lessons": _gen("spiritual_lessons"),
-            "purpose": _gen("spiritual_purpose")
+    if tab == "pending-karma":
+        life_report = {
+            "karma_summary": _gen("spiritual_karma"),
+            "karmic_lessons": _gen("spiritual_lessons"),
+            "past_life_influence": _gen("personality_weaknesses"),
+            "current_karma": _gen("personality_nature"),
+            "remedies": _gen("health_lifestyle")
         }
-    }
+    elif tab == "karmic-connections":
+        life_report = {
+            "relationship_karma": _gen("relationship_compatibility"),
+            "soul_contract": _gen("spiritual_purpose"),
+            "karmic_bond": _gen("relationship_family"),
+            "emotional_compatibility": _gen("personality_nature"),
+            "lessons_together": _gen("spiritual_lessons")
+        }
+    elif tab == "soul-purpose":
+        life_report = {
+            "soul_mission": _gen("spiritual_purpose"),
+            "natural_gifts": _gen("personality_talents"),
+            "life_calling": _gen("career_growth"),
+            "purpose_challenges": _gen("personality_weaknesses"),
+            "growth_path": _gen("spiritual_lessons")
+        }
+    elif tab == "soul-blueprint":
+        life_report = {
+            "soul_blueprint_overview": _gen("personality_strengths"),
+            "core_soul_traits": _gen("personality_nature"),
+            "hidden_gifts": _gen("personality_talents"),
+            "life_themes": _gen("career_growth"),
+            "spiritual_blueprint": _gen("spiritual_purpose")
+        }
+    else:  # soul-alignment
+        life_report = {
+            "current_soul_alignment": _gen("health_physical"),
+            "energy_balance": _gen("health_mental"),
+            "spiritual_blockages": _gen("personality_weaknesses"),
+            "alignment_score": "Alignment Score: 85% - Your physical and subtle energy bodies are in moderate alignment, indicating potential for balancing solar and lunar energy channels.",
+            "daily_guidance": _gen("health_lifestyle")
+        }
 
     return {
         "astrology_details": {
@@ -1281,6 +1322,19 @@ Your response must be a single, valid JSON object containing exactly the keys be
         "life_report": life_report
     }
 
+def mask_life_report(life_report: dict, is_paid: bool) -> dict:
+    if is_paid:
+        return life_report
+    masked = {}
+    keys = list(life_report.keys())
+    for idx, key in enumerate(keys):
+        if idx == 0:
+            masked[key] = life_report[key]
+        else:
+            section_name = " ".join([word.capitalize() for word in key.split("_")])
+            masked[key] = f"🔒 [Locked Section: {section_name}] Complete details are locked. Unlock the premium report or contact Gitika Sharma to view your personalized {section_name} outlook."
+    return masked
+
 # Endpoint for Generating Horoscope Preview
 @api_router.post("/horoscope/generate")
 async def generate_horoscope(request: HoroscopeCreate):
@@ -1293,18 +1347,34 @@ async def generate_horoscope(request: HoroscopeCreate):
         pob=request.pob,
         tab=request.tab,
         partner_name=request.partnerName,
-        partner_dob=request.partnerDob
+        partner_dob=request.partnerDob,
+        partner_tob=request.partnerTob,
+        partner_pob=request.partnerPob,
+        industry=request.industry,
+        career_focus=request.careerFocus,
+        spiritual_quest=request.spiritualQuest,
+        energy_level=request.energyLevel,
+        wellness_focus=request.wellnessFocus
     )
 
     doc = {
         "id": report_id,
         "name": req_name,
+        "phone": request.phone,
+        "email": request.email,
         "dob": request.dob,
         "tob": request.tob,
         "pob": request.pob,
         "tab": request.tab,
         "partner_name": request.partnerName,
         "partner_dob": request.partnerDob,
+        "partner_tob": request.partnerTob,
+        "partner_pob": request.partnerPob,
+        "industry": request.industry,
+        "career_focus": request.careerFocus,
+        "spiritual_quest": request.spiritualQuest,
+        "energy_level": request.energyLevel,
+        "wellness_focus": request.wellnessFocus,
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "is_paid": False,
         "astrology_details": generated["astrology_details"],
@@ -1336,23 +1406,24 @@ async def generate_horoscope(request: HoroscopeCreate):
         preview_weekly = generated.get("weekly_forecast", {})
         preview_monthly = generated.get("monthly_forecast", {})
     else:
-        preview_life_report = {
-            "personality": generated["life_report"]["personality"],
-            "career": {k: f"🔒 [Locked Section: Career Forecast] Complete details are locked. Unlock the premium report to view your personalized {k} outlook." for k in generated["life_report"]["career"].keys()},
-            "relationship": {k: f"🔒 [Locked Section: Marriage & Compatibility] Details are currently encrypted. Unlock the premium report to read your {k} outlook." for k in generated["life_report"]["relationship"].keys()},
-            "financial": {k: f"🔒 [Locked Section: Wealth & Money] Wealth potential details are locked. Unlock the premium report to read your complete {k} outlook." for k in generated["life_report"]["financial"].keys()},
-            "health": {k: f"🔒 [Locked Section: Health & Lifestyle] Physical and mental wellness details are locked. Unlock the premium report to read your {k} guidance." for k in generated["life_report"]["health"].keys()},
-            "spiritual": {k: f"🔒 [Locked Section: Karma & Purpose] Karmic roadmap details are locked. Unlock the premium report to read your {k} analysis." for k in generated["life_report"]["spiritual"].keys()}
-        }
+        preview_life_report = mask_life_report(generated["life_report"], False)
         preview_weekly = {k: f"🔒 [Locked Section: Weekly Forecast] Complete details are locked. Unlock the premium report to view your personalized weekly {k} forecast." for k in generated.get("weekly_forecast", {}).keys()}
         preview_monthly = {k: f"🔒 [Locked Section: Monthly Forecast] Complete details are locked. Unlock the premium report to view your personalized monthly {k} forecast." for k in generated.get("monthly_forecast", {}).keys()}
 
     return {
         "id": report_id,
         "name": request.name,
+        "phone": request.phone,
+        "email": request.email,
         "dob": request.dob,
         "tob": request.tob,
         "pob": request.pob,
+        "tab": request.tab,
+        "industry": request.industry,
+        "career_focus": request.careerFocus,
+        "spiritual_quest": request.spiritualQuest,
+        "energy_level": request.energyLevel,
+        "wellness_focus": request.wellnessFocus,
         "timestamp": doc["timestamp"],
         "is_paid": request.is_calculator,
         "astrology_details": generated["astrology_details"],
@@ -1478,6 +1549,11 @@ async def unlock_horoscope(request: HoroscopeUnlock):
         "dob": report["dob"],
         "tob": report["tob"],
         "pob": report.get("pob", ""),
+        "industry": report.get("industry", ""),
+        "career_focus": report.get("career_focus", ""),
+        "spiritual_quest": report.get("spiritual_quest", ""),
+        "energy_level": report.get("energy_level", ""),
+        "wellness_focus": report.get("wellness_focus", ""),
         "timestamp": report["timestamp"],
         "is_paid": True,
         "pdf_url": f"/uploads/{mock_pdf_filename}",
@@ -1529,22 +1605,23 @@ async def get_horoscope_report(report_id: str):
     is_paid = report.get("is_paid", False)
     
     if not is_paid:
-        preview_life_report = {
-            "personality": report["life_report"].get("personality", {}),
-            "career": {k: f"🔒 [Locked Section: Career Forecast] Complete details are locked. Unlock the premium report to view your personalized {k} outlook." for k in report["life_report"].get("career", {}).keys()},
-            "relationship": {k: f"🔒 [Locked Section: Marriage & Compatibility] Details are currently encrypted. Unlock the premium report to read your {k} outlook." for k in report["life_report"].get("relationship", {}).keys()},
-            "financial": {k: f"🔒 [Locked Section: Wealth & Money] Wealth potential details are locked. Unlock the premium report to read your complete {k} outlook." for k in report["life_report"].get("financial", {}).keys()},
-            "health": {k: f"🔒 [Locked Section: Health & Lifestyle] Physical and mental wellness details are locked. Unlock the premium report to read your {k} guidance." for k in report["life_report"].get("health", {}).keys()},
-            "spiritual": {k: f"🔒 [Locked Section: Karma & Purpose] Karmic roadmap details are locked. Unlock the premium report to read your {k} analysis." for k in report["life_report"].get("spiritual", {}).keys()}
-        }
+        preview_life_report = mask_life_report(report["life_report"], False)
         preview_weekly = {k: f"🔒 [Locked Section: Weekly Forecast] Complete details are locked. Unlock the premium report to view your personalized weekly {k} forecast." for k in report.get("weekly_forecast", {}).keys()}
         preview_monthly = {k: f"🔒 [Locked Section: Monthly Forecast] Complete details are locked. Unlock the premium report to view your personalized monthly {k} forecast." for k in report.get("monthly_forecast", {}).keys()}
         return {
             "id": report["id"],
             "name": report["name"],
+            "phone": report.get("phone", ""),
+            "email": report.get("email", ""),
             "dob": report["dob"],
             "tob": report["tob"],
             "pob": report.get("pob", ""),
+            "tab": report.get("tab", "pending-karma"),
+            "industry": report.get("industry", ""),
+            "career_focus": report.get("career_focus", ""),
+            "spiritual_quest": report.get("spiritual_quest", ""),
+            "energy_level": report.get("energy_level", ""),
+            "wellness_focus": report.get("wellness_focus", ""),
             "timestamp": report["timestamp"],
             "is_paid": False,
             "astrology_details": report["astrology_details"],
@@ -1559,9 +1636,17 @@ async def get_horoscope_report(report_id: str):
         return {
             "id": report["id"],
             "name": report["name"],
+            "phone": report.get("phone", ""),
+            "email": report.get("email", ""),
             "dob": report["dob"],
             "tob": report["tob"],
             "pob": report.get("pob", ""),
+            "tab": report.get("tab", "pending-karma"),
+            "industry": report.get("industry", ""),
+            "career_focus": report.get("career_focus", ""),
+            "spiritual_quest": report.get("spiritual_quest", ""),
+            "energy_level": report.get("energy_level", ""),
+            "wellness_focus": report.get("wellness_focus", ""),
             "timestamp": report["timestamp"],
             "is_paid": True,
             "pdf_url": f"/uploads/{mock_pdf_filename}",
@@ -1998,6 +2083,127 @@ async def get_panchang(response: Response, city: str = "New Delhi", date: str = 
     # Varjyam: 2h duration
     varjyam_start = (noon_local + 8.5) % 24
     varjyam_end = (varjyam_start + 2.0) % 24
+    
+    # Nishita Muhurta: Solar Midnight midpoint ± 24 minutes (0.4 hours)
+    midnight_local = (noon_local + 12.0) % 24
+    nishita_start = (midnight_local - 0.4) % 24
+    nishita_end = (midnight_local + 0.4) % 24
+
+    # Calculate Hora Lord
+    # Planetary speed order starting from Sun: Sun, Venus, Mercury, Moon, Saturn, Jupiter, Mars
+    hora_order = ["Sun", "Venus", "Mercury", "Moon", "Saturn", "Jupiter", "Mars"]
+    hora_start_mapping = {
+        6: 0, # Sunday -> Sun
+        0: 3, # Monday -> Moon
+        1: 6, # Tuesday -> Mars
+        2: 2, # Wednesday -> Mercury
+        3: 5, # Thursday -> Jupiter
+        4: 1, # Friday -> Venus
+        5: 4  # Saturday -> Saturn
+    }
+    start_idx = hora_start_mapping.get(weekday, 0)
+    
+    # Check if daytime or nighttime for Hora calculation
+    is_daytime = False
+    if sunrise_local < sunset_local:
+        is_daytime = sunrise_local <= local_hour_decimal < sunset_local
+    else: # Sunrise/sunset spans midnight boundary
+        is_daytime = local_hour_decimal >= sunrise_local or local_hour_decimal < sunset_local
+        
+    if is_daytime:
+        elapsed = (local_hour_decimal - sunrise_local) % 24
+        hora_idx = int(elapsed / (day_length / 12.0))
+    else:
+        elapsed = (local_hour_decimal - sunset_local) % 24
+        hora_idx = 12 + int(elapsed / (night_length / 12.0))
+        
+    hora_lord = hora_order[(start_idx + hora_idx) % 7]
+
+    # Calculate Sun Sign from sun_lon
+    sun_sign_idx = int(sun_lon / 30.0)
+    sun_sign_name = zodiac_signs[min(sun_sign_idx, 11)]
+
+    # Calculate Vikram & Shaka Samvat
+    vikram_samvat = local_now.year + 57 if local_now.month >= 4 else local_now.year + 56
+    shaka_samvat = local_now.year - 78 if local_now.month >= 4 else local_now.year - 79
+
+    # Calculate traditional Hindu Ritu (Seasons)
+    m_day = (local_now.month, local_now.day)
+    if (3, 19) <= m_day < (5, 19):
+        ritu = "Vasanta (Spring)"
+    elif (5, 19) <= m_day < (7, 19):
+        ritu = "Grishma (Summer)"
+    elif (7, 19) <= m_day < (9, 19):
+        ritu = "Varsha (Monsoon)"
+    elif (9, 19) <= m_day < (11, 19):
+        ritu = "Sharad (Autumn)"
+    elif (11, 19) <= m_day or m_day < (1, 19):
+        ritu = "Hemanta (Pre-winter)"
+    else:
+        ritu = "Shishira (Winter)"
+
+    # Calculate Ayanam
+    if (6, 21) <= m_day < (12, 21):
+        ayanam = "Dakshinayana (Southern Transit)"
+    else:
+        ayanam = "Uttarayana (Northern Transit)"
+
+    # Dynamic Festival & Vrat Detection
+    festivals = []
+    vrats = []
+    
+    # Check Vrats based on Tithi index
+    if tithi_idx in [10, 25]:
+        vrats.append("Ekadashi Vrat")
+    elif tithi_idx in [12, 27]:
+        vrats.append("Pradosha Vrat")
+    elif tithi_idx == 14:
+        vrats.append("Purnima Vrat")
+    elif tithi_idx == 29:
+        vrats.append("Amavasya Vrat")
+    elif tithi_idx == 3:
+        vrats.append("Vinayaka Chaturthi Vrat")
+    elif tithi_idx == 18:
+        vrats.append("Sankashti Chaturthi Vrat")
+        
+    # Check festivals based on month and tithi
+    month_name = hindu_month.lower()
+    if "chaitra" in month_name:
+        if tithi_idx == 0:
+            festivals.append("Gudi Padwa / Ugadi")
+        elif tithi_idx == 8:
+            festivals.append("Rama Navami")
+    elif "vaisakha" in month_name:
+        if tithi_idx == 2:
+            festivals.append("Akshaya Tritiya")
+    elif "ashadha" in month_name:
+        if tithi_idx == 14:
+            festivals.append("Guru Purnima")
+    elif "shravana" in month_name:
+        if tithi_idx == 22:
+            festivals.append("Krishna Janmashtami")
+    elif "bhadrapada" in month_name:
+        if tithi_idx == 3:
+            festivals.append("Ganesh Chaturthi")
+    elif "ashvina" in month_name:
+        if tithi_idx == 9:
+            festivals.append("Dussehra / Vijayadashami")
+    elif "kartika" in month_name:
+        if tithi_idx == 29:
+            festivals.append("Diwali / Deepavali")
+    elif "phalguna" in month_name:
+        if tithi_idx == 28:
+            festivals.append("Maha Shivratri")
+        elif tithi_idx == 14:
+            festivals.append("Holi")
+            
+    if not festivals:
+        festivals.append("No major solar/lunar festivals today")
+    if not vrats:
+        vrats.append("Routine day (No mandatory vrat)")
+
+    # Construct Panchang Summary
+    summary = f"Today is {vara_name}, in the month of {hindu_month}, during {paksha}. The active Tithi is {tithi_name} with Nakshatra {nak_name}."
 
     return {
         "city": city,
@@ -2046,6 +2252,10 @@ async def get_panchang(response: Response, city: str = "New Delhi", date: str = 
             "start": format_hour_to_12h(varjyam_start),
             "end": format_hour_to_12h(varjyam_end)
         },
+        "nishita_muhurta": {
+            "start": format_hour_to_12h(nishita_start),
+            "end": format_hour_to_12h(nishita_end)
+        },
         "status": {
             "label": status_label,
             "description": status_desc,
@@ -2064,16 +2274,25 @@ async def get_panchang(response: Response, city: str = "New Delhi", date: str = 
             "karana": karana_name,
             "vara": vara_name,
             "moon_sign": moon_sign_name,
+            "sun_sign": sun_sign_name,
             "moon_phase": moon_phase_name,
             "paksha": paksha,
             "hindu_month": hindu_month,
-            "samvatsara": samvatsara
+            "samvatsara": samvatsara,
+            "hora": hora_lord,
+            "ritu": ritu,
+            "ayanam": ayanam,
+            "vikram_samvat": f"{vikram_samvat} VS",
+            "shaka_samvat": f"{shaka_samvat} Shaka"
         },
         "choghadiya": {
             "day": day_slots,
             "night": night_slots,
             "active": active_choghadiya
-        }
+        },
+        "festivals": festivals,
+        "vrats": vrats,
+        "summary": summary
     }
 
 # --- Cities API Enhancements ---
@@ -2266,6 +2485,90 @@ async def get_instagram_feed():
         if INSTAGRAM_CACHE["data"]:
             return INSTAGRAM_CACHE["data"]
         return sorted(MOCK_INSTAGRAM_FEED, key=lambda x: x.get("timestamp", ""), reverse=True)
+
+CONSULTATION_PRICES = {
+    "chat": 999,
+    "voice": 1499,
+    "video": 1999,
+    "in-person": 3999
+}
+
+@api_router.get("/booking/booked-slots")
+async def get_booked_slots(date: str):
+    """
+    Returns lists of slots already booked for a specific date to prevent scheduling conflicts.
+    """
+    global use_local_db
+    booked_slots = []
+    
+    # 1. Fetch from MongoDB if available
+    if not use_local_db:
+        try:
+            confirmed = await db.bookings.find({
+                "date": date,
+                "status": "confirmed"
+            }, {"slot": 1}).to_list(1000)
+            booked_slots = [b["slot"] for b in confirmed]
+            return booked_slots
+        except Exception as e:
+            logger.warning(f"MongoDB bookings query failed: {e}. Falling back to local DB.")
+            use_local_db = True
+            
+    # 2. Fetch from local db.json
+    local_data = read_local_db()
+    for b in local_data.get("bookings", []):
+        if b.get("date") == date and b.get("status") == "confirmed":
+            booked_slots.append(b.get("slot"))
+            
+    return booked_slots
+
+
+@api_router.post("/booking/create-order")
+async def create_booking_order(request: BookingOrderCreate):
+    """
+    Checks slot availability and generates a Razorpay Order ID.
+    """
+    global use_local_db
+    # 1. Check if the slot is available
+    is_avail = await BookingService.is_slot_available(request.date, request.slot, use_local_db, db)
+    if not is_avail:
+        raise HTTPException(status_code=400, detail="The selected time slot is already reserved. Please choose another date or time.")
+        
+    # 2. Calculate the exact payment amount in paise (including 18% GST)
+    base_price = CONSULTATION_PRICES.get(request.consultationType, 1999)
+    tax = round(base_price * 0.18)
+    total_amount_inr = base_price + tax
+    amount_paise = total_amount_inr * 100
+    
+    # 3. Create the Razorpay Order
+    receipt_id = f"rcpt_booking_{uuid.uuid4().hex[:12].upper()}"
+    try:
+        order_details = RazorpayService.create_order(amount_paise, receipt_id)
+        return order_details
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api_router.post("/booking/confirm")
+async def confirm_booking(request: BookingConfirmRequest):
+    """
+    Verifies signature and records the confirmed appointment booking.
+    """
+    global use_local_db
+    try:
+        confirmed_booking = await PaymentService.process_and_confirm(
+            request.booking,
+            request.payment,
+            use_local_db,
+            db
+        )
+        return {
+            "success": True,
+            "booking": confirmed_booking
+        }
+    except Exception as e:
+        logger.error(f"Booking confirmation failed: {e}")
+        raise HTTPException(status_code=400, detail=str(e))
 
 # Include the router in the main app
 app.include_router(api_router)

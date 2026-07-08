@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowRight, Sparkles, Moon, Star, Loader2, User, Calendar, Clock, MapPin, Heart, History, Compass, Fingerprint, Activity } from "lucide-react";
+import { ArrowRight, Sparkles, Moon, Star, Loader2, User, Calendar, Clock, MapPin, Mail, Phone, Heart, History, Compass, Fingerprint, Activity } from "lucide-react";
 import { useDesign } from "@/context/DesignContext";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { Country, State, City } from "country-state-city";
+import { ReportService } from "@/services/reportService";
 
 const LOADING_MESSAGES = [
   "Mapping planetary coordinates...",
@@ -98,20 +99,74 @@ const TABS = [
     label: "Soul Blueprint",
     shortLabel: "Blueprint",
     icon: Fingerprint,
-    title: "Soul Blueprint",
-    subtitle: "Examine the unique cosmic coding of your talents, strengths, and soul design.",
-    buttonText: "Unlock Blueprint"
+    title: "Soul Blueprint Path",
+    subtitle: "Map your psychic archetype, spiritual gifts, and subconscious traits.",
+    buttonText: "Map Blueprint"
   },
   {
     id: "soul-alignment",
     label: "Soul Alignment",
-    shortLabel: "Align",
+    shortLabel: "Alignment",
     icon: Activity,
-    title: "Soul Alignment",
-    subtitle: "Align your daily lifestyle, actions, and energies with current planetary transits.",
+    title: "Cosmic Health & Vitality",
+    subtitle: "Understand your body's constitutional archetype and align with celestial vitality cycles.",
     buttonText: "Align Soul"
   }
 ];
+
+const DesktopVideoBackground = React.memo(({ videoId }) => {
+  return (
+    <div className="hidden md:block absolute inset-0 z-0 opacity-[0.25] overflow-hidden">
+      <iframe
+        key={videoId}
+        className="absolute top-1/2 left-1/2 w-[110vw] h-[62vw] min-h-[110vh] min-w-[195vh] -translate-x-1/2 -translate-y-1/2 scale-110 grayscale contrast-[1.1] brightness-[1.0] max-w-none"
+        src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&showinfo=0&autohide=1&modestbranding=1&rel=0&hd=1`}
+        frameBorder="0"
+        allow="autoplay; encrypted-media"
+      ></iframe>
+    </div>
+  );
+});
+
+const MobileVideoBackground = React.memo(({ videoId }) => {
+  return (
+    <div className="block md:hidden absolute inset-0 z-0 opacity-[0.22] pointer-events-none overflow-hidden rounded-2xl">
+      <iframe
+        key={`${videoId}-mobile`}
+        className="absolute top-1/2 left-1/2 w-[280vw] h-[158vw] min-h-full min-w-full -translate-x-1/2 -translate-y-1/2 scale-110 grayscale contrast-[1.15] brightness-[1.0] max-w-none"
+        src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&showinfo=0&autohide=1&modestbranding=1&rel=0&hd=1&playsinline=1`}
+        frameBorder="0"
+        allow="autoplay; encrypted-media"
+      ></iframe>
+    </div>
+  );
+});
+
+const LeftMarketingContent = React.memo(({ videoId, onButtonClick }) => {
+  return (
+    <div className="lg:col-span-6 text-left relative py-8 px-6 md:py-0 md:px-0 rounded-2xl overflow-hidden z-10">
+      <MobileVideoBackground videoId={videoId} />
+
+      <div className="relative z-10 font-sans">
+        <div className="flex items-center gap-4 mb-6 animate-reveal opacity-0" style={{ animationDelay: '0.2s' }}>
+          <span className="inline-flex items-center gap-1.5 px-4 py-2 border border-[#B38B36]/40 rounded-xl bg-[#FCFAF2]/70 backdrop-blur-sm text-xs md:text-sm tracking-[0.2em] uppercase text-[#3C2A21] font-extrabold shadow-sm">
+            ✨ AI Personalized Horoscope
+          </span>
+        </div>
+
+        <h1 className="font-serif text-[#3C2A21] text-4xl md:text-5xl lg:text-[3.2rem] xl:text-[3.8rem] leading-[1.15] tracking-tight mb-8 animate-reveal opacity-0" style={{ animationDelay: '0.4s' }}>
+          Unlock the Karma That <span className="italic font-light text-[#8E6B23] inline">Shapes Your Future.</span>
+        </h1>
+
+        <div className="max-w-lg space-y-8 animate-reveal opacity-0" style={{ animationDelay: '0.6s' }}>
+          <p className="text-lg text-stone-800 leading-relaxed font-medium">
+            Discover what the stars have planned for you. Reveal today's cosmic guidance, planetary movements, and see what destiny has planned in seconds.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+});
 
 const CelestialOracleHero = () => {
   const { bgDesign } = useDesign();
@@ -121,11 +176,26 @@ const CelestialOracleHero = () => {
   const [activeTab, setActiveTab] = useState("pending-karma");
   const [formData, setFormData] = useState({
     name: "",
+    phoneCode: "+91",
+    phoneNumber: "",
+    email: "",
     dob: "",
     tob: "",
     pob: "",
     partnerName: "",
-    partnerDob: ""
+    partnerDob: "",
+    partnerTob: "",
+    partnerPob: "",
+    industry: "",
+    industryOther: "",
+    careerFocus: "",
+    careerFocusOther: "",
+    spiritualQuest: "",
+    spiritualQuestOther: "",
+    energyLevel: "",
+    energyLevelOther: "",
+    wellnessFocus: "",
+    wellnessFocusOther: ""
   });
   
   const [submitting, setSubmitting] = useState(false);
@@ -140,9 +210,19 @@ const CelestialOracleHero = () => {
   const [selectedState, setSelectedState] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
 
+  const [partnerCountries, setPartnerCountries] = useState([]);
+  const [partnerStates, setPartnerStates] = useState([]);
+  const [partnerCities, setPartnerCities] = useState([]);
+
+  const [selectedPartnerCountry, setSelectedPartnerCountry] = useState("");
+  const [selectedPartnerState, setSelectedPartnerState] = useState("");
+  const [selectedPartnerCity, setSelectedPartnerCity] = useState("");
+
   // Load countries on mount
   useEffect(() => {
-    setCountries(Country.getAllCountries());
+    const all = Country.getAllCountries();
+    setCountries(all);
+    setPartnerCountries(all);
   }, []);
 
   // Handle Country Change
@@ -152,10 +232,17 @@ const CelestialOracleHero = () => {
     setSelectedState("");
     setSelectedCity("");
     
+    const countryObj = Country.getCountryByCode(countryCode);
+    if (countryObj) {
+      setFormData(prev => ({
+        ...prev,
+        phoneCode: `+${countryObj.phonecode.replace('+', '')}`
+      }));
+    }
+    
     if (countryCode) {
       const countryStates = State.getStatesOfCountry(countryCode);
       setStates(countryStates);
-      
       if (countryStates.length === 0) {
         setCities(City.getCitiesOfCountry(countryCode));
       } else {
@@ -172,7 +259,6 @@ const CelestialOracleHero = () => {
     const stateCode = e.target.value;
     setSelectedState(stateCode);
     setSelectedCity("");
-    
     if (stateCode) {
       setCities(City.getCitiesOfState(selectedCountry, stateCode));
     } else {
@@ -191,13 +277,11 @@ const CelestialOracleHero = () => {
     if (selectedCountry && selectedCity) {
       const countryObj = Country.getCountryByCode(selectedCountry);
       const stateObj = selectedState ? State.getStateByCodeAndCountry(selectedState, selectedCountry) : null;
-      
       const parts = [
         selectedCity,
         stateObj ? stateObj.name : "",
         countryObj ? countryObj.name : ""
       ].filter(Boolean);
-      
       setFormData((prev) => ({
         ...prev,
         pob: parts.join(", ")
@@ -209,6 +293,261 @@ const CelestialOracleHero = () => {
       }));
     }
   }, [selectedCountry, selectedState, selectedCity]);
+
+  // Handle Partner Country Change
+  const handlePartnerCountryChange = (e) => {
+    const countryCode = e.target.value;
+    setSelectedPartnerCountry(countryCode);
+    setSelectedPartnerState("");
+    setSelectedPartnerCity("");
+    if (countryCode) {
+      const countryStates = State.getStatesOfCountry(countryCode);
+      setPartnerStates(countryStates);
+      if (countryStates.length === 0) {
+        setPartnerCities(City.getCitiesOfCountry(countryCode));
+      } else {
+        setPartnerCities([]);
+      }
+    } else {
+      setPartnerStates([]);
+      setPartnerCities([]);
+    }
+  };
+
+  // Handle Partner State Change
+  const handlePartnerStateChange = (e) => {
+    const stateCode = e.target.value;
+    setSelectedPartnerState(stateCode);
+    setSelectedPartnerCity("");
+    if (stateCode) {
+      setPartnerCities(City.getCitiesOfState(selectedPartnerCountry, stateCode));
+    } else {
+      setPartnerCities([]);
+    }
+  };
+
+  // Handle Partner City Change
+  const handlePartnerCityChange = (e) => {
+    const cityName = e.target.value;
+    setSelectedPartnerCity(cityName);
+  };
+
+  // Sync partner location to formData.partnerPob
+  useEffect(() => {
+    if (selectedPartnerCountry && selectedPartnerCity) {
+      const countryObj = Country.getCountryByCode(selectedPartnerCountry);
+      const stateObj = selectedPartnerState ? State.getStateByCodeAndCountry(selectedPartnerState, selectedPartnerCountry) : null;
+      const parts = [
+        selectedPartnerCity,
+        stateObj ? stateObj.name : "",
+        countryObj ? countryObj.name : ""
+      ].filter(Boolean);
+      setFormData((prev) => ({
+        ...prev,
+        partnerPob: parts.join(", ")
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        partnerPob: ""
+      }));
+    }
+  }, [selectedPartnerCountry, selectedPartnerState, selectedPartnerCity]);
+
+  // Reusable Location Selectors Renderer
+  const renderPlaceOfBirthSelectors = (country, state, city, listCountries, listStates, listCities, handleCountry, handleState, handleCity, label = "Place of Birth") => {
+    return (
+      <div className="flex flex-col gap-1.5 text-left animate-fadeIn">
+        <label className="text-[10px] uppercase tracking-[0.2em] text-[#3C2A21] font-sans font-bold z-10 relative">
+          {label}
+        </label>
+        <div className="flex flex-col gap-2.5 z-10 relative">
+          {/* Country Selector */}
+          <div className="relative">
+            <select
+              required
+              value={country}
+              onChange={handleCountry}
+              className="w-full h-11 px-3 bg-[#FCFAF2]/35 hover:bg-[#FFFDF9]/60 border-[#B38B36]/30 hover:border-[#E5C06A]/60 focus:ring-1 focus:ring-[#E5C06A] focus:border-[#E5C06A] text-[#1E110A] text-xs rounded-xl shadow-sm cursor-pointer outline-none transition-all z-10 relative"
+            >
+              <option value="" className="bg-[#FFFDF9] text-[#1E110A]">Select Country</option>
+              {listCountries.map((c) => (
+                <option key={c.isoCode} value={c.isoCode} className="bg-[#FFFDF9] text-[#1E110A]">
+                  {c.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* State Selector */}
+          {listStates.length > 0 && (
+            <div className="relative">
+              <select
+                required
+                value={state}
+                onChange={handleState}
+                className="w-full h-11 px-3 bg-[#FCFAF2]/35 hover:bg-[#FFFDF9]/60 border-[#B38B36]/30 hover:border-[#E5C06A]/60 focus:ring-1 focus:ring-[#E5C06A] focus:border-[#E5C06A] text-[#1E110A] text-xs rounded-xl shadow-sm cursor-pointer outline-none transition-all z-10 relative"
+              >
+                <option value="" className="bg-[#FFFDF9] text-[#1E110A]">Select State</option>
+                {listStates.map((s) => (
+                  <option key={s.isoCode} value={s.isoCode} className="bg-[#FFFDF9] text-[#1E110A]">
+                    {s.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {/* City Selector */}
+          <div className="relative">
+            <select
+              required
+              disabled={!country || (listStates.length > 0 && !state)}
+              value={city}
+              onChange={handleCity}
+              className="w-full h-11 px-3 bg-[#FCFAF2]/35 hover:bg-[#FFFDF9]/60 border-[#B38B36]/30 hover:border-[#E5C06A]/60 focus:ring-1 focus:ring-[#E5C06A] focus:border-[#E5C06A] text-[#1E110A] text-xs rounded-xl shadow-sm cursor-pointer outline-none transition-all z-10 relative disabled:opacity-50"
+            >
+              <option value="" className="bg-[#FFFDF9] text-[#1E110A]">Select City</option>
+              {listCities.map((cty, idx) => (
+                <option key={idx} value={cty.name} className="bg-[#FFFDF9] text-[#1E110A]">
+                  {cty.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const renderSeekerFields = (nameLabel = "Full Name", namePlaceholder = "Your full name") => {
+    return (
+      <>
+        {/* Full Name */}
+        <div className="flex flex-col gap-1.5 text-left animate-fadeIn">
+          <label className="text-[10px] uppercase tracking-[0.2em] text-[#3C2A21] font-sans font-bold z-10 relative">
+            {nameLabel}
+          </label>
+          <div className="relative group">
+            <User className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#B38B36] group-focus-within:text-[#E5C06A] group-focus-within:scale-110 transition-all duration-300 z-20" />
+            <Input
+              name="name"
+              required
+              placeholder={namePlaceholder}
+              value={formData.name}
+              onChange={handleFormChange}
+              className="pl-[38px] h-11 bg-[#FCFAF2]/35 hover:bg-[#FFFDF9]/60 border-[#B38B36]/30 hover:border-[#E5C06A]/60 focus-visible:ring-1 focus-visible:ring-[#E5C06A] focus-visible:border-[#E5C06A] text-[#1E110A] text-xs rounded-xl shadow-sm transition-all z-10 relative"
+            />
+          </div>
+        </div>
+
+        {/* Email Address */}
+        <div className="flex flex-col gap-1.5 text-left animate-fadeIn">
+          <label className="text-[10px] uppercase tracking-[0.2em] text-[#3C2A21] font-sans font-bold z-10 relative">
+            Email Address *
+          </label>
+          <div className="relative group">
+            <Mail className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#B38B36] group-focus-within:text-[#E5C06A] group-focus-within:scale-110 transition-all duration-300 z-20" />
+            <Input
+              name="email"
+              required
+              type="email"
+              placeholder="Your email address"
+              value={formData.email}
+              onChange={handleFormChange}
+              className="pl-[38px] h-11 bg-[#FCFAF2]/35 hover:bg-[#FFFDF9]/60 border-[#B38B36]/30 hover:border-[#E5C06A]/60 focus-visible:ring-1 focus-visible:ring-[#E5C06A] focus-visible:border-[#E5C06A] text-[#1E110A] text-xs rounded-xl shadow-sm transition-all z-10 relative"
+            />
+          </div>
+        </div>
+
+        {/* Mobile Number */}
+        <div className="flex flex-col gap-1.5 text-left animate-fadeIn">
+          <label className="text-[10px] uppercase tracking-[0.2em] text-[#3C2A21] font-sans font-bold z-10 relative">
+            Mobile Number *
+          </label>
+          <div className="flex gap-2">
+            <select
+              name="phoneCode"
+              value={formData.phoneCode}
+              onChange={handleFormChange}
+              className="w-[95px] h-11 bg-[#FCFAF2]/35 border border-[#B38B36]/30 text-stone-700 text-xs px-2.5 rounded-xl cursor-pointer focus-visible:ring-1 focus-visible:ring-[#E5C06A] focus-visible:border-[#E5C06A] z-10 relative hover:bg-[#FFFDF9]/60"
+            >
+              {countries.map((c) => (
+                <option key={c.isoCode} value={`+${c.phonecode.replace('+', '')}`}>
+                  {c.isoCode} (+{c.phonecode.replace('+', '')})
+                </option>
+              ))}
+            </select>
+            <div className="relative group flex-1">
+              <Phone className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#B38B36] group-focus-within:text-[#E5C06A] group-focus-within:scale-110 transition-all duration-300 z-20" />
+              <Input
+                name="phoneNumber"
+                required
+                type="tel"
+                placeholder="Mobile number"
+                value={formData.phoneNumber}
+                onChange={(e) => {
+                  const val = e.target.value.replace(/\D/g, "");
+                  setFormData(prev => ({ ...prev, phoneNumber: val }));
+                }}
+                className="pl-[38px] h-11 bg-[#FCFAF2]/35 hover:bg-[#FFFDF9]/60 border-[#B38B36]/30 hover:border-[#E5C06A]/60 focus-visible:ring-1 focus-visible:ring-[#E5C06A] focus-visible:border-[#E5C06A] text-[#1E110A] text-xs rounded-xl shadow-sm transition-all z-10 relative"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Date of Birth */}
+        <div className="flex flex-col gap-1.5 text-left animate-fadeIn">
+          <label className="text-[10px] uppercase tracking-[0.2em] text-[#3C2A21] font-sans font-bold z-10 relative">
+            Date of Birth
+          </label>
+          <div className="relative group">
+            <Calendar className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#B38B36] group-focus-within:text-[#E5C06A] group-focus-within:scale-110 transition-all duration-300 z-20" />
+            <Input
+              name="dob"
+              required
+              type="date"
+              value={formData.dob}
+              onChange={handleFormChange}
+              className="pl-[38px] h-11 bg-[#FCFAF2]/35 hover:bg-[#FFFDF9]/60 border-[#B38B36]/30 hover:border-[#E5C06A]/60 focus-visible:ring-1 focus-visible:ring-[#E5C06A] focus-visible:border-[#E5C06A] text-[#1E110A] text-xs rounded-xl shadow-sm transition-all cursor-pointer z-10 relative"
+            />
+          </div>
+        </div>
+
+        {/* Time of Birth */}
+        <div className="flex flex-col gap-1.5 text-left animate-fadeIn">
+          <label className="text-[10px] uppercase tracking-[0.2em] text-[#3C2A21] font-sans font-bold z-10 relative">
+            Time of Birth
+          </label>
+          <div className="relative group">
+            <Clock className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#B38B36] group-focus-within:text-[#E5C06A] group-focus-within:scale-110 transition-all duration-300 z-20" />
+            <Input
+              name="tob"
+              required
+              type="time"
+              value={formData.tob}
+              onChange={handleFormChange}
+              className="pl-[38px] h-11 bg-[#FCFAF2]/35 hover:bg-[#FFFDF9]/60 border-[#B38B36]/30 hover:border-[#E5C06A]/60 focus-visible:ring-1 focus-visible:ring-[#E5C06A] focus-visible:border-[#E5C06A] text-[#1E110A] text-xs rounded-xl shadow-sm transition-all cursor-pointer z-10 relative"
+            />
+          </div>
+        </div>
+
+        {/* Place of Birth */}
+        {renderPlaceOfBirthSelectors(
+          selectedCountry,
+          selectedState,
+          selectedCity,
+          countries,
+          states,
+          cities,
+          handleCountryChange,
+          handleStateChange,
+          handleCityChange,
+          "Place of Birth"
+        )}
+      </>
+    );
+  };
 
   const videoIds = {
     design1: "csfFVRy_2nM",
@@ -265,14 +604,29 @@ const CelestialOracleHero = () => {
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.dob || !formData.tob || !formData.pob) {
-      toast.error("Please fill in Birth Date, Birth Time, and Place of Birth.");
+    
+    const isEmailValid = (email) => {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    };
+
+    if (!formData.name?.trim() || !formData.dob || !formData.tob || !formData.pob) {
+      toast.error("Please fill in your Full Name, Date of Birth, Time of Birth, and Place of Birth.");
+      return;
+    }
+    
+    if (!formData.email?.trim() || !isEmailValid(formData.email)) {
+      toast.error("Please enter a valid Email Address.");
+      return;
+    }
+
+    if (!formData.phoneNumber || formData.phoneNumber.replace(/\D/g, "").length < 10) {
+      toast.error("Please enter a valid Mobile Number (minimum 10 digits).");
       return;
     }
 
     if (activeTab === "karmic-connections") {
-      if (!formData.partnerName?.trim() || !formData.partnerDob) {
-        toast.error("Please fill in Partner's Name and Partner's Date of Birth.");
+      if (!formData.partnerName?.trim() || !formData.partnerDob || !formData.partnerTob || !formData.partnerPob) {
+        toast.error("Please fill in all required fields for Person 2.");
         return;
       }
     }
@@ -280,29 +634,42 @@ const CelestialOracleHero = () => {
     setSubmitting(true);
     setStep("loading");
 
-    try {
-      const response = await fetch(`${apiUrl}/api/horoscope/generate`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...formData,
-          tab: activeTab
-        })
-      });
-      
-      const data = await response.json();
-      if (response.ok) {
-        // Artificially wait to show the cosmic loading animations
-        setTimeout(() => {
-          navigate(`/payment?reportId=${data.id}`);
-        }, 3000);
-      } else {
-        toast.error(data.detail || "Failed to generate horoscope. Try again.");
-        setStep("form");
+    // Helper to resolve custom write-in values for "Other" selections
+    const getPayloadValue = (field, otherField) => {
+      const val = formData[field];
+      if (val === "Other") {
+        return formData[otherField]?.trim() || "";
       }
+      return val || "";
+    };
+
+    const fullPhone = formData.phoneCode + formData.phoneNumber;
+    const payload = {
+      ...formData,
+      phone: fullPhone,
+      industry: getPayloadValue("industry", "industryOther"),
+      careerFocus: getPayloadValue("careerFocus", "careerFocusOther"),
+      spiritualQuest: getPayloadValue("spiritualQuest", "spiritualQuestOther"),
+      energyLevel: getPayloadValue("energyLevel", "energyLevelOther"),
+      wellnessFocus: getPayloadValue("wellnessFocus", "wellnessFocusOther"),
+      tab: activeTab
+    };
+
+    try {
+      const data = await ReportService.generateReport(payload);
+      
+      // Persist seeker identity parameters for booking and status synchronization
+      localStorage.setItem("seeker_phone", fullPhone);
+      localStorage.setItem("seeker_email", formData.email);
+      localStorage.removeItem("active_booking");
+
+      // Artificially wait to show the cosmic loading animations
+      setTimeout(() => {
+        navigate(`/payment?reportId=${data.id}`);
+      }, 3000);
     } catch (error) {
       console.error("Horoscope error:", error);
-      toast.error("Connection failed. Could not reach celestial servers.");
+      toast.error(error.message || "Failed to generate horoscope. Try again.");
       setStep("form");
     } finally {
       setSubmitting(false);
@@ -332,15 +699,7 @@ const CelestialOracleHero = () => {
         </div>
 
         {/* Video Background (Subtle & Ethereal Astrology Loop) */}
-        <div className="hidden md:block absolute inset-0 z-0 opacity-[0.25] overflow-hidden">
-          <iframe
-            key={currentVideoId}
-            className="absolute top-1/2 left-1/2 w-[110vw] h-[62vw] min-h-[110vh] min-w-[195vh] -translate-x-1/2 -translate-y-1/2 scale-110 grayscale contrast-[1.1] brightness-[1.0] max-w-none"
-            src={`https://www.youtube.com/embed/${currentVideoId}?autoplay=1&mute=1&loop=1&playlist=${currentVideoId}&controls=0&showinfo=0&autohide=1&modestbranding=1&rel=0&hd=1`}
-            frameBorder="0"
-            allow="autoplay; encrypted-media"
-          ></iframe>
-        </div>
+        <DesktopVideoBackground videoId={currentVideoId} />
 
         {/* Massive Decorative Typography (Background Layer) */}
         <div className="absolute inset-0 z-0 flex items-center justify-center overflow-hidden select-none pointer-events-none">
@@ -353,51 +712,7 @@ const CelestialOracleHero = () => {
         <div className="relative z-20 max-w-7xl xl:max-w-[1360px] 2xl:max-w-[1480px] mx-auto px-6 lg:px-12 w-full grid lg:grid-cols-12 gap-12 items-center">
           
           {/* Left Column: Heading and Marketing Copy */}
-          <div className="lg:col-span-6 text-left relative py-8 px-6 md:py-0 md:px-0 rounded-2xl overflow-hidden z-10">
-            {/* Mobile-Only Video Background container */}
-            <div className="block md:hidden absolute inset-0 z-0 opacity-[0.22] pointer-events-none overflow-hidden rounded-2xl">
-              <iframe
-                key={`${currentVideoId}-mobile`}
-                className="absolute top-1/2 left-1/2 w-[280vw] h-[158vw] min-h-full min-w-full -translate-x-1/2 -translate-y-1/2 scale-110 grayscale contrast-[1.15] brightness-[1.0] max-w-none"
-                src={`https://www.youtube.com/embed/${currentVideoId}?autoplay=1&mute=1&loop=1&playlist=${currentVideoId}&controls=0&showinfo=0&autohide=1&modestbranding=1&rel=0&hd=1&playsinline=1`}
-                frameBorder="0"
-                allow="autoplay; encrypted-media"
-              ></iframe>
-            </div>
-
-            <div className="relative z-10 font-sans">
-              <div className="flex items-center gap-4 mb-6 animate-reveal opacity-0" style={{ animationDelay: '0.2s' }}>
-                <span className="inline-flex items-center gap-1.5 px-4 py-2 border border-[#B38B36]/40 rounded-xl bg-[#FCFAF2]/70 backdrop-blur-sm text-xs md:text-sm tracking-[0.2em] uppercase text-[#3C2A21] font-extrabold shadow-sm">
-                  ✨ AI Personalized Horoscope
-                </span>
-              </div>
-
-              <h1 className="font-serif text-[#3C2A21] text-4xl md:text-5xl lg:text-[3.2rem] xl:text-[3.8rem] leading-[1.15] tracking-tight mb-8 animate-reveal opacity-0" style={{ animationDelay: '0.4s' }}>
-                Unlock the Karma That <span className="italic font-light text-[#8E6B23] inline">Shapes Your Future.</span>
-              </h1>
-
-              <div className="max-w-lg space-y-8 animate-reveal opacity-0" style={{ animationDelay: '0.6s' }}>
-                <p className="text-lg text-stone-800 leading-relaxed font-medium">
-                  Discover what the stars have planned for you. Reveal today's cosmic guidance, planetary movements, and see what destiny has planned in seconds.
-                </p>
-                <div className="flex flex-row items-center gap-4">
-                  <button 
-                    onClick={handleHeroButtonClick}
-                    className="px-6 py-3.5 bg-[#B38B36] hover:bg-[#8E6B23] text-white text-[9px] tracking-[0.2em] uppercase font-bold rounded-full transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5 transform cursor-pointer flex items-center justify-center gap-2 whitespace-nowrap"
-                  >
-                    <Sparkles className="w-3.5 h-3.5" />
-                    Check My Horoscope
-                  </button>
-                  <button 
-                    onClick={handleHeroButtonClick}
-                    className="px-6 py-3.5 border border-[#B38B36]/40 hover:bg-[#B38B36] text-[#8E6B23] hover:text-white text-[9px] tracking-[0.2em] uppercase font-bold rounded-full transition-all duration-300 cursor-pointer flex items-center justify-center gap-2 whitespace-nowrap"
-                  >
-                    Reveal Future
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
+          <LeftMarketingContent videoId={currentVideoId} onButtonClick={handleHeroButtonClick} />
 
           {/* Right Column: Direct Birth Chart Input Form */}
           <div className="lg:col-span-6 relative w-full mt-8 lg:mt-0 animate-reveal opacity-0" style={{ animationDelay: '0.8s' }}>
@@ -470,193 +785,336 @@ const CelestialOracleHero = () => {
                         </div>
 
                         {/* Active Reading Details with Full Name Badge */}
-                        <div className="text-center space-y-1 mb-6">
-                          <span className="inline-flex items-center gap-1.5 px-3 py-1 border border-[#B38B36]/25 rounded-full bg-[#B38B36]/5 text-[9px] tracking-[0.25em] uppercase text-[#8E6B23] font-black mb-1.5 z-10 relative">
-                            {TABS.find(t => t.id === activeTab)?.label}
-                          </span>
-                          <h3 className="font-serif text-2xl text-brand-dark font-semibold tracking-wide z-10 relative leading-normal">
-                            {TABS.find(t => t.id === activeTab)?.title}
-                          </h3>
-                          <p className="text-[10px] text-stone-700 font-medium z-10 relative max-w-xs mx-auto leading-relaxed">
-                            {TABS.find(t => t.id === activeTab)?.subtitle}
-                          </p>
-                          <div className="w-24 h-[1px] bg-gradient-to-r from-transparent via-[#B38B36]/30 to-transparent mx-auto mt-4" />
+                        <div className="relative z-10 w-full overflow-hidden" style={{ minHeight: '125px' }}>
+                          <AnimatePresence mode="wait">
+                            <motion.div
+                              key={activeTab}
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                              exit={{ opacity: 0 }}
+                              transition={{ duration: 0.3 }}
+                              className="text-center space-y-1"
+                            >
+                              <span className="inline-flex items-center gap-1.5 px-3 py-1 border border-[#B38B36]/25 rounded-full bg-[#B38B36]/5 text-[9px] tracking-[0.25em] uppercase text-[#8E6B23] font-black mb-1.5 z-10 relative">
+                                {TABS.find(t => t.id === activeTab)?.label}
+                              </span>
+                              <h3 className="font-serif text-2xl text-brand-dark font-semibold tracking-wide z-10 relative leading-normal">
+                                {TABS.find(t => t.id === activeTab)?.title}
+                              </h3>
+                              <p className="text-[10px] text-stone-700 font-medium z-10 relative max-w-xs mx-auto leading-relaxed">
+                                {TABS.find(t => t.id === activeTab)?.subtitle}
+                              </p>
+                              <div className="w-24 h-[1px] bg-gradient-to-r from-transparent via-[#B38B36]/30 to-transparent mx-auto mt-4" />
+                            </motion.div>
+                          </AnimatePresence>
                         </div>
 
-                        <form onSubmit={handleFormSubmit} className="space-y-5 text-left">
-                          {/* Name */}
-                          <div className="flex flex-col gap-1.5 text-left">
-                            <label className="text-[10px] uppercase tracking-[0.2em] text-brand-dark font-sans font-bold z-10 relative drop-shadow-[0_1px_1px_rgba(255,255,255,0.8)]">
-                              Full Name
-                            </label>
-                            <div className="relative group">
-                              <User className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#B38B36] group-focus-within:text-[#E5C06A] group-focus-within:scale-110 transition-all duration-300 z-20" />
-                              <Input
-                                id="name-input"
-                                name="name"
-                                placeholder="Your name (optional)"
-                                value={formData.name}
-                                onChange={handleFormChange}
-                                className="pl-[38px] h-11 bg-[#FCFAF2]/35 hover:bg-[#FFFDF9]/60 border-[#B38B36]/30 hover:border-[#E5C06A]/60 focus-visible:ring-1 focus-visible:ring-[#E5C06A] focus-visible:border-[#E5C06A] focus-visible:shadow-[0_0_15px_rgba(229,192,106,0.25)] text-[#1E110A] text-xs rounded-xl shadow-sm transition-all z-10 relative"
-                              />
-                            </div>
+                        <form onSubmit={handleFormSubmit} className="flex-1 flex flex-col justify-between space-y-5 text-left relative z-10">
+                          <div className="h-[360px] overflow-y-auto pr-1.5 custom-scroll">
+                            <AnimatePresence mode="wait">
+                              <motion.div
+                                key={activeTab}
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 0.3 }}
+                                className="space-y-5"
+                              >
+                                {/* 1. Pending Karma Form */}
+                                {activeTab === "pending-karma" && (
+                                  <div className="space-y-5">
+                                    {renderSeekerFields("Full Name", "Your full name")}
+                                  </div>
+                                )}
+
+                                {/* 2. Karmic Connections Form */}
+                                {activeTab === "karmic-connections" && (
+                                  <div className="space-y-5">
+                                    <div className="text-left mb-2">
+                                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 border border-[#B38B36]/20 rounded-full bg-[#B38B36]/5 text-[9px] tracking-wider uppercase text-[#8E6B23] font-bold">
+                                        Person 1 Details
+                                      </span>
+                                    </div>
+                                    {renderSeekerFields("Person 1 Name", "Person 1's full name")}
+                                    
+                                    <div className="text-left mt-6 mb-2 border-t border-[#B38B36]/15 pt-4">
+                                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 border border-[#B38B36]/20 rounded-full bg-[#B38B36]/5 text-[9px] tracking-wider uppercase text-[#8E6B23] font-bold">
+                                        Person 2 Details
+                                      </span>
+                                    </div>
+                                    
+                                    {/* Person 2 Name */}
+                                    <div className="flex flex-col gap-1.5 text-left">
+                                      <label className="text-[10px] uppercase tracking-[0.2em] text-[#3C2A21] font-sans font-bold z-10 relative">
+                                        Person 2 Name
+                                      </label>
+                                      <div className="relative group">
+                                        <User className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#B38B36] group-focus-within:text-[#E5C06A] group-focus-within:scale-110 transition-all duration-300 z-20" />
+                                        <Input
+                                          name="partnerName"
+                                          required
+                                          placeholder="Person 2's full name"
+                                          value={formData.partnerName}
+                                          onChange={handleFormChange}
+                                          className="pl-[38px] h-11 bg-[#FCFAF2]/35 hover:bg-[#FFFDF9]/60 border-[#B38B36]/30 hover:border-[#E5C06A]/60 focus-visible:ring-1 focus-visible:ring-[#E5C06A] focus-visible:border-[#E5C06A] text-[#1E110A] text-xs rounded-xl shadow-sm transition-all z-10 relative"
+                                        />
+                                      </div>
+                                    </div>
+
+                                    {/* Person 2 DOB */}
+                                    <div className="flex flex-col gap-1.5 text-left">
+                                      <label className="text-[10px] uppercase tracking-[0.2em] text-[#3C2A21] font-sans font-bold z-10 relative">
+                                        Person 2 Date of Birth
+                                      </label>
+                                      <div className="relative group">
+                                        <Calendar className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#B38B36] group-focus-within:text-[#E5C06A] group-focus-within:scale-110 transition-all duration-300 z-20" />
+                                        <Input
+                                          name="partnerDob"
+                                          required
+                                          type="date"
+                                          value={formData.partnerDob}
+                                          onChange={handleFormChange}
+                                          className="pl-[38px] h-11 bg-[#FCFAF2]/35 hover:bg-[#FFFDF9]/60 border-[#B38B36]/30 hover:border-[#E5C06A]/60 focus-visible:ring-1 focus-visible:ring-[#E5C06A] focus-visible:border-[#E5C06A] text-[#1E110A] text-xs rounded-xl shadow-sm transition-all cursor-pointer z-10 relative"
+                                        />
+                                      </div>
+                                    </div>
+
+                                    {/* Person 2 TOB */}
+                                    <div className="flex flex-col gap-1.5 text-left">
+                                      <label className="text-[10px] uppercase tracking-[0.2em] text-[#3C2A21] font-sans font-bold z-10 relative">
+                                        Person 2 Time of Birth
+                                      </label>
+                                      <div className="relative group">
+                                        <Clock className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#B38B36] group-focus-within:text-[#E5C06A] group-focus-within:scale-110 transition-all duration-300 z-20" />
+                                        <Input
+                                          name="partnerTob"
+                                          required
+                                          type="time"
+                                          value={formData.partnerTob}
+                                          onChange={handleFormChange}
+                                          className="pl-[38px] h-11 bg-[#FCFAF2]/35 hover:bg-[#FFFDF9]/60 border-[#B38B36]/30 hover:border-[#E5C06A]/60 focus-visible:ring-1 focus-visible:ring-[#E5C06A] focus-visible:border-[#E5C06A] text-[#1E110A] text-xs rounded-xl shadow-sm cursor-pointer z-10 relative"
+                                        />
+                                      </div>
+                                    </div>
+
+                                    {/* Person 2 POB */}
+                                    {renderPlaceOfBirthSelectors(
+                                      selectedPartnerCountry,
+                                      selectedPartnerState,
+                                      selectedPartnerCity,
+                                      partnerCountries,
+                                      partnerStates,
+                                      partnerCities,
+                                      handlePartnerCountryChange,
+                                      handlePartnerStateChange,
+                                      handlePartnerCityChange,
+                                      "Person 2 Place of Birth"
+                                    )}
+                                  </div>
+                                )}
+
+                                {/* 3. Soul Purpose Form */}
+                                {activeTab === "soul-purpose" && (
+                                  <div className="space-y-5">
+                                    {renderSeekerFields("Full Name", "Your full name")}
+                                    <div className="text-left mt-6 mb-2 border-t border-[#B38B36]/15 pt-4">
+                                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 border border-[#B38B36]/20 rounded-full bg-[#B38B36]/5 text-[9px] tracking-wider uppercase text-[#8E6B23] font-bold">
+                                        Spiritual Focus
+                                      </span>
+                                    </div>
+                                    <div className="flex flex-col gap-1.5 text-left">
+                                      <label className="text-[10px] uppercase tracking-[0.2em] text-[#3C2A21] font-sans font-bold z-10 relative">
+                                        Spiritual Aspiration (Optional)
+                                      </label>
+                                      <div className="relative">
+                                        <select
+                                          name="spiritualQuest"
+                                          value={formData.spiritualQuest}
+                                          onChange={handleFormChange}
+                                          className="w-full h-11 px-3 bg-[#FCFAF2]/35 hover:bg-[#FFFDF9]/60 border-[#B38B36]/30 hover:border-[#E5C06A]/60 focus:ring-1 focus:ring-[#E5C06A] focus:border-[#E5C06A] text-[#1E110A] text-xs rounded-xl shadow-sm cursor-pointer outline-none transition-all z-10 relative"
+                                        >
+                                          <option value="" className="bg-[#FFFDF9] text-[#1E110A]">Select Aspiration</option>
+                                          <option value="Dharma / Soul Calling" className="bg-[#FFFDF9] text-[#1E110A]">Dharma / Soul Calling</option>
+                                          <option value="Inner Peace & Emotional Harmony" className="bg-[#FFFDF9] text-[#1E110A]">Inner Peace & Emotional Harmony</option>
+                                          <option value="Ancestral Healing & Karmic Release" className="bg-[#FFFDF9] text-[#1E110A]">Ancestral Healing & Karmic Release</option>
+                                          <option value="Spiritual Evolution & Higher Knowledge" className="bg-[#FFFDF9] text-[#1E110A]">Spiritual Evolution & Higher Knowledge</option>
+                                          <option value="Other" className="bg-[#FFFDF9] text-[#1E110A]">Other (Describe Custom Aspiration)</option>
+                                        </select>
+                                      </div>
+                                      {formData.spiritualQuest === "Other" && (
+                                        <div className="relative group mt-2.5 z-10">
+                                          <Input
+                                            name="spiritualQuestOther"
+                                            placeholder="Enter your custom spiritual focus..."
+                                            value={formData.spiritualQuestOther || ""}
+                                            onChange={handleFormChange}
+                                            className="h-10 bg-[#FCFAF2]/45 border-[#B38B36]/30 focus-visible:ring-1 focus-visible:ring-[#E5C06A] text-xs rounded-xl text-[#1E110A]"
+                                          />
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+                                )}
+
+                                {/* 4. Soul Blueprint Form */}
+                                {activeTab === "soul-blueprint" && (
+                                  <div className="space-y-5">
+                                    {renderSeekerFields("Full Name", "Your full name")}
+                                    <div className="text-left mt-6 mb-2 border-t border-[#B38B36]/15 pt-4">
+                                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 border border-[#B38B36]/20 rounded-full bg-[#B38B36]/5 text-[9px] tracking-wider uppercase text-[#8E6B23] font-bold">
+                                        Professional Alignment
+                                      </span>
+                                    </div>
+                                    {/* Target Industry */}
+                                    <div className="flex flex-col gap-1.5 text-left">
+                                      <label className="text-[10px] uppercase tracking-[0.2em] text-[#3C2A21] font-sans font-bold z-10 relative">
+                                        Target Industry (Optional)
+                                      </label>
+                                      <div className="relative">
+                                        <select
+                                          name="industry"
+                                          value={formData.industry}
+                                          onChange={handleFormChange}
+                                          className="w-full h-11 px-3 bg-[#FCFAF2]/35 hover:bg-[#FFFDF9]/60 border-[#B38B36]/30 hover:border-[#E5C06A]/60 focus:ring-1 focus:ring-[#E5C06A] focus:border-[#E5C06A] text-[#1E110A] text-xs rounded-xl shadow-sm cursor-pointer outline-none transition-all z-10 relative"
+                                        >
+                                          <option value="" className="bg-[#FFFDF9] text-[#1E110A]">Select Industry</option>
+                                          <option value="Technology & Engineering" className="bg-[#FFFDF9] text-[#1E110A]">Technology & Engineering</option>
+                                          <option value="Business, Finance & Entrepreneurship" className="bg-[#FFFDF9] text-[#1E110A]">Business, Finance & Entrepreneurship</option>
+                                          <option value="Arts, Creative & Entertainment" className="bg-[#FFFDF9] text-[#1E110A]">Arts, Creative & Entertainment</option>
+                                          <option value="Healthcare, Wellness & Medicine" className="bg-[#FFFDF9] text-[#1E110A]">Healthcare, Wellness & Medicine</option>
+                                          <option value="Education, Law & Public Service" className="bg-[#FFFDF9] text-[#1E110A]">Education, Law & Public Service</option>
+                                          <option value="Other" className="bg-[#FFFDF9] text-[#1E110A]">Other (Custom Sector/Occupation)</option>
+                                        </select>
+                                      </div>
+                                      {formData.industry === "Other" && (
+                                        <div className="relative group mt-2.5 z-10">
+                                          <Input
+                                            name="industryOther"
+                                            placeholder="Enter custom occupation (e.g. Pilot, Musician, Homemaker...)"
+                                            value={formData.industryOther || ""}
+                                            onChange={handleFormChange}
+                                            className="h-10 bg-[#FCFAF2]/45 border-[#B38B36]/30 focus-visible:ring-1 focus-visible:ring-[#E5C06A] text-xs rounded-xl text-[#1E110A]"
+                                          />
+                                        </div>
+                                      )}
+                                    </div>
+                                    {/* Career Focus */}
+                                    <div className="flex flex-col gap-1.5 text-left">
+                                      <label className="text-[10px] uppercase tracking-[0.2em] text-[#3C2A21] font-sans font-bold z-10 relative">
+                                        Career Focus Aspiration (Optional)
+                                      </label>
+                                      <div className="relative">
+                                        <select
+                                          name="careerFocus"
+                                          value={formData.careerFocus}
+                                          onChange={handleFormChange}
+                                          className="w-full h-11 px-3 bg-[#FCFAF2]/35 hover:bg-[#FFFDF9]/60 border-[#B38B36]/30 hover:border-[#E5C06A]/60 focus:ring-1 focus:ring-[#E5C06A] focus:border-[#E5C06A] text-[#1E110A] text-xs rounded-xl shadow-sm cursor-pointer outline-none transition-all z-10 relative"
+                                        >
+                                          <option value="" className="bg-[#FFFDF9] text-[#1E110A]">Select Aspiration</option>
+                                          <option value="Leadership & Status Elevation" className="bg-[#FFFDF9] text-[#1E110A]">Leadership & Status Elevation</option>
+                                          <option value="Wealth Accumulation & Security" className="bg-[#FFFDF9] text-[#1E110A]">Wealth Accumulation & Security</option>
+                                          <option value="Career Transition & Growth Strategy" className="bg-[#FFFDF9] text-[#1E110A]">Career Transition & Growth Strategy</option>
+                                          <option value="Independent Business Success" className="bg-[#FFFDF9] text-[#1E110A]">Independent Business Success</option>
+                                          <option value="Other" className="bg-[#FFFDF9] text-[#1E110A]">Other (Custom Goal/Aspiration)</option>
+                                        </select>
+                                      </div>
+                                      {formData.careerFocus === "Other" && (
+                                        <div className="relative group mt-2.5 z-10">
+                                          <Input
+                                            name="careerFocusOther"
+                                            placeholder="Enter custom career aspiration/focus..."
+                                            value={formData.careerFocusOther || ""}
+                                            onChange={handleFormChange}
+                                            className="h-10 bg-[#FCFAF2]/45 border-[#B38B36]/30 focus-visible:ring-1 focus-visible:ring-[#E5C06A] text-xs rounded-xl text-[#1E110A]"
+                                          />
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+                                )}
+
+                                {/* 5. Soul Alignment Form */}
+                                {activeTab === "soul-alignment" && (
+                                  <div className="space-y-5">
+                                    {renderSeekerFields("Full Name", "Your full name")}
+                                    <div className="text-left mt-6 mb-2 border-t border-[#B38B36]/15 pt-4">
+                                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 border border-[#B38B36]/20 rounded-full bg-[#B38B36]/5 text-[9px] tracking-wider uppercase text-[#8E6B23] font-bold">
+                                        Wellness & Energy Focus
+                                      </span>
+                                    </div>
+                                    {/* Energy Level */}
+                                    <div className="flex flex-col gap-1.5 text-left">
+                                      <label className="text-[10px] uppercase tracking-[0.2em] text-[#3C2A21] font-sans font-bold z-10 relative">
+                                        Current Energy Level (Optional)
+                                      </label>
+                                      <div className="relative">
+                                        <select
+                                          name="energyLevel"
+                                          value={formData.energyLevel}
+                                          onChange={handleFormChange}
+                                          className="w-full h-11 px-3 bg-[#FCFAF2]/35 hover:bg-[#FFFDF9]/60 border-[#B38B36]/30 hover:border-[#E5C06A]/60 focus:ring-1 focus:ring-[#E5C06A] focus:border-[#E5C06A] text-[#1E110A] text-xs rounded-xl shadow-sm cursor-pointer outline-none transition-all z-10 relative"
+                                        >
+                                          <option value="" className="bg-[#FFFDF9] text-[#1E110A]">Select Energy State</option>
+                                          <option value="High Vitality (Looking to direct energy)" className="bg-[#FFFDF9] text-[#1E110A]">High Vitality (Looking to direct energy)</option>
+                                          <option value="Fatigued / Stressed (Seeking recovery)" className="bg-[#FFFDF9] text-[#1E110A]">Fatigued / Stressed (Seeking recovery)</option>
+                                          <option value="Highly Sensitive (Absorbing environment)" className="bg-[#FFFDF9] text-[#1E110A]">Highly Sensitive (Absorbing environment)</option>
+                                          <option value="Other" className="bg-[#FFFDF9] text-[#1E110A]">Other (Describe Current Energy)</option>
+                                        </select>
+                                      </div>
+                                      {formData.energyLevel === "Other" && (
+                                        <div className="relative group mt-2.5 z-10">
+                                          <Input
+                                            name="energyLevelOther"
+                                            placeholder="Describe your current energy level..."
+                                            value={formData.energyLevelOther || ""}
+                                            onChange={handleFormChange}
+                                            className="h-10 bg-[#FCFAF2]/45 border-[#B38B36]/30 focus-visible:ring-1 focus-visible:ring-[#E5C06A] text-xs rounded-xl text-[#1E110A]"
+                                          />
+                                        </div>
+                                      )}
+                                    </div>
+                                    {/* Wellness Focus */}
+                                    <div className="flex flex-col gap-1.5 text-left">
+                                      <label className="text-[10px] uppercase tracking-[0.2em] text-[#3C2A21] font-sans font-bold z-10 relative">
+                                        Wellness Goal (Optional)
+                                      </label>
+                                      <div className="relative">
+                                        <select
+                                          name="wellnessFocus"
+                                          value={formData.wellnessFocus}
+                                          onChange={handleFormChange}
+                                          className="w-full h-11 px-3 bg-[#FCFAF2]/35 hover:bg-[#FFFDF9]/60 border-[#B38B36]/30 hover:border-[#E5C06A]/60 focus:ring-1 focus:ring-[#E5C06A] focus:border-[#E5C06A] text-[#1E110A] text-xs rounded-xl shadow-sm cursor-pointer outline-none transition-all z-10 relative"
+                                        >
+                                          <option value="" className="bg-[#FFFDF9] text-[#1E110A]">Select Wellness Focus</option>
+                                          <option value="Vedic Constitution (Vata/Pitta/Kapha)" className="bg-[#FFFDF9] text-[#1E110A]">Vedic Constitution (Vata/Pitta/Kapha)</option>
+                                          <option value="Mental Peace & Stress Reduction" className="bg-[#FFFDF9] text-[#1E110A]">Mental Peace & Stress Reduction</option>
+                                          <option value="Daily Routine & Transit Alignment" className="bg-[#FFFDF9] text-[#1E110A]">Daily Routine & Transit Alignment</option>
+                                          <option value="Other" className="bg-[#FFFDF9] text-[#1E110A]">Other (Custom Wellness Goal)</option>
+                                        </select>
+                                      </div>
+                                      {formData.wellnessFocus === "Other" && (
+                                        <div className="relative group mt-2.5 z-10">
+                                          <Input
+                                            name="wellnessFocusOther"
+                                            placeholder="Describe your custom wellness goal..."
+                                            value={formData.wellnessFocusOther || ""}
+                                            onChange={handleFormChange}
+                                            className="h-10 bg-[#FCFAF2]/45 border-[#B38B36]/30 focus-visible:ring-1 focus-visible:ring-[#E5C06A] text-xs rounded-xl text-[#1E110A]"
+                                          />
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+                                )}
+                              </motion.div>
+                            </AnimatePresence>
                           </div>
-
-                          {/* Date of Birth */}
-                          <div className="flex flex-col gap-1.5 text-left">
-                            <label className="text-[10px] uppercase tracking-[0.2em] text-brand-dark font-sans font-bold z-10 relative drop-shadow-[0_1px_1px_rgba(255,255,255,0.8)]">
-                              Date of Birth
-                            </label>
-                            <div className="relative group">
-                              <Calendar className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#B38B36] group-focus-within:text-[#E5C06A] group-focus-within:scale-110 transition-all duration-300 z-20" />
-                              <Input
-                                name="dob"
-                                required
-                                type="date"
-                                value={formData.dob}
-                                onChange={handleFormChange}
-                                className="pl-[38px] h-11 bg-[#FCFAF2]/35 hover:bg-[#FFFDF9]/60 border-[#B38B36]/30 hover:border-[#E5C06A]/60 focus-visible:ring-1 focus-visible:ring-[#E5C06A] focus-visible:border-[#E5C06A] focus-visible:shadow-[0_0_15px_rgba(229,192,106,0.25)] text-[#1E110A] text-xs rounded-xl shadow-sm transition-all cursor-pointer z-10 relative"
-                              />
-                            </div>
-                          </div>
-
-                          {/* Birth Time */}
-                          <div className="flex flex-col gap-1.5 text-left">
-                            <label className="text-[10px] uppercase tracking-[0.2em] text-brand-dark font-sans font-bold z-10 relative drop-shadow-[0_1px_1px_rgba(255,255,255,0.8)]">
-                              Time of Birth
-                            </label>
-                            <div className="relative group">
-                              <Clock className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#B38B36] group-focus-within:text-[#E5C06A] group-focus-within:scale-110 transition-all duration-300 z-20" />
-                              <Input
-                                name="tob"
-                                required
-                                type="time"
-                                value={formData.tob}
-                                onChange={handleFormChange}
-                                className="pl-[38px] h-11 bg-[#FCFAF2]/35 hover:bg-[#FFFDF9]/60 border-[#B38B36]/30 hover:border-[#E5C06A]/60 focus-visible:ring-1 focus-visible:ring-[#E5C06A] focus-visible:border-[#E5C06A] focus-visible:shadow-[0_0_15px_rgba(229,192,106,0.25)] text-[#1E110A] text-xs rounded-xl shadow-sm transition-all cursor-pointer z-10 relative"
-                              />
-                            </div>
-                          </div>
-
-                          {/* Birth Place (3 Dropdowns) */}
-                          <div className="flex flex-col gap-1.5 text-left">
-                            <label className="text-[10px] uppercase tracking-[0.2em] text-brand-dark font-sans font-bold z-10 relative drop-shadow-[0_1px_1px_rgba(255,255,255,0.8)]">
-                              Place of Birth
-                            </label>
-                            <div className="flex flex-col gap-2.5 z-10 relative">
-                              {/* Country Selector */}
-                              <div className="relative">
-                                <select
-                                  required
-                                  value={selectedCountry}
-                                  onChange={handleCountryChange}
-                                  className="w-full h-11 px-3 bg-[#FCFAF2]/35 hover:bg-[#FFFDF9]/60 border-[#B38B36]/30 hover:border-[#E5C06A]/60 focus:ring-1 focus:ring-[#E5C06A] focus:border-[#E5C06A] text-[#1E110A] text-xs rounded-xl shadow-sm cursor-pointer outline-none transition-all z-10 relative"
-                                >
-                                  <option value="" className="bg-[#FFFDF9] text-[#1E110A]">Select Country</option>
-                                  {countries.map((c) => (
-                                    <option key={c.isoCode} value={c.isoCode} className="bg-[#FFFDF9] text-[#1E110A]">
-                                      {c.name}
-                                    </option>
-                                  ))}
-                                </select>
-                              </div>
-
-                              {/* State Selector */}
-                              {states.length > 0 && (
-                                <div className="relative">
-                                  <select
-                                    required
-                                    value={selectedState}
-                                    onChange={handleStateChange}
-                                    className="w-full h-11 px-3 bg-[#FCFAF2]/35 hover:bg-[#FFFDF9]/60 border-[#B38B36]/30 hover:border-[#E5C06A]/60 focus:ring-1 focus:ring-[#E5C06A] focus:border-[#E5C06A] text-[#1E110A] text-xs rounded-xl shadow-sm cursor-pointer outline-none transition-all z-10 relative"
-                                  >
-                                    <option value="" className="bg-[#FFFDF9] text-[#1E110A]">Select State</option>
-                                    {states.map((s) => (
-                                      <option key={s.isoCode} value={s.isoCode} className="bg-[#FFFDF9] text-[#1E110A]">
-                                        {s.name}
-                                      </option>
-                                    ))}
-                                  </select>
-                                </div>
-                              )}
-
-                              {/* City Selector */}
-                              <div className="relative">
-                                <select
-                                  required
-                                  disabled={!selectedCountry || (states.length > 0 && !selectedState)}
-                                  value={selectedCity}
-                                  onChange={handleCityChange}
-                                  className="w-full h-11 px-3 bg-[#FCFAF2]/35 hover:bg-[#FFFDF9]/60 border-[#B38B36]/30 hover:border-[#E5C06A]/60 focus:ring-1 focus:ring-[#E5C06A] focus:border-[#E5C06A] text-[#1E110A] text-xs rounded-xl shadow-sm cursor-pointer outline-none transition-all z-10 relative disabled:opacity-50"
-                                >
-                                  <option value="" className="bg-[#FFFDF9] text-[#1E110A]">Select City</option>
-                                  {cities.map((city, idx) => (
-                                    <option key={idx} value={city.name} className="bg-[#FFFDF9] text-[#1E110A]">
-                                      {city.name}
-                                    </option>
-                                  ))}
-                                </select>
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Partner details (only for Karmic Connections tab) */}
-                          {activeTab === "karmic-connections" && (
-                            <motion.div
-                              initial={{ opacity: 0, height: 0 }}
-                              animate={{ opacity: 1, height: "auto" }}
-                              exit={{ opacity: 0, height: 0 }}
-                              className="space-y-4 pt-2 border-t border-[#B38B36]/15 z-10 relative"
-                            >
-                              <div className="text-left">
-                                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 border border-[#B38B36]/20 rounded-full bg-[#B38B36]/5 text-[9px] tracking-wider uppercase text-[#8E6B23] font-bold">
-                                  Partner Details
-                                </span>
-                              </div>
-                              
-                              {/* Partner's Full Name */}
-                              <div className="flex flex-col gap-1.5 text-left">
-                                <label className="text-[10px] uppercase tracking-[0.2em] text-brand-dark font-sans font-bold z-10 relative drop-shadow-[0_1px_1px_rgba(255,255,255,0.8)]">
-                                  Partner's Name
-                                </label>
-                                <div className="relative group">
-                                  <User className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#B38B36] group-focus-within:text-[#E5C06A] group-focus-within:scale-110 transition-all duration-300 z-20" />
-                                  <Input
-                                    name="partnerName"
-                                    required={activeTab === "karmic-connections"}
-                                    placeholder="Partner's full name"
-                                    value={formData.partnerName}
-                                    onChange={handleFormChange}
-                                    className="pl-[38px] h-11 bg-[#FCFAF2]/35 hover:bg-[#FFFDF9]/60 border-[#B38B36]/30 hover:border-[#E5C06A]/60 focus-visible:ring-1 focus-visible:ring-[#E5C06A] focus-visible:border-[#E5C06A] focus-visible:shadow-[0_0_15px_rgba(229,192,106,0.25)] text-[#1E110A] text-xs rounded-xl shadow-sm transition-all z-10 relative"
-                                  />
-                                </div>
-                              </div>
-
-                              {/* Partner's Date of Birth */}
-                              <div className="flex flex-col gap-1.5 text-left">
-                                <label className="text-[10px] uppercase tracking-[0.2em] text-brand-dark font-sans font-bold z-10 relative drop-shadow-[0_1px_1px_rgba(255,255,255,0.8)]">
-                                  Partner's Date of Birth
-                                </label>
-                                <div className="relative group">
-                                  <Calendar className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#B38B36] group-focus-within:text-[#E5C06A] group-focus-within:scale-110 transition-all duration-300 z-20" />
-                                  <Input
-                                    name="partnerDob"
-                                    required={activeTab === "karmic-connections"}
-                                    type="date"
-                                    value={formData.partnerDob}
-                                    onChange={handleFormChange}
-                                    className="pl-[38px] h-11 bg-[#FCFAF2]/35 hover:bg-[#FFFDF9]/60 border-[#B38B36]/30 hover:border-[#E5C06A]/60 focus-visible:ring-1 focus-visible:ring-[#E5C06A] focus-visible:border-[#E5C06A] focus-visible:shadow-[0_0_15px_rgba(229,192,106,0.25)] text-[#1E110A] text-xs rounded-xl shadow-sm transition-all cursor-pointer z-10 relative"
-                                  />
-                                </div>
-                              </div>
-                            </motion.div>
-                          )}
 
                           {/* Submit Button */}
                           <button
                             type="submit"
                             disabled={submitting}
-                            className="w-full mt-4 py-4 bg-gradient-to-r from-[#B38B36] to-[#8E6B23] hover:from-[#8E6B23] hover:to-[#725D46] text-white font-sans font-extrabold tracking-[0.22em] uppercase rounded-xl transition-all duration-500 shadow-[0_4px_20px_rgba(179,139,54,0.3)] hover:shadow-[0_8px_30px_rgba(179,139,54,0.5)] flex items-center justify-center gap-2 text-xs cursor-pointer hover:scale-[1.02] border border-[#B38B36]/30 z-10 relative"
+                            className="w-full py-4 bg-gradient-to-r from-[#B38B36] to-[#8E6B23] hover:from-[#8E6B23] hover:to-[#725D46] text-white font-sans font-extrabold tracking-[0.22em] uppercase rounded-xl transition-all duration-500 shadow-[0_4px_20px_rgba(179,139,54,0.3)] hover:shadow-[0_8px_30px_rgba(179,139,54,0.5)] flex items-center justify-center gap-2 text-xs cursor-pointer hover:scale-[1.02] border border-[#B38B36]/30 z-10 relative"
                           >
                             <span>{TABS.find(t => t.id === activeTab)?.buttonText || "GENERATE HOROSCOPE"}</span>
                             <ArrowRight className="w-3.5 h-3.5 stroke-[3px]" />
@@ -954,6 +1412,10 @@ const CelestialOracleHero = () => {
           backdrop-filter: blur(12px) !important;
           border: 1px solid rgba(229, 192, 106, 0.25) !important;
           transition: all 0.5s ease-in-out;
+          min-height: 680px;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
         }
         .glittery-form-card:hover {
           background: rgba(253, 251, 247, 0.75) !important;
@@ -962,6 +1424,20 @@ const CelestialOracleHero = () => {
             0 30px 70px rgba(179, 139, 54, 0.2),
             0 0 50px rgba(229, 192, 106, 0.15),
             inset 0 0 25px rgba(255, 255, 255, 0.4) !important;
+        }
+        .custom-scroll::-webkit-scrollbar {
+          width: 4px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+          background: rgba(179, 139, 54, 0.05);
+          border-radius: 9999px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+          background: rgba(179, 139, 54, 0.25);
+          border-radius: 9999px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb:hover {
+          background: rgba(179, 139, 54, 0.45);
         }
         .glittery-form-card label {
           color: #3C2A21 !important;

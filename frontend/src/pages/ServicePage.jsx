@@ -30,7 +30,7 @@ const ServicePage = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1 }}
-        className="relative w-full h-[250px] md:h-[300px] bg-[#3C2A21] flex items-center overflow-hidden border-b border-[#B38B36]/20"
+        className="relative w-full h-[180px] md:h-[220px] bg-[#3C2A21] flex items-center overflow-hidden border-b border-[#B38B36]/20"
       >
         <div className="absolute inset-0 bg-black/45 z-10" />
         <motion.img 
@@ -57,13 +57,13 @@ const ServicePage = () => {
 
       {/* Main Content Section */}
       <section className="py-24 max-w-7xl mx-auto px-6 lg:px-12 border-b border-[#B38B36]/10 overflow-hidden">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
+        <div className="grid lg:grid-cols-2 gap-16 items-stretch">
           <motion.div 
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="relative group max-w-sm mx-auto lg:ml-0"
+            className="relative group w-full h-full flex flex-col justify-center min-h-[400px] lg:min-h-[500px]"
           >
              {/* Slowly rotating celestial background rings */}
              <motion.div 
@@ -77,22 +77,22 @@ const ServicePage = () => {
                className="absolute -bottom-10 -left-10 w-48 h-48 rounded-full border border-[#B38B36]/20 border-dotted z-0"
              />
 
-             {/* Main Tarot-style Image Card */}
+             {/* Main Rectangular Image Card */}
              <motion.div
-               animate={{ y: [0, -15, 0] }}
+               animate={{ y: [0, -10, 0] }}
                transition={{ repeat: Infinity, duration: 6, ease: "easeInOut" }}
-               className="relative z-10 p-3 bg-white/60 backdrop-blur-xl rounded-t-[12rem] rounded-b-3xl shadow-[0_30px_60px_rgba(60,42,33,0.15)] border border-[#B38B36]/20"
+               className="relative z-10 p-3 bg-white/60 backdrop-blur-xl rounded-3xl shadow-[0_30px_60px_rgba(60,42,33,0.15)] border border-[#B38B36]/20 h-full flex flex-col"
              >
-                <div className="overflow-hidden rounded-t-[12rem] rounded-b-2xl relative bg-[#FDFBF7]">
+                <div className="overflow-hidden rounded-2xl relative bg-[#FDFBF7] flex-1 min-h-[380px] lg:h-full">
                   <img
                     src={data.mainImage}
                     alt={data.title}
-                    className="w-full h-[400px] md:h-[480px] object-cover transform scale-[1.25] group-hover:scale-[1.35] transition-transform duration-1000"
+                    className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-1000"
                     onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&q=80" }}
                   />
                   
                   {/* Subtle inner gold rim */}
-                  <div className="absolute inset-0 border border-[#B38B36]/40 rounded-t-[12rem] rounded-b-2xl pointer-events-none mix-blend-overlay" />
+                  <div className="absolute inset-0 border border-[#B38B36]/40 rounded-2xl pointer-events-none mix-blend-overlay" />
                   
                   {/* Mystical overlay glow on hover */}
                   <div className="absolute inset-0 bg-gradient-to-tr from-[#B38B36]/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />

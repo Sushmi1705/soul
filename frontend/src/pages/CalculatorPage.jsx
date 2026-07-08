@@ -21,6 +21,8 @@ import {
   ChevronRight
 } from "lucide-react";
 import { Country, State, City } from "country-state-city";
+import CalculatorBookingModal from "@/components/CalculatorBookingModal";
+import { CalculatorBookingService } from "@/services/calculatorBookingServices";
 
 const CALCULATOR_DETAILS = {
   "moon-sign": { title: "Moon Sign Calculator", desc: "Understand your emotional nature, instincts, and how you truly respond to life situations." },
@@ -593,6 +595,18 @@ const CalculatorPage = () => {
   
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
+  const [showBookingModal, setShowBookingModal] = useState(false);
+  const [hasActiveBooking, setHasActiveBooking] = useState(false);
+
+  useEffect(() => {
+    const storedPhone = localStorage.getItem("seeker_phone");
+    if (storedPhone && result) {
+      const active = CalculatorBookingService.getActiveBooking(storedPhone, id);
+      setHasActiveBooking(!!active);
+    } else {
+      setHasActiveBooking(false);
+    }
+  }, [result, id, showBookingModal]);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -2126,16 +2140,16 @@ const CalculatorPage = () => {
                   Recalculate
                 </motion.button>
 
-                {/* Redirect to checkout flow for complete destiny analysis */}
-                {result.reportId && (
+                {/* Contact Gitika Sharma Consultation Modal Trigger */}
+                {result && (
                   <motion.button 
-                    onClick={() => navigate(`/payment?reportId=${result.reportId}`)}
+                    onClick={() => setShowBookingModal(true)}
                     whileHover={{ scale: 1.02, y: -1 }}
                     whileTap={{ scale: 0.98 }}
                     className="w-full sm:w-auto text-[10px] uppercase tracking-widest font-serif font-bold text-[#1E110A] bg-gradient-to-r from-[#BF953F] via-[#FCF6BA] to-[#B38728] hover:brightness-[1.12] px-6 py-2.5 rounded-full transition-all duration-500 shadow-[0_4px_12px_rgba(179,139,54,0.3)] transform cursor-pointer flex items-center justify-center gap-1.5 border border-[#FCF6BA]/40"
                   >
-                    <Unlock className="w-3.5 h-3.5 stroke-[2.5px]" />
-                    <span>Unlock Full Report</span>
+                    <User className="w-3.5 h-3.5 stroke-[2.5px]" />
+                    <span>{hasActiveBooking ? "Active Booking - View Details" : "Contact Gitika Sharma"}</span>
                   </motion.button>
                 )}
               </div>
@@ -2145,6 +2159,14 @@ const CalculatorPage = () => {
         )}
 
       </div>
+
+      <CalculatorBookingModal
+        open={showBookingModal}
+        onClose={() => setShowBookingModal(false)}
+        calculatorId={id}
+        calculatorName={CALCULATOR_DETAILS[id]?.title || "Free Astrological Calculator"}
+        resultId={result?.reportId || result?.matchingResult?.matchingId}
+      />
     </div>
   );
 };

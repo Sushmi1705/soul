@@ -34,6 +34,7 @@ import AdminDashboard from "@/pages/AdminDashboard";
 import PaymentPage from "@/pages/PaymentPage";
 import ShubhMuhuratPage from "@/pages/ShubhMuhuratPage";
 import PanchangPage from "@/pages/PanchangPage";
+import MyOrdersPage from "@/pages/MyOrdersPage";
 
 const Layout = ({ children }) => {
   const { pathname } = useLocation();
@@ -122,6 +123,7 @@ function App() {
               <Route path="/admin/login" element={<AdminLogin />} />
               <Route path="/admin" element={<AdminDashboard />} />
               <Route path="/payment" element={<PaymentPage />} />
+              <Route path="/my-orders" element={<MyOrdersPage />} />
             </Routes>
           </Layout>
         </BrowserRouter>

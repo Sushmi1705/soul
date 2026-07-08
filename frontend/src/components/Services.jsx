@@ -1,10 +1,16 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ArrowUpRight, CalendarClock } from "lucide-react";
 import { SERVICES, formatINR } from "@/data/content";
 import BookingModal from "@/components/BookingModal";
+import { ServiceBookingService } from "@/services/serviceBookingServices";
 
 const Services = () => {
   const [selected, setSelected] = useState(null);
+  const [seekerPhone, setSeekerPhone] = useState("");
+
+  useEffect(() => {
+    setSeekerPhone(localStorage.getItem("seeker_phone") || "");
+  }, []);
 
   return (
     <section
@@ -69,15 +75,20 @@ const Services = () => {
                        <span className="font-serif text-xl text-[#3C2A21]">{formatINR(item.price)}</span>
                     </div>
                     
-                    <button 
-                       onClick={() => setSelected(item)}
-                       className="group/btn flex items-center gap-2 text-[10px] tracking-[0.2em] uppercase font-bold text-[#3C2A21] hover:text-[#B38B36] transition-colors"
-                    >
-                      Book Session
-                      <span className="w-8 h-8 rounded-full bg-[#FDFBF7] border border-[#E5E0D8] flex items-center justify-center group-hover/btn:bg-[#B38B36] group-hover/btn:border-[#B38B36] transition-colors">
-                        <ArrowUpRight className="w-3.5 h-3.5 text-[#3C2A21] group-hover/btn:text-white transition-colors" />
-                      </span>
-                    </button>
+                    {(() => {
+                      const activeBooking = ServiceBookingService.getActiveBooking(item.id, seekerPhone);
+                      return (
+                        <button 
+                           onClick={() => setSelected(item)}
+                           className="group/btn flex items-center gap-2 text-[10px] tracking-[0.2em] uppercase font-bold text-[#3C2A21] hover:text-[#B38B36] transition-colors"
+                        >
+                          {activeBooking ? "View Booking" : "Book Session"}
+                          <span className="w-8 h-8 rounded-full bg-[#FDFBF7] border border-[#E5E0D8] flex items-center justify-center group-hover/btn:bg-[#B38B36] group-hover/btn:border-[#B38B36] transition-colors">
+                            <ArrowUpRight className="w-3.5 h-3.5 text-[#3C2A21] group-hover/btn:text-white transition-colors" />
+                          </span>
+                        </button>
+                      );
+                    })()}
                 </div>
               </div>
             </div>
@@ -88,7 +99,10 @@ const Services = () => {
       <BookingModal
         service={selected}
         open={!!selected}
-        onClose={() => setSelected(null)}
+        onClose={() => {
+          setSelected(null);
+          setSeekerPhone(localStorage.getItem("seeker_phone") || "");
+        }}
       />
     </section>
   );

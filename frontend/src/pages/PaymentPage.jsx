@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
@@ -26,9 +26,27 @@ import {
   MapPin,
   MessageSquare,
   Phone,
-  Mail
+  Video,
+  Mail,
+  ShieldCheck,
+  BookOpen,
+  ShieldAlert,
+  Award,
+  Zap,
+  Flame,
+  Compass,
+  ChevronDown,
+  ChevronUp,
+  Search
 } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import AppointmentBookingModal from "@/components/AppointmentBookingModal";
+import { ConsultationStatusService } from "@/services/consultationStatusService";
+import { CustomerService } from "@/services/customerService";
+import { ReportService } from "@/services/reportService";
+import { BookingService, PaymentService } from "@/services/bookingServices";
+import { CancellationService, RefundService, NotificationService } from "@/services/cancellationService";
+import { HistoryService } from "@/services/historyService";
 
 const PaymentPage = () => {
   const [searchParams] = useSearchParams();
@@ -42,14 +60,49 @@ const PaymentPage = () => {
   // Mock payment variables
   const [showMockModal, setShowMockModal] = useState(false);
   const [mockOrderData, setMockOrderData] = useState(null);
+  
+  // Appointment Booking modal state
+  const [showBookingModal, setShowBookingModal] = useState(false);
+  const [activeBooking, setActiveBooking] = useState(null);
+  const [seekerPhone, setSeekerPhone] = useState("");
+  const [isCancellationOpen, setIsCancellationOpen] = useState(false);
+  const [isCancelling, setIsCancelling] = useState(false);
+
+  // Booking History states
+  const [bookingHistory, setBookingHistory] = useState([]);
+  const [historyFilter, setHistoryFilter] = useState("All");
+  const [historySearch, setHistorySearch] = useState("");
+  const [selectedHistoryBooking, setSelectedHistoryBooking] = useState(null);
+  const [receiptBooking, setReceiptBooking] = useState(null);
+  const [isHistoryOpen, setIsHistoryOpen] = useState(true);
 
   const apiUrl = process.env.REACT_APP_API_URL || "http://127.0.0.1:8005";
+
+  // Refresh active booking & booking history list
+  const refreshBookingsAndHistory = useCallback((phone) => {
+    if (!phone) return;
+    const allBookings = BookingService.getAllBookingsByPhone(phone);
+    
+    // Find active booking (Pending, Confirmed, Upcoming, Live)
+    const active = allBookings.find(b => {
+      const currentStatus = ConsultationStatusService.getCalculatedStatus(b);
+      return ["Pending", "Confirmed", "Upcoming", "Live"].includes(currentStatus);
+    });
+    
+    if (active) {
+      const currentStatus = ConsultationStatusService.getCalculatedStatus(active);
+      setActiveBooking({ ...active, calculatedStatus: currentStatus });
+    } else {
+      setActiveBooking(null);
+    }
+    
+    setBookingHistory(allBookings);
+  }, []);
 
   // Set page title for SEO & reset body styles to unlock scroll/pointer events
   useEffect(() => {
     document.title = "Astro Power 24 | Unlock Premium Destiny Report";
     
-    // Reset any locked body and html styles left by Radix modal dialogs
     document.body.style.overflow = "unset";
     document.body.style.pointerEvents = "unset";
     document.body.style.removeProperty("overflow");
@@ -60,7 +113,6 @@ const PaymentPage = () => {
     document.documentElement.style.removeProperty("overflow");
     document.documentElement.style.removeProperty("pointer-events");
     
-    // Remove stale Radix portal elements and Dialog overlays from the DOM
     document.querySelectorAll("[data-radix-portal]").forEach(el => el.remove());
     document.querySelectorAll(".radix-overlay, [class*='overlay'], [class*='DialogOverlay']").forEach(el => el.remove());
   }, []);
@@ -75,12 +127,18 @@ const PaymentPage = () => {
 
     const fetchReport = async () => {
       try {
-        const response = await fetch(`${apiUrl}/api/horoscope/reports/${reportId}`);
-        const data = await response.json();
-        if (response.ok) {
-          setReport(data);
-        } else {
-          toast.error(data.detail || "Failed to find the specified horoscope report.");
+        const data = await ReportService.getReport(reportId);
+        setReport(data);
+        if (data.phone) {
+          localStorage.setItem("seeker_phone", data.phone);
+          setSeekerPhone(data.phone);
+          refreshBookingsAndHistory(data.phone);
+        }
+        if (data.email) {
+          localStorage.setItem("seeker_email", data.email);
+        }
+        if (data.name) {
+          localStorage.setItem("seeker_name", data.name);
         }
       } catch (err) {
         console.error(err);
@@ -91,7 +149,73 @@ const PaymentPage = () => {
     };
 
     fetchReport();
-  }, [reportId, apiUrl]);
+  }, [reportId, refreshBookingsAndHistory]);
+
+  // Load existing booking on mount
+  useEffect(() => {
+    const phone = localStorage.getItem("seeker_phone") || "";
+    setSeekerPhone(phone);
+    if (phone) {
+      refreshBookingsAndHistory(phone);
+    }
+  }, [refreshBookingsAndHistory]);
+
+  const handleCustomerCancellation = async () => {
+    if (!activeBooking || !activeBooking.bookingId) return;
+    setIsCancelling(true);
+    try {
+      await CancellationService.cancelBookingByCustomer(activeBooking.bookingId);
+      setIsCancellationOpen(false);
+      toast.success("Consultation cancelled successfully.");
+      if (seekerPhone) {
+        refreshBookingsAndHistory(seekerPhone);
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error(error.message || "Failed to cancel consultation.");
+    } finally {
+      setIsCancelling(false);
+    }
+  };
+
+  const handleAdminCancellation = async (bookingId) => {
+    setIsCancelling(true);
+    try {
+      await CancellationService.cancelBookingByAdmin(bookingId);
+      toast.success("Consultation cancelled by astrologer (Refund Initiated).");
+      if (seekerPhone) {
+        refreshBookingsAndHistory(seekerPhone);
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error(error.message || "Failed to cancel consultation by admin.");
+    } finally {
+      setIsCancelling(false);
+    }
+  };
+
+  useEffect(() => {
+    window.simulateAdminCancellation = (bookingId) => {
+      const id = bookingId || (activeBooking ? activeBooking.bookingId : null);
+      if (!id) {
+        console.error("No booking ID available to cancel.");
+        return;
+      }
+      handleAdminCancellation(id);
+    };
+    return () => {
+      delete window.simulateAdminCancellation;
+    };
+  }, [activeBooking]);
+
+  // Set up live countdown & status recalculations every 10 seconds
+  useEffect(() => {
+    if (!seekerPhone) return;
+    const timer = setInterval(() => {
+      refreshBookingsAndHistory(seekerPhone);
+    }, 10000);
+    return () => clearInterval(timer);
+  }, [seekerPhone, refreshBookingsAndHistory]);
 
   // Load Razorpay script dynamically
   const loadRazorpayScript = () => {
@@ -238,24 +362,163 @@ const PaymentPage = () => {
 
   // Helper getters
   const getAstroData = () => report?.astrology_details || {};
-  const today = report?.today_prediction || {};
-  const tomorrow = report?.tomorrow_prediction || {};
-  const weekly = report?.weekly_forecast || {};
-  const monthly = report?.monthly_forecast || {};
   const lifeReport = report?.life_report || {};
   const isPaid = report?.is_paid || false;
   const pdfUrl = report?.pdf_url ? (report.pdf_url.startsWith("http") ? report.pdf_url : `${apiUrl}${report.pdf_url}`) : "";
 
+  const getTabLabel = () => {
+    switch (report?.tab) {
+      case "pending-karma": return "Pending Karma Analysis";
+      case "karmic-connections": return "Karmic Connections Analysis";
+      case "soul-purpose": return "Spiritual Path & Soul Purpose";
+      case "soul-blueprint": return "Career Roadmap & Wealth Blueprint";
+      case "soul-alignment": return "Health & Soul Alignment";
+      default: return "Destiny Report";
+    }
+  };
+
+  const getTabSections = (tab) => {
+    switch (tab) {
+      case "pending-karma":
+        return [
+          { title: "Karma Summary", key: "karma_summary" },
+          { title: "Past Life Lessons", key: "karmic_lessons" },
+          { title: "Present Life Challenges", key: "past_life_influence" },
+          { title: "Karmic Debts", key: "current_karma" },
+          { title: "Suggested Remedies", key: "remedies" },
+          { title: "Key Spiritual Guidance", key: "remedies", isQuote: true }
+        ];
+      case "karmic-connections":
+        return [
+          { title: "Relationship Karma", key: "relationship_karma" },
+          { title: "Soul Contracts", key: "soul_contract" },
+          { title: "Karmic Relationships", key: "karmic_bond" },
+          { title: "Twin Flame Indicators", key: "emotional_compatibility", isHighlight: true },
+          { title: "Marriage & Partnership Guidance", key: "emotional_compatibility" },
+          { title: "Healing Suggestions", key: "lessons_together" }
+        ];
+      case "soul-purpose":
+        return [
+          { title: "Core Life Mission", key: "soul_mission" },
+          { title: "Natural Talents", key: "natural_gifts" },
+          { title: "Career Direction", key: "life_calling" },
+          { title: "Dharma Path", key: "growth_path" },
+          { title: "Spiritual Growth Areas", key: "purpose_challenges" },
+          { title: "Recommended Actions", key: "growth_path" }
+        ];
+      case "soul-blueprint":
+        return [
+          { title: "Personality Blueprint", key: "soul_blueprint_overview" },
+          { title: "Core Strengths", key: "core_soul_traits" },
+          { title: "Hidden Potential", key: "hidden_gifts" },
+          { title: "Decision Making Style", key: "life_themes" },
+          { title: "Emotional Pattern", key: "core_soul_traits" },
+          { title: "Personal Evolution", key: "spiritual_blueprint" }
+        ];
+      case "soul-alignment":
+        return [
+          { title: "Current Energy Alignment", key: "current_soul_alignment" },
+          { title: "Spiritual Balance", key: "energy_balance" },
+          { title: "Chakra/Energy Focus", key: "spiritual_blockages" },
+          { title: "Life Alignment Score", key: "alignment_score", isScore: true },
+          { title: "Areas Requiring Attention", key: "spiritual_blockages" },
+          { title: "Alignment Recommendations", key: "daily_guidance" }
+        ];
+      default:
+        return [];
+    }
+  };
+
+  const getSectionIcon = (title) => {
+    const t = title.toLowerCase();
+    if (t.includes("summary")) return <FileText className="w-5 h-5 text-[#B38B36]" />;
+    if (t.includes("lessons")) return <BookOpen className="w-5 h-5 text-[#B38B36]" />;
+    if (t.includes("challenge") || t.includes("attention")) return <ShieldAlert className="w-5 h-5 text-red-500/80" />;
+    if (t.includes("debts")) return <AlertCircle className="w-5 h-5 text-[#B38B36]" />;
+    if (t.includes("remedies") || t.includes("healing") || t.includes("recommendation")) return <Activity className="w-5 h-5 text-[#B38B36]" />;
+    if (t.includes("guidance")) return <Compass className="w-5 h-5 text-[#B38B36]" />;
+    if (t.includes("connection") || t.includes("relationship") || t.includes("partnership")) return <Heart className="w-5 h-5 text-rose-400" />;
+    if (t.includes("contract")) return <ShieldCheck className="w-5 h-5 text-[#B38B36]" />;
+    if (t.includes("mission")) return <Compass className="w-5 h-5 text-[#B38B36]" />;
+    if (t.includes("talent") || t.includes("strength") || t.includes("potential")) return <Award className="w-5 h-5 text-[#B38B36]" />;
+    if (t.includes("career") || t.includes("direction") || t.includes("action")) return <Briefcase className="w-5 h-5 text-[#B38B36]" />;
+    if (t.includes("dharma") || t.includes("evolution") || t.includes("growth")) return <TrendingUp className="w-5 h-5 text-[#B38B36]" />;
+    if (t.includes("blueprint") || t.includes("personality")) return <User className="w-5 h-5 text-[#B38B36]" />;
+    if (t.includes("energy") || t.includes("alignment")) return <Zap className="w-5 h-5 text-[#B38B36]" />;
+    if (t.includes("balance")) return <ShieldCheck className="w-5 h-5 text-[#B38B36]" />;
+    if (t.includes("score")) return <Award className="w-5 h-5 text-[#B38B36]" />;
+    if (t.includes("twin flame")) return <Flame className="w-5 h-5 text-orange-400" />;
+    return <Sparkles className="w-5 h-5 text-[#B38B36]" />;
+  };
+
+  const renderFormattedContent = (text) => {
+    if (!text) return null;
+    if (text.includes("🔒")) {
+      return (
+        <div className="flex items-center gap-2.5 p-4.5 bg-stone-50 border border-stone-200/60 rounded-2xl text-stone-500 italic text-xs font-light shadow-inner">
+          <Lock className="w-3.5 h-3.5 text-stone-400 shrink-0" />
+          <span>{text}</span>
+        </div>
+      );
+    }
+    const paragraphs = text.split("\n\n").filter(Boolean);
+    return (
+      <div className="space-y-6">
+        {paragraphs.map((p, idx) => {
+          if (idx === 0) {
+            return (
+              <div key={idx} className="space-y-1 animate-fadeIn">
+                <span className="text-[9px] uppercase tracking-widest text-[#8E6B23] font-bold">
+                  Overview
+                </span>
+                <p className="text-sm sm:text-base text-[#5C4D43] leading-relaxed font-light">
+                  {p}
+                </p>
+              </div>
+            );
+          }
+          if (idx === 1) {
+            const isNegative = p.toLowerCase().includes("challenge") || p.toLowerCase().includes("difficult") || p.toLowerCase().includes("blockage") || p.toLowerCase().includes("struggle") || p.toLowerCase().includes("warns");
+            return (
+              <div key={idx} className="p-4.5 bg-[#FFFDF9]/60 border border-[#B38B36]/15 rounded-2xl shadow-sm space-y-2 animate-fadeIn">
+                <span className="inline-flex items-center gap-1.5 text-[9px] uppercase tracking-widest font-black text-[#3C2A21]">
+                  <Sparkles className="w-3.5 h-3.5 text-[#B38B36]" />
+                  {isNegative ? "Growth Area & Key Challenges" : "Core Strengths & Potential"}
+                </span>
+                <p className="text-xs sm:text-sm text-[#5C4D43] leading-relaxed font-light">
+                  {p}
+                </p>
+              </div>
+            );
+          }
+          return (
+            <div key={idx} className="p-4.5 bg-[#B38B36]/5 border-l-4 border-[#B38B36] rounded-r-2xl shadow-sm space-y-2 animate-fadeIn">
+              <span className="inline-flex items-center gap-1.5 text-[9px] uppercase tracking-widest font-black text-[#8E6B23]">
+                <Activity className="w-3.5 h-3.5 text-[#B38B36]" />
+                Practical Guidance & Remedies
+              </span>
+              <div className="text-xs sm:text-sm text-[#3C2A21] leading-relaxed font-light">
+                {p.includes("- ") || p.includes("* ") ? (
+                  <ul className="list-disc pl-4 space-y-1.5 mt-1">
+                    {p.split(/\n/g).map(item => item.replace(/^[-*\s]+/, "").trim()).filter(Boolean).map((item, i) => (
+                      <li key={i}>{item}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p>{p}</p>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
+
   const CONFIG_ITEMS = [
+    { label: "Lagna (Rising Sign)", value: getAstroData().lagna?.split(" ")[0], desc: getAstroData().lagna, icon: <TrendingUp className="w-4 h-4 text-[#8E6B23]" /> },
     { label: "Rasi (Moon Sign)", value: getAstroData().rasi?.split(" ")[0], desc: getAstroData().rasi, icon: <Moon className="w-4 h-4 text-[#8E6B23]" /> },
-    { label: "Nakshatra", value: getAstroData().nakshatra, desc: "Lunar Mansion", icon: <Sparkles className="w-4 h-4 text-[#8E6B23]" /> },
-    { label: "Lagna (Rising)", value: getAstroData().lagna?.split(" ")[0], desc: "Ascendant sign", icon: <TrendingUp className="w-4 h-4 text-[#8E6B23]" /> },
-    { label: "Zodiac (Sun)", value: getAstroData().zodiac, desc: "Solar Sign", icon: <Star className="w-4 h-4 text-[#8E6B23]" /> },
-    { label: "Moon Sign", value: getAstroData().moon_sign, desc: "Emotional core", icon: <Moon className="w-4 h-4 text-[#8E6B23]" /> },
-    { label: "Birth Star", value: getAstroData().birth_star, desc: "Constellation", icon: <Star className="w-4 h-4 text-[#8E6B23]" /> },
-    { label: "Lucky Number", value: getAstroData().lucky_number, desc: "Cosmic vibration", icon: <Sparkles className="w-4 h-4 text-[#8E6B23]" /> },
-    { label: "Lucky Color", value: getAstroData().lucky_color, desc: "Auric energy", icon: <Heart className="w-4 h-4 text-[#8E6B23]" /> },
-    { label: "Lucky Day", value: getAstroData().lucky_day, desc: "Weekly alignment", icon: <Calendar className="w-4 h-4 text-[#8E6B23]" /> }
+    { label: "Nakshatra", value: getAstroData().nakshatra, desc: "Lunar Mansion", icon: <Sparkles className="w-4 h-4 text-[#8E6B23]" /> }
   ];
 
   if (loading) {
@@ -283,6 +546,314 @@ const PaymentPage = () => {
       </div>
     );
   }
+
+  const getCountdownDisplay = (booking) => {
+    if (!booking) return "";
+    const calcStatus = ConsultationStatusService.getCalculatedStatus(booking);
+    if (calcStatus === "Cancelled") return "Consultation Cancelled";
+    if (calcStatus === "Expired") return "Consultation Expired";
+    if (calcStatus === "Completed") return "Completed";
+    if (calcStatus === "Live Now") return "Live Now";
+    
+    const start = ConsultationStatusService.getSlotDateTime(booking.date, booking.slot);
+    const now = new Date();
+    const isToday = start.toDateString() === now.toDateString();
+    
+    if (isToday) {
+      return `Today at ${booking.slot}`;
+    }
+    
+    const diffMs = start.getTime() - now.getTime();
+    const diffMins = Math.floor(diffMs / (1000 * 60));
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    
+    if (diffDays > 0) {
+      const hoursRem = diffHours % 24;
+      return `Starts in ${diffDays} Day${diffDays > 1 ? 's' : ''} ${hoursRem} Hour${hoursRem > 1 ? 's' : ''}`;
+    }
+    if (diffHours > 0) {
+      const minsRem = diffMins % 60;
+      return `Starts in ${diffHours} Hour${diffHours > 1 ? 's' : ''} ${minsRem} Min${minsRem > 1 ? 's' : ''}`;
+    }
+    return `Starts in ${diffMins} Min${diffMins > 1 ? 's' : ''}`;
+  };
+
+  const getMeetingActionButton = (booking) => {
+    if (!booking) return null;
+    const calcStatus = ConsultationStatusService.getCalculatedStatus(booking);
+    if (calcStatus === "Cancelled" || calcStatus === "Cancelled by Customer" || calcStatus === "Cancelled by Admin" || calcStatus === "Expired" || calcStatus === "Completed") {
+      return null;
+    }
+    
+    const start = ConsultationStatusService.getSlotDateTime(booking.date, booking.slot);
+    const now = new Date();
+    
+    const fifteenMinsBeforeStart = new Date(start.getTime() - 15 * 60 * 1000);
+    const durationMins = booking.consultationType === "in-person" ? 60 : 45;
+    const end = new Date(start.getTime() + durationMins * 60 * 1000);
+    const isCloseToStartOrLive = now >= fifteenMinsBeforeStart && now <= end;
+    
+    if (booking.consultationType === "video") {
+      if (isCloseToStartOrLive) {
+        return (
+          <a
+            href={booking.meetLink || "https://meet.google.com"}
+            target="_blank"
+            rel="noreferrer"
+            className="px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white font-bold text-[10px] tracking-wider uppercase rounded-xl transition-all duration-300 flex items-center justify-center gap-1.5 shadow-md hover:scale-[1.02] border border-white/20 animate-pulse"
+          >
+            <Video className="w-3.5 h-3.5" />
+            <span>Join Google Meet</span>
+          </a>
+        );
+      }
+      return (
+        <button
+          disabled
+          className="px-4 py-2 bg-stone-100 border border-stone-200 text-stone-400 font-bold text-[10px] tracking-wider uppercase rounded-xl cursor-not-allowed opacity-65 flex items-center justify-center gap-1.5"
+          title="Meeting link will activate 15 minutes before the scheduled time."
+        >
+          <Video className="w-3.5 h-3.5" />
+          <span>Join Google Meet (Locked)</span>
+        </button>
+      );
+    }
+
+    if (booking.consultationType === "voice") {
+      if (isCloseToStartOrLive) {
+        return (
+          <a
+            href={booking.meetLink || "https://meet.google.com"}
+            target="_blank"
+            rel="noreferrer"
+            className="px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white font-bold text-[10px] tracking-wider uppercase rounded-xl transition-all duration-300 flex items-center justify-center gap-1.5 shadow-md hover:scale-[1.02] border border-white/20 animate-pulse"
+          >
+            <Phone className="w-3.5 h-3.5" />
+            <span>Join Meeting</span>
+          </a>
+        );
+      }
+      return (
+        <button
+          disabled
+          className="px-4 py-2 bg-stone-100 border border-stone-200 text-stone-400 font-bold text-[10px] tracking-wider uppercase rounded-xl cursor-not-allowed opacity-65 flex items-center justify-center gap-1.5"
+          title="Meeting link will activate 15 minutes before the scheduled time."
+        >
+          <Phone className="w-3.5 h-3.5" />
+          <span>Join Meeting (Locked)</span>
+        </button>
+      );
+    }
+    
+    if (booking.consultationType === "chat") {
+      if (isCloseToStartOrLive) {
+        return (
+          <a
+            href={booking.chatLink || "#"}
+            className="px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-[10px] tracking-wider uppercase rounded-xl transition-all duration-300 flex items-center justify-center gap-1.5 shadow-md hover:scale-[1.02] border border-white/20"
+          >
+            <MessageSquare className="w-3.5 h-3.5" />
+            <span>Open Chat</span>
+          </a>
+        );
+      }
+      return (
+        <button
+          disabled
+          className="px-4 py-2 bg-stone-100 border border-stone-200 text-stone-400 font-bold text-[10px] tracking-wider uppercase rounded-xl cursor-not-allowed opacity-65 flex items-center justify-center gap-1.5"
+          title="Chat session will activate 15 minutes before the scheduled time."
+        >
+          <MessageSquare className="w-3.5 h-3.5" />
+          <span>Open Chat (Locked)</span>
+        </button>
+      );
+    }
+    
+    if (booking.consultationType === "in-person") {
+      return (
+        <a
+          href="https://maps.google.com"
+          target="_blank"
+          rel="noreferrer"
+          className="px-4 py-2 bg-[#B38B36] hover:bg-[#8E6B23] text-white font-bold text-[10px] tracking-wider uppercase rounded-xl transition-all duration-300 flex items-center justify-center gap-1.5 shadow-md hover:scale-[1.02]"
+        >
+          <MapPin className="w-3.5 h-3.5" />
+          <span>View Appointment</span>
+        </a>
+      );
+    }
+    
+    return null;
+  };
+
+  const renderConsultationStatusCard = (booking) => {
+    if (!booking) return null;
+    
+    const calcStatus = ConsultationStatusService.getCalculatedStatus(booking);
+    const countdown = getCountdownDisplay(booking);
+    
+    const typeLabel = {
+      chat: "Chat Consultation",
+      voice: "Voice Call",
+      video: "Video Consultation",
+      "in-person": "In-Person Consultation"
+    }[booking.consultationType] || booking.consultationType;
+    
+    const statusColors = {
+      "Upcoming": "border-blue-200 bg-blue-50/50 text-blue-800",
+      "Today's Meeting": "border-amber-200 bg-amber-50/50 text-amber-800",
+      "Live Now": "border-green-200 bg-green-50/60 text-green-800 animate-pulse",
+      "Completed": "border-stone-200 bg-stone-50/50 text-stone-600",
+      "Cancelled": "border-red-200 bg-red-50/50 text-red-700",
+      "Cancelled by Customer": "border-red-200 bg-red-50/50 text-red-700",
+      "Cancelled by Admin": "border-red-200 bg-red-50/50 text-red-700",
+      "Expired": "border-stone-200 bg-stone-50/50 text-stone-500"
+    }[calcStatus] || "border-stone-200 bg-stone-50 text-stone-700";
+
+    const isCancelled = calcStatus === "Cancelled by Customer" || calcStatus === "Cancelled by Admin" || calcStatus === "Cancelled";
+    const headerTitle = (calcStatus === "Cancelled by Customer" || calcStatus === "Cancelled")
+      ? "Booking Cancelled"
+      : calcStatus === "Cancelled by Admin"
+      ? "Booking Cancelled by Astrologer"
+      : "Consultation Confirmed";
+
+    return (
+      <div className="border border-[#B38B36]/35 bg-white/95 rounded-2xl p-4 max-w-sm w-full text-xs shadow-md space-y-2.5 relative overflow-hidden backdrop-blur-sm">
+        <div className="absolute inset-1.5 border border-[#B38B36]/10 rounded-xl pointer-events-none" />
+        
+        <div className="flex items-center justify-between border-b border-[#B38B36]/15 pb-2">
+          <div className="flex items-center gap-1.5 text-stone-700 font-bold">
+            {isCancelled ? (
+              <AlertCircle className="w-4 h-4 text-red-600 animate-[fadeIn_0.3s]" />
+            ) : (
+              <CheckCircle2 className="w-4 h-4 text-green-600 animate-[fadeIn_0.3s]" />
+            )}
+            <span className="font-serif tracking-wide text-xs">{headerTitle}</span>
+          </div>
+          <span className={`px-2 py-0.5 text-[8px] font-black uppercase tracking-wider border rounded-md ${statusColors}`}>
+            {calcStatus === "Cancelled" ? "Cancelled" : calcStatus}
+          </span>
+        </div>
+
+        <div className="grid grid-cols-2 gap-y-1.5 gap-x-2 text-[10px] text-stone-600 leading-tight">
+          <div>
+            <span className="text-stone-400 uppercase tracking-wider text-[7px] block">Consultation Mode</span>
+            <span className="font-bold text-[#3C2A21]">{typeLabel}</span>
+          </div>
+          <div>
+            <span className="text-stone-400 uppercase tracking-wider text-[7px] block">Booking ID</span>
+            <span className="font-mono font-bold text-[#8E6B23]">{booking.bookingId}</span>
+          </div>
+          <div>
+            <span className="text-stone-400 uppercase tracking-wider text-[7px] block">Appointment Time</span>
+            <span className="font-semibold text-stone-700">{new Date(booking.date).toDateString()}</span>
+            <span className="block text-[#8E6B23] font-bold mt-0.5">{booking.slot} ({booking.duration || "45 mins"})</span>
+          </div>
+          <div>
+            <span className="text-stone-400 uppercase tracking-wider text-[7px] block">Payment Status</span>
+            <span className="inline-flex items-center gap-1 font-bold text-green-700 bg-green-50 border border-green-200 px-1.5 py-0.5 rounded-md text-[8px] uppercase mt-0.5 animate-[fadeIn_0.3s]">
+              ✓ Successful
+            </span>
+          </div>
+        </div>
+
+        {(calcStatus === "Cancelled by Customer" || calcStatus === "Cancelled") && (
+          <div className="bg-red-50 border border-red-200 rounded-xl p-2.5 space-y-1 text-[10px] text-red-800 animate-[fadeIn_0.3s] leading-relaxed">
+            <span className="font-bold block mb-0.5 text-[8px] uppercase tracking-wider text-red-700">Cancellation Info</span>
+            <p>• Refund: <span className="font-bold">Not Eligible</span></p>
+            <p>• Reason: Cancelled by Customer</p>
+          </div>
+        )}
+
+        {calcStatus === "Cancelled by Admin" && (
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-2.5 space-y-1 text-[10px] text-amber-800 animate-[fadeIn_0.3s] leading-relaxed">
+            <span className="font-bold block mb-0.5 text-[8px] uppercase tracking-wider text-amber-700">Cancellation Info</span>
+            <p>• Refund Status: <span className="font-bold">Refund Initiated</span></p>
+            <p>• Expected Refund: <span className="font-bold">Within 24 Hours</span></p>
+          </div>
+        )}
+
+        {calcStatus !== "Completed" && !isCancelled && calcStatus !== "Expired" && (
+          <div className="bg-[#FCFAF2]/60 border border-[#B38B36]/15 rounded-xl p-2.5 flex items-center justify-between text-[10px] font-semibold text-stone-800 animate-[fadeIn_0.3s]">
+            <div className="flex items-center gap-1.5">
+              <Clock className="w-3.5 h-3.5 text-[#B38B36]" />
+              <span className="font-light text-stone-500 uppercase tracking-wider text-[8px]">Schedule countdown</span>
+            </div>
+            <span className="text-[#8E6B23] font-bold">{countdown}</span>
+          </div>
+        )}
+
+        {calcStatus === "Completed" && (
+          <div className="bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-[10px] font-medium text-stone-500 animate-[fadeIn_0.3s]">
+            ✓ Consultation Completed on {new Date(booking.date).toDateString()} @ {booking.slot}
+          </div>
+        )}
+
+        <div className="flex flex-wrap gap-2 pt-1 z-10 relative">
+          <button
+            type="button"
+            onClick={() => {
+              toast.info(
+                <div className="space-y-2">
+                  <div>
+                    <p className="font-bold text-xs mb-1">Consultation Details</p>
+                    <p className="text-[10px] text-stone-500">Name: {booking.name}</p>
+                    <p className="text-[10px] text-stone-500">Phone: {booking.phone}</p>
+                    <p className="text-[10px] text-stone-500">Email: {booking.email}</p>
+                    {booking.notes && <p className="text-[10px] text-stone-500 italic mt-1">"{booking.notes}"</p>}
+                  </div>
+                  <div className="pt-2 border-t border-stone-100 text-[8px] text-stone-400 leading-normal">
+                    <span className="font-bold text-stone-600 block mb-0.5">Cancellation Policy</span>
+                    • Customer Cancellation: No Refund.<br />
+                    • Astrologer Cancellation: 100% Refund within 24 Hours.
+                  </div>
+                  {!isCancelled && calcStatus !== "Completed" && calcStatus !== "Expired" && (
+                    <button
+                      type="button"
+                      onClick={() => handleAdminCancellation(booking.bookingId)}
+                      className="mt-2 w-full py-1 text-center bg-amber-500 hover:bg-amber-600 text-white font-bold text-[8px] uppercase tracking-wider rounded-lg transition-all cursor-pointer"
+                    >
+                      🛠 Simulate Astrologer Cancel
+                    </button>
+                  )}
+                </div>,
+                { duration: 12000 }
+              );
+            }}
+            className="px-3 py-2 bg-white border border-[#B38B36]/35 text-[#8E6B23] hover:text-[#3C2A21] hover:bg-[#B38B36]/5 text-[9px] tracking-wider uppercase font-bold rounded-xl transition-all duration-300 cursor-pointer flex-1"
+          >
+            View Details
+          </button>
+          
+          {getMeetingActionButton(booking)}
+        </div>
+
+        {calcStatus !== "Completed" && !isCancelled && calcStatus !== "Expired" ? (
+          <div className="flex justify-between border-t border-stone-100 pt-2.5 mt-1 text-[8px] uppercase tracking-wider text-stone-400">
+            <button 
+              type="button" 
+              onClick={() => toast.info("Rescheduling is active up to 24 hours before slot. Please coordinate with support.")}
+              className="hover:text-[#8E6B23] transition-colors cursor-pointer"
+            >
+              Reschedule
+            </button>
+            <button 
+              type="button" 
+              onClick={() => setIsCancellationOpen(true)}
+              className="hover:text-red-600 transition-colors cursor-pointer"
+            >
+              Cancel Booking
+            </button>
+          </div>
+        ) : isCancelled ? (
+          <div className="flex justify-center border-t border-[#B38B36]/15 pt-2.5 mt-1 text-[8px] uppercase tracking-wider font-extrabold text-red-600">
+            Booking Cancelled
+          </div>
+        ) : null}
+      </div>
+    );
+  };
 
   return (
     <div id="payment-page-root" className="min-h-screen bg-[#FFFDF9] text-[#3C2A21] font-sans relative pb-20 pt-28 md:pt-36 overflow-hidden">
@@ -359,7 +930,7 @@ const PaymentPage = () => {
         </div>
 
         {/* Banner Card */}
-        <div className="relative border border-[#B38B36]/20 bg-white/70 shadow-[0_15px_40px_rgba(179,139,54,0.06)] rounded-3xl p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 backdrop-blur-xl overflow-hidden">
+        <div className="relative border border-[#B38B36]/20 bg-white/70 shadow-[0_15px_40px_rgba(179,139,54,0.06)] rounded-3xl p-6 md:p-8 flex flex-col md:flex-row items-stretch justify-between gap-6">
           {/* Subtle gold inner accent frame */}
           <div className="absolute inset-2 border border-[#B38B36]/10 rounded-[1.3rem] pointer-events-none" />
           
@@ -367,12 +938,12 @@ const PaymentPage = () => {
           <div className="absolute top-3 left-4 text-[#B38B36]/30 text-xs animate-[twinkle_4s_infinite_linear]">✦</div>
           <div className="absolute bottom-3 right-6 text-[#B38B36]/25 text-[10px] animate-[twinkle_3s_infinite_linear]" style={{ animationDelay: "1.5s" }}>✦</div>
 
-          <div className="space-y-2 text-center md:text-left relative z-10">
+          <div className="space-y-2 text-center md:text-left relative z-10 flex flex-col justify-center">
             <span className="inline-flex items-center gap-1 px-3 py-1 border border-[#B38B36]/25 rounded-full bg-[#B38B36]/5 text-[9px] tracking-widest text-[#8E6B23] uppercase font-bold">
               ✨ Cosmic Reading Room
             </span>
             <h1 className="font-serif text-3xl md:text-4xl text-[#3C2A21] font-semibold leading-tight mt-1">
-              Destiny Report for <em className="italic text-[#8E6B23]">{report.name || "Seeker"}</em>
+              {getTabLabel()} for <em className="italic text-[#8E6B23]">{report.name || "Seeker"}</em>
             </h1>
             <div className="flex flex-col md:flex-row items-center justify-center md:justify-start gap-2 md:gap-4 text-xs text-[#6E5D53] mt-2">
               <span className="flex items-center gap-1 font-light"><Calendar className="w-3.5 h-3.5 text-[#B38B36]" /> {new Date(report.dob).toLocaleDateString(undefined, { dateStyle: "long" })}</span>
@@ -387,23 +958,42 @@ const PaymentPage = () => {
             </div>
           </div>
           
-          <div className="relative z-10 shrink-0">
-            {isPaid ? (
+          <div className="relative z-10 shrink-0 flex flex-wrap items-center gap-3">
+            {isPaid && (
               <a
                 href={pdfUrl}
                 download
-                className="px-8 py-4 bg-gradient-to-r from-[#B38B36] to-[#8E6B23] hover:brightness-[1.1] text-white font-bold text-xs tracking-widest uppercase rounded-full transition-all duration-300 flex items-center gap-2.5 shadow-md hover:scale-[1.02] border border-white/20"
+                className="px-6 py-3.5 bg-gradient-to-r from-[#B38B36] to-[#8E6B23] hover:brightness-[1.1] text-white font-bold text-xs tracking-widest uppercase rounded-full transition-all duration-300 flex items-center gap-2 shadow-md hover:scale-[1.02] border border-white/20"
               >
-                <Download className="w-4 h-4 text-white" />
-                <span>Download Premium PDF</span>
+                <Download className="w-3.5 h-3.5 text-white" />
+                <span>Download PDF</span>
               </a>
+            )}
+            
+            {activeBooking ? (
+              <div className="flex flex-col md:flex-row items-center gap-3">
+                {renderConsultationStatusCard(activeBooking)}
+                {(activeBooking.calculatedStatus === "Completed" || 
+                  activeBooking.calculatedStatus === "Cancelled" || 
+                  activeBooking.calculatedStatus === "Cancelled by Customer" ||
+                  activeBooking.calculatedStatus === "Cancelled by Admin" ||
+                  activeBooking.calculatedStatus === "Expired") && (
+                  <button
+                    onClick={() => setShowBookingModal(true)}
+                    className="px-6 py-3.5 bg-gradient-to-r from-[#BF953F] via-[#FCF6BA] to-[#B38728] hover:brightness-[1.12] text-[#1E110A] font-serif font-bold text-xs tracking-[0.2em] uppercase rounded-full transition-all duration-500 flex items-center gap-2 shadow-[0_4px_15px_rgba(179,139,54,0.35)] hover:scale-[1.02] cursor-pointer border border-[#FCF6BA]/40"
+                  >
+                    <MessageSquare className="w-3.5 h-3.5 text-[#1E110A]" />
+                    <span>Book Another Consultation</span>
+                  </button>
+                )}
+              </div>
             ) : (
               <button
-                onClick={(e) => e.preventDefault()}
-                className="px-8 py-4 bg-gradient-to-r from-[#BF953F] via-[#FCF6BA] to-[#B38728] hover:brightness-[1.12] text-[#1E110A] font-serif font-bold text-xs tracking-[0.2em] uppercase rounded-full transition-all duration-500 flex items-center gap-2.5 shadow-[0_4px_15px_rgba(179,139,54,0.35)] hover:scale-[1.02] cursor-pointer border border-[#FCF6BA]/40"
+                onClick={() => setShowBookingModal(true)}
+                className="px-6 py-3.5 bg-gradient-to-r from-[#BF953F] via-[#FCF6BA] to-[#B38728] hover:brightness-[1.12] text-[#1E110A] font-serif font-bold text-xs tracking-[0.2em] uppercase rounded-full transition-all duration-500 flex items-center gap-2 shadow-[0_4px_15px_rgba(179,139,54,0.35)] hover:scale-[1.02] cursor-pointer border border-[#FCF6BA]/40"
               >
-                <MessageSquare className="w-4 h-4 text-[#1E110A]" />
-                <span>Connect with Gitika Sharma</span>
+                <MessageSquare className="w-3.5 h-3.5 text-[#1E110A]" />
+                <span>{bookingHistory.length > 0 ? "Book Another Consultation" : "Connect with Gitika Sharma"}</span>
               </button>
             )}
           </div>
@@ -426,30 +1016,204 @@ const PaymentPage = () => {
           </motion.div>
         )}
 
+        {/* Booking History Section */}
+        {seekerPhone && bookingHistory.length > 0 && (
+          <div className="relative border border-[#B38B36]/25 bg-white/70 shadow-[0_15px_40px_rgba(179,139,54,0.06)] rounded-3xl p-6 backdrop-blur-xl space-y-4">
+            <div 
+              onClick={() => setIsHistoryOpen(!isHistoryOpen)}
+              className="flex items-center justify-between cursor-pointer border-b border-[#B38B36]/15 pb-3 select-none"
+            >
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-[#B38B36]" />
+                <h2 className="font-serif text-lg text-[#3C2A21] font-semibold">
+                  Booking History
+                </h2>
+              </div>
+              <div className="flex items-center gap-1.5 text-stone-500 hover:text-[#8E6B23] transition-colors">
+                <span className="text-[10px] uppercase font-bold tracking-wider">
+                  {isHistoryOpen ? "Collapse" : "Expand"}
+                </span>
+                {isHistoryOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+              </div>
+            </div>
+
+            <AnimatePresence initial={false}>
+              {isHistoryOpen && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="overflow-hidden space-y-4 pt-1"
+                >
+                  {/* Filters and Search Bar */}
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs">
+                    {/* Filter Tabs */}
+                    <div className="flex flex-wrap gap-1 bg-[#B38B36]/5 p-1 rounded-xl border border-[#B38B36]/10">
+                      {["All", "Upcoming", "Completed", "Cancelled", "Refunded"].map((f) => {
+                        const isActive = historyFilter === f;
+                        return (
+                          <button
+                            key={f}
+                            type="button"
+                            onClick={() => setHistoryFilter(f)}
+                            className={`px-3 py-1.5 rounded-lg font-bold uppercase tracking-wider text-[9px] transition-all cursor-pointer ${
+                              isActive 
+                                ? "bg-[#B38B36] text-white shadow-sm" 
+                                : "text-[#8E6B23] hover:bg-[#B38B36]/10"
+                            }`}
+                          >
+                            {f}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    {/* Search Input */}
+                    <div className="relative max-w-xs w-full">
+                      <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" />
+                      <input
+                        type="text"
+                        placeholder="Search ID, date, mode..."
+                        value={historySearch}
+                        onChange={(e) => setHistorySearch(e.target.value)}
+                        className="w-full pl-9 pr-3 py-2 bg-white/80 border border-[#B38B36]/20 rounded-xl text-xs text-[#3C2A21] placeholder-stone-400 focus:outline-none focus:border-[#B38B36] transition-colors"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Booking Cards Grid */}
+                  {(() => {
+                    const filtered = HistoryService.filterAndSearchBookings(bookingHistory, historyFilter, historySearch);
+                    if (filtered.length === 0) {
+                      return (
+                        <div className="text-center py-8 text-stone-400 text-xs italic">
+                          No past bookings match the selected filters or search criteria.
+                        </div>
+                      );
+                    }
+                    return (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {filtered.map((b) => {
+                          const statusColors = {
+                            "Pending": "border-amber-200 bg-amber-50/50 text-amber-700",
+                            "Confirmed": "border-green-200 bg-green-50/50 text-green-700",
+                            "Upcoming": "border-green-200 bg-green-50/50 text-green-700",
+                            "Live": "border-emerald-200 bg-emerald-50/50 text-emerald-700 animate-pulse",
+                            "Completed": "border-stone-200 bg-stone-50/50 text-stone-500",
+                            "Cancelled by Customer": "border-red-200 bg-red-50/50 text-red-700",
+                            "Cancelled by Admin": "border-red-200 bg-red-50/50 text-red-700",
+                            "Cancelled": "border-red-200 bg-red-50/50 text-red-700",
+                            "Expired": "border-stone-200 bg-stone-50/50 text-stone-500"
+                          }[b.status] || "border-stone-200 bg-stone-50 text-stone-700";
+
+                          const isCancelled = ["Cancelled by Customer", "Cancelled by Admin", "Cancelled"].includes(b.status);
+
+                          return (
+                            <div 
+                              key={b.bookingId} 
+                              className="border border-[#B38B36]/15 hover:border-[#B38B36]/35 bg-white/95 rounded-2xl p-4 shadow-sm space-y-2.5 transition-all duration-300 hover:shadow-md relative"
+                            >
+                              {/* Header */}
+                              <div className="flex items-center justify-between border-b border-stone-100 pb-2">
+                                <span className="font-mono font-bold text-[#8E6B23] text-xs">
+                                  {b.bookingId}
+                                </span>
+                                <span className={`px-2 py-0.5 text-[8px] font-black uppercase tracking-wider border rounded-md ${statusColors}`}>
+                                  {b.status}
+                                </span>
+                              </div>
+
+                              {/* Details Grid */}
+                              <div className="grid grid-cols-2 gap-y-2 gap-x-3 text-[10px] text-stone-600 leading-normal">
+                                <div>
+                                  <span className="text-stone-400 uppercase tracking-wider text-[7px] block">Consultation Type</span>
+                                  <span className="font-semibold text-[#3C2A21] uppercase">{b.consultationType} ({b.consultationType === "in-person" ? "60 mins" : "45 mins"})</span>
+                                </div>
+                                <div>
+                                  <span className="text-stone-400 uppercase tracking-wider text-[7px] block">Booking Date</span>
+                                  <span className="font-medium text-stone-700">{new Date(b.created_at || b.date).toDateString()}</span>
+                                </div>
+                                <div>
+                                  <span className="text-stone-400 uppercase tracking-wider text-[7px] block">Meeting Time</span>
+                                  <span className="font-medium text-stone-700">{new Date(b.date).toDateString()} @ {b.slot}</span>
+                                </div>
+                                <div>
+                                  <span className="text-stone-400 uppercase tracking-wider text-[7px] block">Payment Status</span>
+                                  <span className="font-bold text-green-700 uppercase">✓ Successful</span>
+                                </div>
+                              </div>
+
+                              {/* Cancellation Details */}
+                              {isCancelled && (
+                                <div className="bg-red-50 border border-red-200/60 rounded-xl p-2 text-[9px] text-red-800 space-y-0.5">
+                                  <p>• <span className="font-bold">Refund:</span> {b.refund?.status || "Not Eligible"}</p>
+                                  {b.refund?.expectedRefund && <p>• <span className="font-bold">Timeline:</span> {b.refund.expectedRefund}</p>}
+                                  {b.refund?.reason && <p>• <span className="font-bold">Reason:</span> {b.refund.reason}</p>}
+                                </div>
+                              )}
+
+                              {/* Footer Actions */}
+                              <div className="flex gap-2 pt-1.5 border-t border-stone-50">
+                                <button
+                                  type="button"
+                                  onClick={() => setSelectedHistoryBooking(b)}
+                                  className="px-2.5 py-1.5 bg-white border border-[#B38B36]/35 text-[#8E6B23] hover:text-[#3C2A21] hover:bg-[#B38B36]/5 text-[8px] tracking-wider uppercase font-extrabold rounded-lg transition-colors cursor-pointer flex-1 text-center"
+                                >
+                                  View Details
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => setReceiptBooking(b)}
+                                  className="px-2.5 py-1.5 bg-white border border-stone-200 text-stone-500 hover:text-stone-800 hover:bg-stone-50 text-[8px] tracking-wider uppercase font-extrabold rounded-lg transition-colors cursor-pointer flex-1 text-center flex items-center justify-center gap-1"
+                                >
+                                  <Download className="w-2.5 h-2.5" />
+                                  <span>Receipt</span>
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => toast.info("Invoice generation will be available in future releases.")}
+                                  className="px-2.5 py-1.5 bg-white border border-stone-100 text-stone-300 hover:text-stone-500 text-[8px] tracking-wider uppercase font-extrabold rounded-lg transition-colors cursor-pointer flex-1 text-center"
+                                >
+                                  Invoice
+                                </button>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    );
+                  })()}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        )}
+
         {/* Astro Parameter Dashboard Grid */}
         <div className="space-y-4">
           <h2 className="font-serif text-[#3C2A21] border-l-2 border-[#B38B36] pl-3 uppercase tracking-widest text-[10px] font-bold">
             Astronomical Configurations
           </h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-9 gap-3.5">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 max-w-4xl mx-auto">
             {CONFIG_ITEMS.map((item, idx) => (
               <div 
                 key={idx} 
-                className="group relative overflow-hidden bg-white/60 backdrop-blur-md border border-white/70 shadow-sm hover:shadow-[0_12px_30px_rgba(179,139,54,0.15)] hover:border-[#B38B36]/50 hover:-translate-y-1 transition-all duration-300 rounded-2xl p-4 flex flex-col items-center justify-between text-center min-h-[145px]"
+                className="group relative overflow-hidden bg-white/60 backdrop-blur-md border border-white/70 shadow-sm hover:shadow-[0_12px_30px_rgba(179,139,54,0.15)] hover:border-[#B38B36]/50 hover:-translate-y-1 transition-all duration-300 rounded-2xl p-5 flex flex-col items-center justify-between text-center min-h-[145px]"
               >
                 {/* Micro glow overlay */}
                 <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-[#B38B36]/2 to-[#B38B36]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
                 
                 {/* Icon wrapper */}
-                <div className="w-8 h-8 rounded-full bg-[#B38B36]/10 border border-[#B38B36]/20 flex items-center justify-center mb-2 group-hover:scale-110 group-hover:bg-[#B38B36]/15 transition-all duration-300 shadow-inner text-[#8E6B23]">
+                <div className="w-10 h-10 rounded-full bg-[#B38B36]/10 border border-[#B38B36]/20 flex items-center justify-center mb-2.5 group-hover:scale-110 group-hover:bg-[#B38B36]/15 transition-all duration-300 shadow-inner text-[#8E6B23]">
                   {item.icon}
                 </div>
                 
-                <span className="text-[8px] uppercase tracking-widest text-[#6E5D53] font-bold leading-tight line-clamp-1">{item.label}</span>
-                <div className="my-1.5 text-[#8E6B23] font-serif font-bold text-sm tracking-wide line-clamp-1 group-hover:text-[#3C2A21] transition-colors">
+                <span className="text-[9px] uppercase tracking-widest text-[#6E5D53] font-bold leading-tight line-clamp-1">{item.label}</span>
+                <div className="my-1.5 text-[#8E6B23] font-serif font-bold text-base tracking-wide line-clamp-1 group-hover:text-[#3C2A21] transition-colors">
                   {item.value || "—"}
                 </div>
-                <span className="text-[8px] text-[#6E5D53]/60 italic font-light line-clamp-1">{item.desc || "—"}</span>
+                <span className="text-[9px] text-[#6E5D53]/60 italic font-light line-clamp-1">{item.desc || "—"}</span>
               </div>
             ))}
           </div>
@@ -497,423 +1261,117 @@ const PaymentPage = () => {
           </div>
         )}
 
-        {/* Main Columns: Predictions vs Detailed Life Report */}
-        <div className="grid lg:grid-cols-12 gap-8 items-start">
-          
-          {/* LEFT: Predictions, Summaries, and checkout Card */}
-          <div className="lg:col-span-5 space-y-6">
-            
-            {/* BILLING CARD if report is not paid */}
-            {!isPaid && (
-              <div className="relative bg-gradient-to-b from-[#FFFDF9]/95 to-[#FFF9ED]/95 border border-[#B38B36]/30 shadow-[0_20px_50px_rgba(179,139,54,0.12)] rounded-3xl p-6 overflow-hidden backdrop-blur-xl">
-                {/* Double border gold accent frame inside */}
-                <div className="absolute inset-2 border border-[#B38B36]/15 rounded-2xl pointer-events-none" />
-                
-                <div className="text-center mb-6 relative z-10">
-                  <div className="w-12 h-12 rounded-full bg-[#B38B36]/10 border border-[#B38B36]/35 flex items-center justify-center mx-auto mb-3 text-[#B38B36] shadow-sm relative">
-                    <Sparkles className="w-5 h-5 text-[#B38B36] animate-pulse" />
-                  </div>
-                  <span className="text-[9px] uppercase tracking-[0.25em] font-extrabold text-[#B38B36] block mb-1">Professional Astrology Consultation</span>
-                  <h2 className="font-serif text-2xl font-semibold text-[#3C2A21]">Connect with Gitika Sharma</h2>
-                  <p className="text-xs text-[#6E5D53] mt-3 font-light leading-relaxed max-w-xs mx-auto">
-                    Need personalized guidance regarding your report? Connect directly with Gitika Sharma for expert astrology consultation and receive personalized insights based on your birth details.
-                  </p>
-                </div>
+        {/* Premium Analysis Sections */}
+        <div className="max-w-4xl mx-auto space-y-8 pt-6">
+          <div className="text-center space-y-2">
+            <span className="text-[10px] tracking-[0.25em] uppercase font-bold text-[#8E6B23] border border-[#B38B36]/25 rounded-full px-3.5 py-1 bg-[#B38B36]/5">
+              Personalized Consultation Report
+            </span>
+            <h3 className="font-serif text-3xl text-[#3C2A21] font-semibold">
+              Vedic Astrology Insights
+            </h3>
+          </div>
 
-                <button
-                  onClick={(e) => e.preventDefault()}
-                  className="relative z-10 w-full py-4 bg-gradient-to-r from-[#BF953F] via-[#FCF6BA] to-[#B38728] hover:brightness-[1.12] text-[#1E110A] font-sans font-bold text-xs uppercase tracking-widest rounded-xl transition-all duration-500 shadow-[0_4px_15px_rgba(179,139,54,0.35)] hover:scale-[1.01] flex items-center justify-center gap-2 cursor-pointer border border-[#FCF6BA]/40"
+          <div className="space-y-6 relative">
+            {/* Dynamic sections rendering */}
+            {getTabSections(report?.tab).map((section, idx) => {
+              const rawContent = lifeReport[section.key] || lifeReport[Object.keys(lifeReport)[idx % Object.keys(lifeReport).length]] || "";
+              const isSectionFree = idx === 0;
+              const isLocked = !isSectionFree && !isPaid;
+
+              return (
+                <div 
+                  key={section.title}
+                  className="relative overflow-hidden bg-white/70 border border-[#B38B36]/20 shadow-[0_10px_35px_rgba(179,139,54,0.04)] rounded-3xl p-6 md:p-8 backdrop-blur-xl transition-all duration-300 hover:shadow-[0_15px_40px_rgba(179,139,54,0.08)]"
                 >
-                  <MessageSquare className="w-4 h-4 text-[#1E110A]" />
-                  <span>Connect with Gitika Sharma</span>
-                </button>
+                  {/* Subtle inner gold line */}
+                  <div className="absolute inset-2 border border-[#B38B36]/5 rounded-2xl pointer-events-none" />
+
+                  {/* Card Header */}
+                  <div className="flex items-center justify-between border-b border-[#B38B36]/10 pb-4 mb-5">
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-full bg-[#B38B36]/10 border border-[#B38B36]/20 flex items-center justify-center text-[#8E6B23] shadow-inner">
+                        {getSectionIcon(section.title)}
+                      </div>
+                      <h4 className="font-serif text-lg md:text-xl text-[#3C2A21] font-bold">
+                        {section.title}
+                      </h4>
+                    </div>
+                    {isSectionFree ? (
+                      <span className="text-[8px] uppercase tracking-widest px-2.5 py-1 border border-green-200 text-green-600 bg-green-50/50 rounded-full font-bold">
+                        Free Access
+                      </span>
+                    ) : (
+                      isLocked && (
+                        <span className="text-[8px] uppercase tracking-widest px-2.5 py-1 border border-[#B38B36]/25 text-[#8E6B23] bg-[#B38B36]/5 rounded-full font-bold flex items-center gap-1">
+                          <Lock className="w-2 h-2" /> Premium
+                        </span>
+                      )
+                    )}
+                  </div>
+
+                  {/* Card Body */}
+                  <div className={`transition-all duration-700 ${isLocked ? 'blur-md select-none pointer-events-none opacity-40' : ''}`}>
+                    {section.isScore && !isLocked ? (
+                      <div className="flex flex-col sm:flex-row items-center gap-6 p-5 bg-[#B38B36]/5 border border-[#B38B36]/20 rounded-2xl">
+                        <div className="w-20 h-20 rounded-full bg-white border border-[#B38B36]/30 flex flex-col items-center justify-center shadow-md shrink-0">
+                          <span className="text-xs text-[#8E6B23] font-bold uppercase tracking-wider">Score</span>
+                          <span className="font-serif text-2xl font-black text-[#3C2A21]">
+                            {rawContent.match(/\d+%/)?.[0] || "85%"}
+                          </span>
+                        </div>
+                        <div className="flex-1 text-center sm:text-left">
+                          <p className="text-sm sm:text-base text-[#5C4D43] leading-relaxed">
+                            {rawContent}
+                          </p>
+                        </div>
+                      </div>
+                    ) : section.isQuote && !isLocked ? (
+                      <blockquote className="p-5 border-l-4 border-[#8E6B23] bg-[#FDFBF7] italic rounded-r-xl shadow-inner text-[#3C2A21] text-base leading-relaxed">
+                        "{rawContent.replace(/^["'\s]+|["'\s]+$/g, "")}"
+                      </blockquote>
+                    ) : (
+                      renderFormattedContent(rawContent)
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+
+            {/* PREMIUM LOCK CONVERSION COVER */}
+            {!isPaid && (
+              <div className="absolute inset-x-0 bottom-0 top-[20%] bg-gradient-to-t from-[#FFFDF9] via-[#FFFDF9]/95 to-transparent flex flex-col justify-end p-6 md:p-8 text-center backdrop-blur-[6px] z-20">
+                <div className="bg-white/95 border border-[#B38B36]/25 rounded-3xl p-6 md:p-8 max-w-lg mx-auto shadow-[0_20px_60px_rgba(179,139,54,0.18)] relative z-10 backdrop-blur-md">
+                  <div className="absolute inset-2 border border-[#B38B36]/15 rounded-2xl pointer-events-none" />
+                  
+                  <div className="w-12 h-12 rounded-full bg-[#B38B36]/10 border border-[#B38B36]/35 flex items-center justify-center mx-auto mb-4 text-[#B38B36] shadow-sm relative">
+                    <div className="w-12 h-12 rounded-full bg-[#B38B36]/5 absolute animate-ping" />
+                    <Lock className="w-4 h-4 text-[#8E6B23] relative z-10" />
+                  </div>
+                  
+                  <h5 className="font-serif text-2xl text-[#3C2A21] mb-2 font-bold tracking-wide">Connect with Gitika Sharma</h5>
+                  <p className="text-xs text-[#6E5D53] leading-relaxed mb-6 font-light max-w-sm mx-auto">
+                    Have questions about your astrology report or need personalized guidance? Connect directly with Gitika Sharma for expert consultation and assistance.
+                  </p>
+                  
+                  <button
+                    onClick={handlePayment}
+                    className="w-full py-4.5 bg-gradient-to-r from-[#BF953F] via-[#FCF6BA] to-[#B38728] hover:brightness-[1.08] text-[#1E110A] font-sans font-bold text-xs uppercase tracking-widest rounded-xl transition-all duration-500 shadow-[0_4px_15px_rgba(179,139,54,0.35)] hover:scale-[1.02] flex items-center justify-center gap-2 cursor-pointer border border-[#FCF6BA]/30"
+                  >
+                    <Unlock className="w-3.5 h-3.5 stroke-[2.5px]" />
+                    <span>Unlock Complete Destiny Report</span>
+                  </button>
+                </div>
               </div>
             )}
-
-            {/* TODAY'S PREDICTION */}
-            <div className="bg-white/65 border border-[#B38B36]/15 hover:border-[#B38B36]/35 shadow-[0_8px_30px_rgba(0,0,0,0.02)] hover:shadow-[0_12px_35px_rgba(179,139,54,0.08)] transition-all duration-300 rounded-3xl p-6 relative overflow-hidden backdrop-blur-md group">
-              <div className="flex items-center justify-between mb-4 border-b border-[#B38B36]/10 pb-3">
-                <h4 className="font-serif text-lg text-[#3C2A21] font-medium flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-[#B38B36] group-hover:animate-pulse" /> Today's Horoscope
-                </h4>
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-green-500/10 text-[8px] uppercase tracking-widest font-black text-green-600 border border-green-200">Aligned</span>
-              </div>
-              <div className="space-y-4 text-xs leading-relaxed">
-                <div className="p-3.5 bg-white/70 border border-white/80 rounded-xl border-l-2 border-[#B38B36] shadow-sm">
-                  <strong className="text-[#8E6B23] uppercase text-[9px] tracking-widest block mb-1">Overall Guidance</strong>
-                  <p className="text-[#3C2A21] italic">"{today.overall}"</p>
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="p-3 bg-white/40 border border-white/60 rounded-xl">
-                    <span className="text-[#8E6B23] uppercase text-[9px] tracking-widest font-bold flex items-center gap-1.5 mb-1">
-                      <Briefcase className="w-3 h-3 text-[#B38B36]" /> Career
-                    </span>
-                    <p className="text-[#5C4D43] font-light">{today.career}</p>
-                  </div>
-                  <div className="p-3 bg-white/40 border border-white/60 rounded-xl">
-                    <span className="text-[#8E6B23] uppercase text-[9px] tracking-widest font-bold flex items-center gap-1.5 mb-1">
-                      <TrendingUp className="w-3 h-3 text-[#B38B36]" /> Wealth
-                    </span>
-                    <p className="text-[#5C4D43] font-light">{today.finance}</p>
-                  </div>
-                  <div className="p-3 bg-white/40 border border-white/60 rounded-xl">
-                    <span className="text-[#8E6B23] uppercase text-[9px] tracking-widest font-bold flex items-center gap-1.5 mb-1">
-                      <Heart className="w-3 h-3 text-[#B38B36]" /> Relations
-                    </span>
-                    <p className="text-[#5C4D43] font-light">{today.relationship}</p>
-                  </div>
-                  <div className="p-3 bg-white/40 border border-white/60 rounded-xl">
-                    <span className="text-[#8E6B23] uppercase text-[9px] tracking-widest font-bold flex items-center gap-1.5 mb-1">
-                      <Activity className="w-3 h-3 text-[#B38B36]" /> Health
-                    </span>
-                    <p className="text-[#5C4D43] font-light">{today.health}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* TOMORROW'S PREDICTION */}
-            <div className="bg-white/65 border border-[#B38B36]/15 hover:border-[#B38B36]/35 shadow-[0_8px_30px_rgba(0,0,0,0.02)] hover:shadow-[0_12px_35px_rgba(179,139,54,0.08)] transition-all duration-300 rounded-3xl p-6 relative overflow-hidden backdrop-blur-md group">
-              <div className="flex items-center justify-between mb-4 border-b border-[#B38B36]/10 pb-3">
-                <h4 className="font-serif text-lg text-[#3C2A21] font-medium flex items-center gap-2">
-                  <Moon className="w-4 h-4 text-[#B38B36] group-hover:animate-pulse" /> Tomorrow's Forecast
-                </h4>
-                <span className="text-[8px] uppercase tracking-widest font-bold text-[#6E5D53]">Preview</span>
-              </div>
-              <div className="space-y-4 text-xs leading-relaxed">
-                <div className="p-3.5 bg-white/70 border border-white/80 rounded-xl border-l-2 border-[#8E6B23] shadow-sm">
-                  <strong className="text-[#8E6B23] uppercase text-[9px] tracking-widest block mb-1">Tomorrow's Energy</strong>
-                  <p className="text-[#3C2A21] italic">"{tomorrow.energy}"</p>
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="p-3 bg-white/40 border border-white/60 rounded-xl">
-                    <span className="text-[#8E6B23] uppercase text-[9px] tracking-widest font-bold flex items-center gap-1.5 mb-1">
-                      <Briefcase className="w-3 h-3 text-[#B38B36]" /> Work
-                    </span>
-                    <p className="text-[#5C4D43] font-light">{tomorrow.career}</p>
-                  </div>
-                  <div className="p-3 bg-white/40 border border-white/60 rounded-xl">
-                    <span className="text-[#8E6B23] uppercase text-[9px] tracking-widest font-bold flex items-center gap-1.5 mb-1">
-                      <TrendingUp className="w-3 h-3 text-[#B38B36]" /> Finance
-                    </span>
-                    <p className="text-[#5C4D43] font-light">{tomorrow.finance}</p>
-                  </div>
-                  <div className="p-3 bg-white/40 border border-white/60 rounded-xl">
-                    <span className="text-[#8E6B23] uppercase text-[9px] tracking-widest font-bold flex items-center gap-1.5 mb-1">
-                      <Heart className="w-3 h-3 text-[#B38B36]" /> Love
-                    </span>
-                    <p className="text-[#5C4D43] font-light">{tomorrow.relationship}</p>
-                  </div>
-                  <div className="p-3 bg-white/40 border border-white/60 rounded-xl">
-                    <span className="text-[#8E6B23] uppercase text-[9px] tracking-widest font-bold flex items-center gap-1.5 mb-1">
-                      <Activity className="w-3 h-3 text-[#B38B36]" /> Wellness
-                    </span>
-                    <p className="text-[#5C4D43] font-light">{tomorrow.health}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* WEEKLY FORECAST (Premium) */}
-            <div className="bg-white/65 border border-[#B38B36]/15 hover:border-[#B38B36]/35 shadow-[0_8px_30px_rgba(0,0,0,0.02)] hover:shadow-[0_12px_35px_rgba(179,139,54,0.08)] transition-all duration-300 rounded-3xl p-6 relative overflow-hidden backdrop-blur-md group">
-              <div className="flex items-center justify-between mb-4 border-b border-[#B38B36]/10 pb-3">
-                <h4 className="font-serif text-lg text-[#3C2A21] font-medium flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-[#B38B36] group-hover:animate-pulse" /> Weekly Forecast
-                </h4>
-                {!isPaid ? (
-                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 border border-[#B38B36]/35 rounded-full bg-[#B38B36]/10 text-[8px] uppercase tracking-wider font-bold text-[#8E6B23]">
-                    <Lock className="w-2.5 h-2.5 text-[#8E6B23]" /> Premium
-                  </span>
-                ) : (
-                  <span className="text-[8px] uppercase tracking-widest font-bold text-green-600">Unlocked</span>
-                )}
-              </div>
-              
-              <div className="relative">
-                <div className={`space-y-4 text-xs leading-relaxed transition-all duration-700 ${!isPaid ? 'blur-[5px] select-none pointer-events-none opacity-40' : ''}`}>
-                  <div className="p-3 bg-white/70 border border-white/80 rounded-xl border-l-2 border-[#B38B36] shadow-sm">
-                    <strong className="text-[#8E6B23] uppercase text-[9px] tracking-widest block mb-1">Weekly Focus</strong>
-                    <p className="text-[#3C2A21] italic">"{weekly.overall}"</p>
-                  </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="p-3 bg-white/40 border border-white/60 rounded-xl">
-                      <span className="text-[#8E6B23] uppercase text-[9px] tracking-widest font-bold flex items-center gap-1.5 mb-1">
-                        <Briefcase className="w-3 h-3 text-[#B38B36]" /> Career
-                      </span>
-                      <p className="text-[#5C4D43] font-light">{weekly.career}</p>
-                    </div>
-                    <div className="p-3 bg-white/40 border border-white/60 rounded-xl">
-                      <span className="text-[#8E6B23] uppercase text-[9px] tracking-widest font-bold flex items-center gap-1.5 mb-1">
-                        <TrendingUp className="w-3 h-3 text-[#B38B36]" /> Wealth
-                      </span>
-                      <p className="text-[#5C4D43] font-light">{weekly.finance}</p>
-                    </div>
-                    <div className="p-3 bg-white/40 border border-white/60 rounded-xl">
-                      <span className="text-[#8E6B23] uppercase text-[9px] tracking-widest font-bold flex items-center gap-1.5 mb-1">
-                        <Heart className="w-3 h-3 text-[#B38B36]" /> Relations
-                      </span>
-                      <p className="text-[#5C4D43] font-light">{weekly.relationship}</p>
-                    </div>
-                    <div className="p-3 bg-white/40 border border-white/60 rounded-xl">
-                      <span className="text-[#8E6B23] uppercase text-[9px] tracking-widest font-bold flex items-center gap-1.5 mb-1">
-                        <Activity className="w-3 h-3 text-[#B38B36]" /> Health
-                      </span>
-                      <p className="text-[#5C4D43] font-light">{weekly.health}</p>
-                    </div>
-                  </div>
-                </div>
-
-                {!isPaid && (
-                  <div className="absolute inset-0 bg-transparent flex flex-col items-center justify-center text-center cursor-pointer p-4 z-10" onClick={handlePayment}>
-                    <div className="w-9 h-9 rounded-full bg-white border border-[#B38B36]/20 flex items-center justify-center shadow-md mb-2 group-hover:scale-110 transition-transform duration-300">
-                      <Lock className="w-3.5 h-3.5 text-[#B38B36] animate-pulse" />
-                    </div>
-                    <span className="text-[9px] text-[#8E6B23] uppercase tracking-widest font-bold">Unlock Weekly Forecast</span>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* MONTHLY FORECAST (Premium) */}
-            <div className="bg-white/65 border border-[#B38B36]/15 hover:border-[#B38B36]/35 shadow-[0_8px_30px_rgba(0,0,0,0.02)] hover:shadow-[0_12px_35px_rgba(179,139,54,0.08)] transition-all duration-300 rounded-3xl p-6 relative overflow-hidden backdrop-blur-md group">
-              <div className="flex items-center justify-between mb-4 border-b border-[#B38B36]/10 pb-3">
-                <h4 className="font-serif text-lg text-[#3C2A21] font-medium flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-[#B38B36] group-hover:animate-pulse" /> Monthly Forecast
-                </h4>
-                {!isPaid ? (
-                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 border border-[#B38B36]/35 rounded-full bg-[#B38B36]/10 text-[8px] uppercase tracking-wider font-bold text-[#8E6B23]">
-                    <Lock className="w-2.5 h-2.5 text-[#8E6B23]" /> Premium
-                  </span>
-                ) : (
-                  <span className="text-[8px] uppercase tracking-widest font-bold text-green-600">Unlocked</span>
-                )}
-              </div>
-              
-              <div className="relative">
-                <div className={`space-y-4 text-xs leading-relaxed transition-all duration-700 ${!isPaid ? 'blur-[5px] select-none pointer-events-none opacity-40' : ''}`}>
-                  <div className="p-3 bg-white/70 border border-white/80 rounded-xl border-l-2 border-[#B38B36] shadow-sm">
-                    <strong className="text-[#8E6B23] uppercase text-[9px] tracking-widest block mb-1">Monthly Focus</strong>
-                    <p className="text-[#3C2A21] italic">"{monthly.overall}"</p>
-                  </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="p-3 bg-white/40 border border-white/60 rounded-xl">
-                      <span className="text-[#8E6B23] uppercase text-[9px] tracking-widest font-bold flex items-center gap-1.5 mb-1">
-                        <Briefcase className="w-3 h-3 text-[#B38B36]" /> Career
-                      </span>
-                      <p className="text-[#5C4D43] font-light">{monthly.career}</p>
-                    </div>
-                    <div className="p-3 bg-white/40 border border-white/60 rounded-xl">
-                      <span className="text-[#8E6B23] uppercase text-[9px] tracking-widest font-bold flex items-center gap-1.5 mb-1">
-                        <TrendingUp className="w-3 h-3 text-[#B38B36]" /> Finance
-                      </span>
-                      <p className="text-[#5C4D43] font-light">{monthly.finance}</p>
-                    </div>
-                    <div className="p-3 bg-white/40 border border-white/60 rounded-xl">
-                      <span className="text-[#8E6B23] uppercase text-[9px] tracking-widest font-bold flex items-center gap-1.5 mb-1">
-                        <Heart className="w-3 h-3 text-[#B38B36]" /> Relations
-                      </span>
-                      <p className="text-[#5C4D43] font-light">{monthly.relationship}</p>
-                    </div>
-                    <div className="p-3 bg-white/40 border border-white/60 rounded-xl">
-                      <span className="text-[#8E6B23] uppercase text-[9px] tracking-widest font-bold flex items-center gap-1.5 mb-1">
-                        <Activity className="w-3 h-3 text-[#B38B36]" /> Health
-                      </span>
-                      <p className="text-[#5C4D43] font-light">{monthly.health}</p>
-                    </div>
-                  </div>
-                </div>
-
-                {!isPaid && (
-                  <div className="absolute inset-0 bg-transparent flex flex-col items-center justify-center text-center cursor-pointer p-4 z-10" onClick={handlePayment}>
-                    <div className="w-9 h-9 rounded-full bg-white border border-[#B38B36]/20 flex items-center justify-center shadow-md mb-2 group-hover:scale-110 transition-transform duration-300">
-                      <Lock className="w-3.5 h-3.5 text-[#B38B36] animate-pulse" />
-                    </div>
-                    <span className="text-[9px] text-[#8E6B23] uppercase tracking-widest font-bold">Unlock Monthly Forecast</span>
-                  </div>
-                )}
-              </div>
-            </div>
-
           </div>
-
-          {/* RIGHT: Detailed Life Report Panels */}
-          <div className="lg:col-span-7 space-y-6">
-            
-            <div className="relative bg-white/70 border border-[#B38B36]/20 shadow-[0_15px_45px_rgba(179,139,54,0.06)] rounded-3xl p-6 md:p-8 backdrop-blur-xl overflow-hidden min-h-[500px]">
-              
-              <h4 className="font-serif text-2xl text-[#3C2A21] mb-8 border-b border-[#B38B36]/15 pb-4 flex items-center gap-2">
-                <FileText className="w-5 h-5 text-[#B38B36]" /> Detailed Destiny Analysis
-              </h4>
-
-              <div className="space-y-8 pb-10">
-                {/* 1. Personality Analysis */}
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between text-xs font-sans font-bold text-[#3C2A21] uppercase tracking-wider">
-                    <div className="flex items-center gap-2.5">
-                      <div className="w-5 h-5 rounded-full bg-green-500/10 text-green-600 flex items-center justify-center shadow-inner">
-                        <CheckCircle2 className="w-3 h-3" />
-                      </div>
-                      <span className="font-serif text-sm tracking-wide normal-case text-[#3C2A21] font-bold">Personality & Inner Essence</span>
-                    </div>
-                    <span className="text-[8px] uppercase px-2 py-0.5 border border-green-200 text-green-600 bg-green-50/50 rounded-full tracking-widest font-bold">Free Access</span>
-                  </div>
-                  <div className="text-sm sm:text-base text-[#3C2A21] space-y-4 pl-7 border-l border-[#B38B36]/20 leading-relaxed font-normal">
-                    <p><strong>Core Strengths:</strong> {lifeReport.personality?.strengths}</p>
-                    <p><strong>Undercurrent Weaknesses:</strong> {lifeReport.personality?.weaknesses}</p>
-                    <p><strong>Latent Talents:</strong> {lifeReport.personality?.hidden_talents}</p>
-                    <p><strong>Emotional Chemistry:</strong> {lifeReport.personality?.emotional_nature}</p>
-                  </div>
-                </div>
-
-                {/* 2. Career Analysis */}
-                <div className="space-y-3 relative">
-                  <div className="flex items-center justify-between text-xs font-sans font-bold text-[#3C2A21] uppercase tracking-wider">
-                    <div className="flex items-center gap-2.5">
-                      <div className={`w-5 h-5 rounded-full ${isPaid ? 'bg-green-500/10 text-green-600' : 'bg-[#B38B36]/10 text-[#8E6B23]'} flex items-center justify-center shadow-inner`}>
-                        {isPaid ? <CheckCircle2 className="w-3 h-3" /> : <Lock className="w-2.5 h-2.5" />}
-                      </div>
-                      <span className="font-serif text-sm tracking-wide normal-case text-[#3C2A21] font-bold">Career Roadmap & Growth</span>
-                    </div>
-                    {!isPaid && (
-                      <span className="text-[8px] uppercase tracking-widest font-bold text-[#8E6B23] px-2 py-0.5 border border-[#B38B36]/20 bg-[#B38B36]/5 rounded-full flex items-center gap-1">
-                        <Lock className="w-2 h-2" /> Premium
-                      </span>
-                    )}
-                  </div>
-                  <div className={`text-sm sm:text-base text-[#5C4D43] space-y-4 pl-7 border-l border-[#B38B36]/20 leading-relaxed font-normal transition-all duration-700 ${!isPaid ? 'blur-sm select-none pointer-events-none opacity-40' : ''}`}>
-                    <p><strong>Growth Timeline:</strong> {lifeReport.career?.growth}</p>
-                    <p><strong>Business Potential:</strong> {lifeReport.career?.business}</p>
-                    <p><strong>Leadership Styles:</strong> {lifeReport.career?.leadership}</p>
-                  </div>
-                </div>
-
-                {/* 3. Relationship Analysis */}
-                <div className="space-y-3 relative">
-                  <div className="flex items-center justify-between text-xs font-sans font-bold text-[#3C2A21] uppercase tracking-wider">
-                    <div className="flex items-center gap-2.5">
-                      <div className={`w-5 h-5 rounded-full ${isPaid ? 'bg-green-500/10 text-green-600' : 'bg-[#B38B36]/10 text-[#8E6B23]'} flex items-center justify-center shadow-inner`}>
-                        {isPaid ? <CheckCircle2 className="w-3 h-3" /> : <Lock className="w-2.5 h-2.5" />}
-                      </div>
-                      <span className="font-serif text-sm tracking-wide normal-case text-[#3C2A21] font-bold">Marriage & Compatibility</span>
-                    </div>
-                    {!isPaid && (
-                      <span className="text-[8px] uppercase tracking-widest font-bold text-[#8E6B23] px-2 py-0.5 border border-[#B38B36]/20 bg-[#B38B36]/5 rounded-full flex items-center gap-1">
-                        <Lock className="w-2 h-2" /> Premium
-                      </span>
-                    )}
-                  </div>
-                  <div className={`text-sm sm:text-base text-[#5C4D43] space-y-4 pl-7 border-l border-[#B38B36]/20 leading-relaxed font-normal transition-all duration-700 ${!isPaid ? 'blur-sm select-none pointer-events-none opacity-40' : ''}`}>
-                    <p><strong>Marriage Outlook:</strong> {lifeReport.relationship?.marriage}</p>
-                    <p><strong>Vedic Compatibility:</strong> {lifeReport.relationship?.compatibility}</p>
-                    <p><strong>Domestic Alignment:</strong> {lifeReport.relationship?.family}</p>
-                  </div>
-                </div>
-
-                {/* 4. Financial Analysis */}
-                <div className="space-y-3 relative">
-                  <div className="flex items-center justify-between text-xs font-sans font-bold text-[#3C2A21] uppercase tracking-wider">
-                    <div className="flex items-center gap-2.5">
-                      <div className={`w-5 h-5 rounded-full ${isPaid ? 'bg-green-500/10 text-green-600' : 'bg-[#B38B36]/10 text-[#8E6B23]'} flex items-center justify-center shadow-inner`}>
-                        {isPaid ? <CheckCircle2 className="w-3 h-3" /> : <Lock className="w-2.5 h-2.5" />}
-                      </div>
-                      <span className="font-serif text-sm tracking-wide normal-case text-[#3C2A21] font-bold">Wealth & Resource Forecast</span>
-                    </div>
-                    {!isPaid && (
-                      <span className="text-[8px] uppercase tracking-widest font-bold text-[#8E6B23] px-2 py-0.5 border border-[#B38B36]/20 bg-[#B38B36]/5 rounded-full flex items-center gap-1">
-                        <Lock className="w-2 h-2" /> Premium
-                      </span>
-                    )}
-                  </div>
-                  <div className={`text-sm sm:text-base text-[#5C4D43] space-y-4 pl-7 border-l border-[#B38B36]/20 leading-relaxed font-normal transition-all duration-700 ${!isPaid ? 'blur-sm select-none pointer-events-none opacity-40' : ''}`}>
-                    <p><strong>Wealth Potential:</strong> {lifeReport.financial?.wealth}</p>
-                    <p><strong>Habits & Security:</strong> {lifeReport.financial?.habits}</p>
-                    <p><strong>Abundance Windows:</strong> {lifeReport.financial?.opportunities}</p>
-                  </div>
-                </div>
-
-                {/* 5. Health Analysis */}
-                <div className="space-y-3 relative">
-                  <div className="flex items-center justify-between text-xs font-sans font-bold text-[#3C2A21] uppercase tracking-wider">
-                    <div className="flex items-center gap-2.5">
-                      <div className={`w-5 h-5 rounded-full ${isPaid ? 'bg-green-500/10 text-green-600' : 'bg-[#B38B36]/10 text-[#8E6B23]'} flex items-center justify-center shadow-inner`}>
-                        {isPaid ? <CheckCircle2 className="w-3 h-3" /> : <Lock className="w-2.5 h-2.5" />}
-                      </div>
-                      <span className="font-serif text-sm tracking-wide normal-case text-[#3C2A21] font-bold">Health & Vitality Guide</span>
-                    </div>
-                    {!isPaid && (
-                      <span className="text-[8px] uppercase tracking-widest font-bold text-[#8E6B23] px-2 py-0.5 border border-[#B38B36]/20 bg-[#B38B36]/5 rounded-full flex items-center gap-1">
-                        <Lock className="w-2 h-2" /> Premium
-                      </span>
-                    )}
-                  </div>
-                  <div className={`text-sm sm:text-base text-[#5C4D43] space-y-4 pl-7 border-l border-[#B38B36]/20 leading-relaxed font-normal transition-all duration-700 ${!isPaid ? 'blur-sm select-none pointer-events-none opacity-40' : ''}`}>
-                    <p><strong>Physical Constitution:</strong> {lifeReport.health?.physical}</p>
-                    <p><strong>Mental Harmony:</strong> {lifeReport.health?.mental}</p>
-                    <p><strong>Lifestyle Roadmap:</strong> {lifeReport.health?.lifestyle}</p>
-                  </div>
-                </div>
-
-                {/* 6. Spiritual Analysis */}
-                <div className="space-y-3 relative">
-                  <div className="flex items-center justify-between text-xs font-sans font-bold text-[#3C2A21] uppercase tracking-wider">
-                    <div className="flex items-center gap-2.5">
-                      <div className={`w-5 h-5 rounded-full ${isPaid ? 'bg-green-500/10 text-green-600' : 'bg-[#B38B36]/10 text-[#8E6B23]'} flex items-center justify-center shadow-inner`}>
-                        {isPaid ? <CheckCircle2 className="w-3 h-3" /> : <Lock className="w-2.5 h-2.5" />}
-                      </div>
-                      <span className="font-serif text-sm tracking-wide normal-case text-[#3C2A21] font-bold">Karma & Soul Purpose</span>
-                    </div>
-                    {!isPaid && (
-                      <span className="text-[8px] uppercase tracking-widest font-bold text-[#8E6B23] px-2 py-0.5 border border-[#B38B36]/20 bg-[#B38B36]/5 rounded-full flex items-center gap-1">
-                        <Lock className="w-2 h-2" /> Premium
-                      </span>
-                    )}
-                  </div>
-                  <div className={`text-sm sm:text-base text-[#5C4D43] space-y-4 pl-7 border-l border-[#B38B36]/20 leading-relaxed font-normal transition-all duration-700 ${!isPaid ? 'blur-sm select-none pointer-events-none opacity-40' : ''}`}>
-                    <p><strong>Karmic Debt (Saturn):</strong> {lifeReport.spiritual?.karma}</p>
-                    <p><strong>Soul Lessons:</strong> {lifeReport.spiritual?.lessons}</p>
-                    <p><strong>Divine Mission:</strong> {lifeReport.spiritual?.purpose}</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* PREMIUM LOCK CONVERSION COVER */}
-              {!isPaid && (
-                <div className="absolute inset-x-0 bottom-0 top-[22%] bg-gradient-to-t from-[#FFFDF9] via-[#FFFDF9]/90 to-transparent flex flex-col justify-end p-6 md:p-8 text-center backdrop-blur-[6px] z-20">
-                  <div className="bg-white/80 border border-[#B38B36]/25 rounded-3xl p-6 md:p-8 max-w-md mx-auto shadow-[0_20px_50px_rgba(179,139,54,0.2)] relative z-10 backdrop-blur-md">
-                    {/* Double border gold accent frame inside */}
-                    <div className="absolute inset-2 border border-[#B38B36]/15 rounded-2xl pointer-events-none" />
-                    
-                    <div className="w-12 h-12 rounded-full bg-[#B38B36]/10 border border-[#B38B36]/35 flex items-center justify-center mx-auto mb-4 text-[#B38B36] shadow-sm relative">
-                      <div className="w-12 h-12 rounded-full bg-[#B38B36]/5 absolute animate-ping" />
-                      <Lock className="w-4 h-4 text-[#8E6B23] relative z-10 animate-pulse" />
-                    </div>
-                    
-                    <h5 className="font-serif text-xl text-[#3C2A21] mb-2 font-bold tracking-wide">Connect with Gitika Sharma</h5>
-                    <p className="text-[11px] text-[#6E5D53] leading-relaxed mb-6 font-light max-w-xs mx-auto">
-                      Have questions about your astrology report or need personalized guidance? Connect directly with Gitika Sharma for expert consultation and assistance.
-                    </p>
-                    <button
-                      onClick={(e) => e.preventDefault()}
-                      className="w-full py-4 bg-gradient-to-r from-[#BF953F] via-[#FCF6BA] to-[#B38728] hover:brightness-[1.08] text-[#1E110A] font-sans font-bold text-xs uppercase tracking-widest rounded-xl transition-all duration-500 shadow-[0_4px_15px_rgba(179,139,54,0.35)] hover:scale-[1.02] flex items-center justify-center gap-2 cursor-pointer border border-[#FCF6BA]/30"
-                    >
-                      <Unlock className="w-3.5 h-3.5 stroke-[2.5px]" />
-                      <span>Connect with Gitika Sharma</span>
-                    </button>
-                  </div>
-                </div>
-              )}
-
-            </div>
-
-          </div>
-
         </div>
 
       </div>
 
       {/* NESTED DIALOG: DEVELOPMENT MOCK AUTHORIZATION PANEL */}
       <Dialog open={showMockModal} onOpenChange={(v) => !v && setShowMockModal(false)}>
-        <DialogContent className="max-w-md p-6 bg-[#FFFDF9] border border-white/90 text-[#3C2A21] font-sans rounded-2xl shadow-2xl relative overflow-hidden">
+        <DialogContent className="max-w-md p-6 bg-[#FFFDF9] border border-white/90 text-[#3C2A21] font-sans rounded-2xl shadow-2xl overflow-hidden">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(229,192,106,0.1),transparent_70%)] pointer-events-none z-0" />
           
           <div className="relative z-10 space-y-6">
@@ -958,6 +1416,258 @@ const PaymentPage = () => {
               </button>
             </div>
           </div>
+        </DialogContent>
+      </Dialog>
+
+      <AppointmentBookingModal
+        open={showBookingModal}
+        onClose={() => setShowBookingModal(false)}
+        onBookingSuccess={(booking) => {
+          if (booking && booking.phone) {
+            setSeekerPhone(booking.phone);
+            refreshBookingsAndHistory(booking.phone);
+          } else {
+            setActiveBooking(booking);
+          }
+        }}
+      />
+
+      <Dialog open={isCancellationOpen} onOpenChange={(v) => !v && !isCancelling && setIsCancellationOpen(false)}>
+        <DialogContent className="max-w-md p-6 bg-[#FDFBF7] border border-[#E5E1D8] text-[#3C2A21] rounded-2xl shadow-2xl overflow-hidden z-50">
+          <DialogTitle className="font-serif text-lg font-bold text-[#3C2A21] mb-2 flex items-center gap-2">
+            <AlertCircle className="w-5 h-5 text-red-600" />
+            <span>Cancel Consultation?</span>
+          </DialogTitle>
+          <DialogDescription className="text-xs text-stone-500 leading-relaxed mb-4">
+            Are you sure you want to cancel your booked consultation? This action cannot be undone.
+          </DialogDescription>
+          
+          <div className="bg-stone-50 border border-[#B38B36]/15 rounded-xl p-3.5 space-y-2 mb-6 text-[10px] text-stone-600 leading-normal">
+            <span className="font-bold text-[#8E6B23] block uppercase tracking-wider text-[8px]">Cancellation Policy</span>
+            <p>• Customer cancellations are <span className="font-bold text-red-700">non-refundable</span>.</p>
+            <p>• If the consultation is cancelled by the astrologer or admin, the full payment will be refunded within 24 hours.</p>
+          </div>
+
+          <div className="flex justify-end gap-3 text-xs font-bold uppercase tracking-wider">
+            <button
+              disabled={isCancelling}
+              onClick={() => setIsCancellationOpen(false)}
+              className="px-4 py-2.5 border border-stone-200 hover:border-stone-400 rounded-xl text-stone-600 transition-colors cursor-pointer disabled:opacity-50"
+            >
+              Keep Booking
+            </button>
+            <button
+              disabled={isCancelling}
+              onClick={handleCustomerCancellation}
+              className="px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl shadow-md hover:shadow-lg transition-all cursor-pointer flex items-center gap-1.5 disabled:opacity-50"
+            >
+              {isCancelling ? (
+                <>
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  <span>Processing...</span>
+                </>
+              ) : (
+                <span>Cancel Booking</span>
+              )}
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Premium View Details Modal */}
+      <Dialog open={!!selectedHistoryBooking} onOpenChange={(v) => !v && setSelectedHistoryBooking(null)}>
+        <DialogContent className="max-w-md p-6 bg-[#FDFBF7] border border-[#E5E1D8] text-[#3C2A21] rounded-2xl shadow-2xl overflow-hidden z-50">
+          {selectedHistoryBooking && (
+            <>
+              <DialogTitle className="font-serif text-lg font-bold text-[#3C2A21] mb-1 flex items-center gap-2 border-b border-[#B38B36]/15 pb-2">
+                <Sparkles className="w-4 h-4 text-[#B38B36]" />
+                <span>Consultation Details</span>
+              </DialogTitle>
+              <DialogDescription className="sr-only">
+                Full profile and tracking coordinates for booking {selectedHistoryBooking.bookingId}
+              </DialogDescription>
+              
+              <div className="space-y-4 my-3 text-xs overflow-y-auto max-h-[60vh] pr-1">
+                {/* Customer Info */}
+                <div className="bg-stone-50 border border-stone-200/50 rounded-xl p-3 space-y-1">
+                  <span className="font-bold text-[#8E6B23] uppercase tracking-wider text-[8px] block">Customer Profile</span>
+                  <p><span className="text-stone-400">Name:</span> <span className="font-semibold">{selectedHistoryBooking.name}</span></p>
+                  <p><span className="text-stone-400">Phone:</span> {selectedHistoryBooking.phone}</p>
+                  <p><span className="text-stone-400">Email:</span> {selectedHistoryBooking.email}</p>
+                </div>
+
+                {/* Booking Info */}
+                <div className="grid grid-cols-2 gap-2 bg-stone-50 border border-stone-200/50 rounded-xl p-3">
+                  <div className="col-span-2">
+                    <span className="font-bold text-[#8E6B23] uppercase tracking-wider text-[8px] block mb-1">Booking Coordinates</span>
+                  </div>
+                  <p><span className="text-stone-400">Booking ID:</span> <span className="font-mono font-bold text-stone-700">{selectedHistoryBooking.bookingId}</span></p>
+                  <p><span className="text-stone-400">Type:</span> <span className="uppercase font-semibold">{selectedHistoryBooking.consultationType}</span></p>
+                  <p><span className="text-stone-400">Duration:</span> {selectedHistoryBooking.consultationType === "in-person" ? "60 mins" : "45 mins"}</p>
+                  <p><span className="text-stone-400">Status:</span> <span className="font-bold">{selectedHistoryBooking.status}</span></p>
+                </div>
+
+                {/* Meeting & Payment Info */}
+                <div className="bg-stone-50 border border-stone-200/50 rounded-xl p-3 space-y-1.5">
+                  <span className="font-bold text-[#8E6B23] uppercase tracking-wider text-[8px] block">Meeting & Financials</span>
+                  {selectedHistoryBooking.meetLink && (
+                    <p><span className="text-stone-400">Link:</span> <a href={selectedHistoryBooking.meetLink} target="_blank" rel="noreferrer" className="text-blue-600 underline font-medium hover:text-blue-800">{selectedHistoryBooking.meetLink}</a></p>
+                  )}
+                  <p><span className="text-stone-400">Amount Charged:</span> <span className="font-semibold text-green-700">₹{selectedHistoryBooking.amount || 499.00} (Paid)</span></p>
+                  <p><span className="text-stone-400">Payment ID:</span> <span className="font-mono text-stone-500">{selectedHistoryBooking.paymentId || "RP_PAYMENT_SUCCESS"}</span></p>
+                </div>
+
+                {/* Cancellation & Refund Info if exists */}
+                {selectedHistoryBooking.refund && (
+                  <div className="bg-red-50 border border-red-200/60 rounded-xl p-3 space-y-1 text-red-800">
+                    <span className="font-bold text-red-700 uppercase tracking-wider text-[8px] block">Cancellation & Refund Logs</span>
+                    <p><span className="text-red-600">Refund Status:</span> <span className="font-bold">{selectedHistoryBooking.refund.status}</span></p>
+                    {selectedHistoryBooking.refund.expectedRefund && (
+                      <p><span className="text-red-600">Expected Timeline:</span> <span className="font-medium">{selectedHistoryBooking.refund.expectedRefund}</span></p>
+                    )}
+                    {selectedHistoryBooking.refund.reason && (
+                      <p><span className="text-red-600">Log Reason:</span> {selectedHistoryBooking.refund.reason}</p>
+                    )}
+                  </div>
+                )}
+
+                {/* Timeline */}
+                <div className="bg-stone-50 border border-stone-200/50 rounded-xl p-3">
+                  <span className="font-bold text-[#8E6B23] uppercase tracking-wider text-[8px] block mb-3">Consultation Lifecycle Timeline</span>
+                  <div className="relative pl-6 space-y-3.5 border-l border-stone-200 ml-1.5">
+                    {/* Step 1: Created */}
+                    <div className="relative">
+                      <div className="absolute left-[-29px] top-0.5 w-4 h-4 rounded-full bg-green-500 flex items-center justify-center text-white text-[8px]">✓</div>
+                      <p className="font-bold text-[#3C2A21] leading-none">Consultation Initiated</p>
+                      <p className="text-[8px] text-stone-400 mt-0.5">Booking request registered</p>
+                    </div>
+
+                    {/* Step 2: Payment Success */}
+                    <div className="relative">
+                      <div className="absolute left-[-29px] top-0.5 w-4 h-4 rounded-full bg-green-500 flex items-center justify-center text-white text-[8px]">✓</div>
+                      <p className="font-bold text-[#3C2A21] leading-none">Payment Success</p>
+                      <p className="text-[8px] text-stone-400 mt-0.5">Payment verified via Razorpay API</p>
+                    </div>
+
+                    {/* Step 3: Booking Confirmed */}
+                    <div className="relative">
+                      <div className="absolute left-[-29px] top-0.5 w-4 h-4 rounded-full bg-green-500 flex items-center justify-center text-white text-[8px]">✓</div>
+                      <p className="font-bold text-[#3C2A21] leading-none">Booking Confirmed</p>
+                      <p className="text-[8px] text-stone-400 mt-0.5">Slot secured and confirmed</p>
+                    </div>
+
+                    {/* Step 4: Meeting Scheduled */}
+                    <div className="relative">
+                      <div className="absolute left-[-29px] top-0.5 w-4 h-4 rounded-full bg-green-500 flex items-center justify-center text-white text-[8px]">✓</div>
+                      <p className="font-bold text-[#3C2A21] leading-none">Meeting Scheduled</p>
+                      <p className="text-[8px] text-stone-400 mt-0.5">Video/voice credentials established</p>
+                    </div>
+
+                    {/* Step 5: Final State */}
+                    <div className="relative">
+                      {selectedHistoryBooking.status.includes("Cancelled") ? (
+                        <>
+                          <div className="absolute left-[-29px] top-0.5 w-4 h-4 rounded-full bg-red-500 flex items-center justify-center text-white text-[8px]">✗</div>
+                          <p className="font-bold text-red-600 leading-none">Booking Cancelled</p>
+                          <p className="text-[8px] text-red-400 mt-0.5">Lifecycle terminated via Cancellation API</p>
+                        </>
+                      ) : selectedHistoryBooking.status === "Completed" ? (
+                        <>
+                          <div className="absolute left-[-29px] top-0.5 w-4 h-4 rounded-full bg-green-500 flex items-center justify-center text-white text-[8px]">✓</div>
+                          <p className="font-bold text-green-600 leading-none">Consultation Completed</p>
+                          <p className="text-[8px] text-stone-400 mt-0.5">Astrologer meeting finished successfully</p>
+                        </>
+                      ) : (
+                        <>
+                          <div className="absolute left-[-29px] top-0.5 w-4 h-4 rounded-full bg-[#B38B36] flex items-center justify-center text-white text-[8px] animate-pulse">●</div>
+                          <p className="font-bold text-[#8E6B23] leading-none">Upcoming Session</p>
+                          <p className="text-[8px] text-stone-400 mt-0.5">Active session awaits schedule start</p>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex justify-end pt-2 border-t border-stone-100">
+                <button
+                  onClick={() => setSelectedHistoryBooking(null)}
+                  className="px-4 py-2 bg-[#B38B36] hover:bg-[#8E6B23] text-white rounded-xl text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer"
+                >
+                  Close details
+                </button>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Receipt Details Modal */}
+      <Dialog open={!!receiptBooking} onOpenChange={(v) => !v && setReceiptBooking(null)}>
+        <DialogContent className="max-w-md p-6 bg-[#FDFBF7] border border-[#E5E1D8] text-[#3C2A21] rounded-2xl shadow-2xl z-50">
+          {receiptBooking && (() => {
+            const receipt = HistoryService.getReceiptDetails(receiptBooking);
+            return (
+              <div className="space-y-4">
+                <div className="text-center border-b border-[#B38B36]/15 pb-4 space-y-1">
+                  <h2 className="font-serif text-xl font-bold text-[#3C2A21]">AstroPower 24 Receipt</h2>
+                  <p className="text-[10px] text-stone-400 uppercase tracking-widest">Transaction Statement</p>
+                </div>
+
+                <div className="space-y-3 text-xs">
+                  <div className="flex justify-between">
+                    <span className="text-stone-400 font-light">Receipt No:</span>
+                    <span className="font-mono font-bold text-stone-700">{receipt.receiptNumber}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-stone-400 font-light">Booking Reference:</span>
+                    <span className="font-mono font-bold text-stone-700">{receipt.bookingId}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-stone-400 font-light">Payment Reference:</span>
+                    <span className="font-mono font-semibold text-stone-700">{receipt.paymentId}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-stone-400 font-light">Transaction Date:</span>
+                    <span className="font-medium text-stone-700">{receipt.date}</span>
+                  </div>
+                  <div className="flex justify-between border-b border-stone-100 pb-2">
+                    <span className="text-stone-400 font-light">Service:</span>
+                    <span className="font-medium text-stone-700 uppercase">{receipt.consultationType} Consultation</span>
+                  </div>
+
+                  <div className="space-y-1">
+                    <span className="font-bold text-[#8E6B23] uppercase tracking-wider text-[8px] block">Customer Details</span>
+                    <p><span className="text-stone-400">Name:</span> <span className="font-semibold">{receipt.customerName}</span></p>
+                    <p><span className="text-stone-400">Phone:</span> {receipt.customerPhone}</p>
+                    <p><span className="text-stone-400">Email:</span> {receipt.customerEmail}</p>
+                  </div>
+
+                  <div className="flex justify-between border-t border-stone-200/60 pt-3 text-sm">
+                    <span className="font-bold text-[#3C2A21]">Total Paid:</span>
+                    <span className="font-serif font-black text-[#8E6B23]">₹{receipt.amountPaid}.00</span>
+                  </div>
+                </div>
+
+                <div className="flex gap-2 pt-3 border-t border-stone-100">
+                  <button
+                    onClick={() => {
+                      window.print();
+                    }}
+                    className="flex-1 px-4 py-2 border border-stone-200 hover:border-stone-400 rounded-xl text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer text-stone-600 font-bold"
+                  >
+                    Print Receipt
+                  </button>
+                  <button
+                    onClick={() => setReceiptBooking(null)}
+                    className="flex-1 px-4 py-2 bg-[#B38B36] hover:bg-[#8E6B23] text-white rounded-xl text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer"
+                  >
+                    Dismiss
+                  </button>
+                </div>
+              </div>
+            );
+          })()}
         </DialogContent>
       </Dialog>
 

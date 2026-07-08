@@ -43,7 +43,7 @@ const ContactPage = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1 }}
-        className="relative w-full h-[300px] md:h-[400px] bg-[#3C2A21] flex items-center overflow-hidden border-b border-[#B38B36]/20"
+        className="relative w-full h-[180px] md:h-[220px] bg-[#3C2A21] flex items-center overflow-hidden border-b border-[#B38B36]/20"
       >
         <div className="absolute inset-0 bg-black/45 z-10" />
         <motion.img 

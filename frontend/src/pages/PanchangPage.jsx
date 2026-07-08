@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   MapPin, 
@@ -29,6 +29,7 @@ import { toast } from "sonner";
 
 const PanchangPage = () => {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   
   // Format today's date as YYYY-MM-DD
   const getTodayString = () => {
@@ -39,8 +40,11 @@ const PanchangPage = () => {
     return `${year}-${month}-${day}`;
   };
 
-  const [city, setCity] = useState("New Delhi");
-  const [selectedDate, setSelectedDate] = useState(getTodayString());
+  const queryCity = searchParams.get("city");
+  const queryDate = searchParams.get("date");
+
+  const [city, setCity] = useState(queryCity || "New Delhi");
+  const [selectedDate, setSelectedDate] = useState(queryDate || getTodayString());
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [choghadiyaTab, setChoghadiyaTab] = useState("day");
@@ -101,6 +105,28 @@ const PanchangPage = () => {
       setApiLoading(false);
     }
   };
+
+  // Sync state to URL search parameters
+  useEffect(() => {
+    const currentParams = {};
+    if (city) currentParams.city = city;
+    if (selectedDate) currentParams.date = selectedDate;
+    if (searchParams.get("city") !== city || searchParams.get("date") !== selectedDate) {
+      setSearchParams(currentParams, { replace: true });
+    }
+  }, [city, selectedDate, searchParams, setSearchParams]);
+
+  // Sync URL search parameters back to state (for back/forward navigation)
+  useEffect(() => {
+    const qCity = searchParams.get("city");
+    const qDate = searchParams.get("date");
+    if (qCity && qCity !== city) {
+      setCity(qCity);
+    }
+    if (qDate && qDate !== selectedDate) {
+      setSelectedDate(qDate);
+    }
+  }, [searchParams, city, selectedDate]);
 
   useEffect(() => {
     fetchPanchang(city, selectedDate);
@@ -188,46 +214,46 @@ const PanchangPage = () => {
   // Auspicious Muhurats Data
   const auspMuhurats = {
     marriage: [
-      { month: "January", dates: ["18 (Sunday)", "26 (Monday)"] },
-      { month: "February", dates: ["12 (Thursday)", "22 (Sunday)"] },
-      { month: "March", dates: ["12 (Thursday)", "20 (Friday)"] },
-      { month: "April", dates: ["08 (Wednesday)", "24 (Friday)"] },
-      { month: "May", dates: ["15 (Friday)", "28 (Thursday)"] },
-      { month: "June", dates: ["08 (Monday)", "25 (Thursday)"] },
-      { month: "July", dates: ["16 (Thursday)", "22 (Wednesday)"] },
-      { month: "August", dates: ["12 (Wednesday)", "14 (Friday)"] },
-      { month: "September", dates: ["16 (Wednesday)", "24 (Thursday)"] },
-      { month: "October", dates: ["14 (Wednesday)", "20 (Tuesday)"] },
-      { month: "November", dates: ["18 (Wednesday)", "20 (Friday)"] },
-      { month: "December", dates: ["05 (Friday)", "19 (Saturday)"] }
+      { month: "January", dates: ["No Shubh Dates"] },
+      { month: "February", dates: ["05", "06", "08", "10", "12", "14", "19", "20", "21", "24", "25", "26"] },
+      { month: "March", dates: ["02", "03", "04", "07", "08", "09", "11", "12"] },
+      { month: "April", dates: ["15", "20", "21", "25", "26", "27", "28", "29"] },
+      { month: "May", dates: ["01", "03", "05", "06", "07", "08", "13", "14"] },
+      { month: "June", dates: ["21", "22", "23", "24", "25", "26", "27", "29"] },
+      { month: "July", dates: ["01", "06", "07", "11"] },
+      { month: "August", dates: ["No Shubh Dates"] },
+      { month: "September", dates: ["No Shubh Dates"] },
+      { month: "October", dates: ["No Shubh Dates"] },
+      { month: "November", dates: ["21", "25", "26"] },
+      { month: "December", dates: ["02", "03", "04", "05", "06", "11", "12"] }
     ],
     vehicle: [
-      { month: "January", dates: ["02", "05", "11", "14", "21", "28"] },
+      { month: "January", dates: ["01", "02", "04", "05", "11", "12", "14", "21", "28", "29"] },
       { month: "February", dates: ["01", "06", "11", "26", "27"] },
-      { month: "March", dates: ["01", "05", "08", "09", "15", "16", "23"] },
-      { month: "April", dates: ["01", "06", "12", "13", "20", "24"] },
-      { month: "May", dates: ["01", "04", "10", "11", "14", "28"] },
+      { month: "March", dates: ["01", "05", "06", "08", "09", "15", "16", "23", "25", "27"] },
+      { month: "April", dates: ["01", "02", "03", "06", "12", "13", "20", "24", "29"] },
+      { month: "May", dates: ["01", "04", "10", "11", "14"] },
       { month: "June", dates: ["17", "22", "24", "25"] },
-      { month: "July", dates: ["02", "08", "12", "19", "24"] },
-      { month: "August", dates: ["07", "09", "10", "16", "20", "26"] },
-      { month: "September", dates: ["04", "06", "13", "14", "16", "24"] },
+      { month: "July", dates: ["02", "03", "05", "08", "12", "19", "24", "29", "30"] },
+      { month: "August", dates: ["07", "09", "10", "16", "17", "20", "26", "27", "28", "31"] },
+      { month: "September", dates: ["04", "06", "07", "13", "14", "16", "17", "24"] },
       { month: "October", dates: ["21", "22", "25", "28", "30"] },
       { month: "November", dates: ["01", "06", "25", "26", "29"] },
-      { month: "December", dates: ["03", "04", "13", "14", "23", "30"] }
+      { month: "December", dates: ["03", "04", "06", "13", "14", "23", "30", "31"] }
     ],
     property: [
-      { month: "January", dates: ["08", "15", "22", "29"] },
-      { month: "February", dates: ["05", "12", "19", "26"] },
-      { month: "March", dates: ["05", "12", "19", "26"] },
-      { month: "April", dates: ["02", "09", "16", "23", "30"] },
-      { month: "May", dates: ["07", "14", "21", "28"] },
-      { month: "June", dates: ["04", "11", "18", "25"] },
-      { month: "July", dates: ["02", "09", "16", "23", "30"] },
-      { month: "August", dates: ["06", "13", "20", "27"] },
-      { month: "September", dates: ["03", "10", "17", "24"] },
-      { month: "October", dates: ["01", "08", "15", "22", "29"] },
-      { month: "November", dates: ["05", "12", "19", "26"] },
-      { month: "December", dates: ["03", "10", "17", "24", "31"] }
+      { month: "January", dates: ["01", "02", "08", "15", "16", "22", "23", "29", "30"] },
+      { month: "February", dates: ["12", "13", "19", "20", "26", "27"] },
+      { month: "March", dates: ["12", "13", "19", "20", "26", "27"] },
+      { month: "April", dates: ["09", "10", "16", "17", "23", "24"] },
+      { month: "May", dates: ["01", "07", "14"] },
+      { month: "June", dates: ["18", "19", "25", "26"] },
+      { month: "July", dates: ["16", "17", "23", "24"] },
+      { month: "August", dates: ["13", "14", "20", "21", "28"] },
+      { month: "September", dates: ["04", "10", "11", "17", "18", "25"] },
+      { month: "October", dates: ["01", "02", "08", "16", "22", "23", "29", "30"] },
+      { month: "November", dates: ["12", "13", "19", "20", "26", "27"] },
+      { month: "December", dates: ["10", "11", "17", "18", "24", "25"] }
     ]
   };
 
@@ -270,7 +296,7 @@ const PanchangPage = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8 }}
-        className="relative w-full h-[260px] md:h-[300px] bg-[#3C2A21] flex items-center overflow-hidden border-b border-[#B38B36]/20"
+        className="relative w-full h-[180px] md:h-[220px] bg-[#3C2A21] flex items-center overflow-hidden border-b border-[#B38B36]/20"
       >
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full border border-white/5 opacity-10 pointer-events-none" />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] rounded-full border border-white/10 opacity-5 pointer-events-none" />
@@ -490,9 +516,18 @@ const PanchangPage = () => {
                     { label: "Karana (Half Tithi)", value: data.elements?.karana },
                     { label: "Vara (Weekday Name)", value: data.elements?.vara },
                     { label: "Moon Sign (Zodiac Rashi)", value: data.elements?.moon_sign },
+                    { label: "Sun Sign (Zodiac Rashi)", value: data.elements?.sun_sign },
                     { label: "Moon Phase Percentage", value: data.elements?.moon_phase },
                     { label: "Hindu Lunar Month", value: data.elements?.hindu_month },
-                    { label: "Samvatsara Year Name", value: data.elements?.samvatsara }
+                    { label: "Samvatsara Year Name", value: data.elements?.samvatsara },
+                    { label: "Current Hora Ruler", value: data.elements?.hora },
+                    { label: "Nishita Muhurta", value: `${data.nishita_muhurta?.start} - ${data.nishita_muhurta?.end}` },
+                    { label: "Vikram Samvat", value: data.elements?.vikram_samvat },
+                    { label: "Shaka Samvat", value: data.elements?.shaka_samvat },
+                    { label: "Ritu (Season)", value: data.elements?.ritu },
+                    { label: "Ayanam", value: data.elements?.ayanam },
+                    { label: "Today's Festival", value: data.festivals?.join(", ") },
+                    { label: "Active Vrat/Fasting", value: data.vrats?.join(", ") }
                   ].map((item, idx) => (
                     <div key={idx} className="flex justify-between items-center py-2.5 border-b border-stone-100 last:border-0">
                       <span className="font-bold text-stone-500">{item.label}</span>
@@ -502,6 +537,13 @@ const PanchangPage = () => {
                     </div>
                   ))}
                 </div>
+
+                {data.summary && (
+                  <div className="mt-6 bg-[#FAF6EE] border border-[#B38B36]/15 p-4 rounded-2xl text-xs text-[#725D46] font-light leading-relaxed">
+                    <span className="font-bold text-[#3C2A21] uppercase tracking-wider block mb-1 text-[9px]">Panchangam Summary</span>
+                    {data.summary}
+                  </div>
+                )}
               </div>
 
               {/* SECTION 4: MUHURAT DETAILS */}
@@ -525,7 +567,8 @@ const PanchangPage = () => {
                     { name: "Brahma Muhurat", data: data.brahma_muhurat, status: "auspicious", desc: "Highly auspicious hour before dawn. Optimal for study & yoga.", tag: "Recommended" },
                     { name: "Dur Muhurat", data: data.dur_muhurat, status: "inauspicious", desc: "Inauspicious alignment. Restrict key ceremonies.", tag: "Avoid" },
                     { name: "Amrit Kalam", data: data.amrit_kalam, status: "auspicious", desc: "Excellent period for spiritual practice or meeting mentors.", tag: "Recommended" },
-                    { name: "Varjyam", data: data.varjyam, status: "inauspicious", desc: "Caution: Avoid core operations during this energy cycle.", tag: "Avoid" }
+                    { name: "Varjyam", data: data.varjyam, status: "inauspicious", desc: "Caution: Avoid core operations during this energy cycle.", tag: "Avoid" },
+                    { name: "Nishita Muhurta", data: data.nishita_muhurta, status: "neutral", desc: "Midnight sandhya hour. Recommended for meditation and silent contemplation.", tag: "Spiritual Tasks" }
                   ].map((muh, idx) => {
                     let indicatorBg = "bg-amber-50/60 border-amber-200/50 hover:border-amber-300";
                     let tagStyle = "bg-amber-100/70 text-amber-700 border-amber-200/30";
@@ -555,7 +598,7 @@ const PanchangPage = () => {
                         <div className="pt-3 border-t border-stone-100 flex justify-between items-center text-xs">
                           <span className="text-stone-400 font-medium text-[9px] uppercase tracking-wider">Time Slot</span>
                           <span className="font-serif font-extrabold text-[#3C2A21] bg-white border border-stone-200/50 px-2.5 py-1 rounded-lg shadow-sm">
-                            {muh.data.start} - {muh.data.end}
+                            {muh.data?.start || "N/A"} - {muh.data?.end || "N/A"}
                           </span>
                         </div>
                       </div>
@@ -797,38 +840,44 @@ const PanchangPage = () => {
                   <Compass className="w-7 h-7 text-[#B38B36] mx-auto mb-2" />
                   <h4 className="font-serif text-base font-extrabold text-[#3C2A21]">Celestial Pulse</h4>
                   <p className="text-[10px] text-stone-400 font-semibold mt-0.5">{city.split(',')[0]}</p>
-                </div>
-
-                <div className="space-y-3.5 text-xs text-[#3C2A21]">
+                         <div className="space-y-3.5 text-xs text-[#3C2A21]">
                   <div className="flex justify-between items-center">
                     <span className="text-stone-500 font-bold">Moon Sign</span>
-                    <span className="font-serif font-extrabold text-[#B38B36]">{data.elements?.moon_sign.split(" ")[0]}</span>
+                    <span className="font-serif font-extrabold text-[#B38B36]">{data.elements?.moon_sign?.split(" ")[0] || "N/A"}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-stone-500 font-bold">Sun Sign</span>
+                    <span className="font-serif font-extrabold text-[#B38B36]">{data.elements?.sun_sign?.split(" ")[0] || "N/A"}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-stone-500 font-bold">Hora Ruler</span>
+                    <span className="font-serif font-extrabold text-[#B38B36]">{data.elements?.hora || "N/A"}</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-stone-500 font-bold">Tithi</span>
-                    <span className="font-serif font-extrabold text-[#B38B36] text-right truncate max-w-[120px]">{data.elements?.tithi.split(" ")[0]}</span>
+                    <span className="font-serif font-extrabold text-[#B38B36] text-right truncate max-w-[120px]">{data.elements?.tithi?.split(" ")[0] || "N/A"}</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-stone-500 font-bold">Nakshatra</span>
-                    <span className="font-serif font-extrabold text-[#B38B36]">{data.elements?.nakshatra}</span>
+                    <span className="font-serif font-extrabold text-[#B38B36]">{data.elements?.nakshatra || "N/A"}</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-stone-500 font-bold">Rahu Kalam</span>
-                    <span className="font-mono font-extrabold text-red-700 bg-red-50 px-2 py-0.5 rounded border border-red-100">{data.rahu_kaal.start} - {data.rahu_kaal.end}</span>
+                    <span className="font-mono font-extrabold text-red-700 bg-red-50 px-2 py-0.5 rounded border border-red-100">{data.rahu_kaal?.start || "N/A"} - {data.rahu_kaal?.end || "N/A"}</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-stone-500 font-bold">Shubh Muhurat</span>
-                    <span className="font-mono font-extrabold text-green-700 bg-green-50 px-2 py-0.5 rounded border border-green-100">{data.abhijit.start} - {data.abhijit.end}</span>
+                    <span className="font-mono font-extrabold text-green-700 bg-green-50 px-2 py-0.5 rounded border border-green-100">{data.abhijit?.start || "N/A"} - {data.abhijit?.end || "N/A"}</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-stone-500 font-bold">Sunrise</span>
-                    <span className="font-serif font-extrabold text-[#3C2A21]">{data.sunrise}</span>
+                    <span className="font-serif font-extrabold text-[#3C2A21]">{data.sunrise || "N/A"}</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-stone-500 font-bold">Sunset</span>
-                    <span className="font-serif font-extrabold text-[#3C2A21]">{data.sunset}</span>
+                    <span className="font-serif font-extrabold text-[#3C2A21]">{data.sunset || "N/A"}</span>
                   </div>
-                </div>
+                </div>          </div>
 
                 <div className="pt-4 border-t border-[#B38B36]/15 text-center">
                   <div className="bg-[#FAF6EE] border border-[#B38B36]/15 rounded-xl p-3 text-[10px] text-[#725D46] font-light italic">

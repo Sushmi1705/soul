@@ -1,6 +1,8 @@
 import { ArrowUpRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const About = () => {
+  const navigate = useNavigate();
   return (
     <section
       id="about"
@@ -68,7 +70,10 @@ const About = () => {
                   dedicated to unraveling the intricate threads of pending karma woven within the fabric of existence. 
                   Our reports are individualized and meticulously researched to provide profound insights.
                 </p>
-                <button className="group flex items-center gap-4 text-[10px] tracking-[0.4em] uppercase font-black text-[#3C2A21] border-b-2 border-[#B38B36] pb-2 hover:gap-6 transition-all">
+                <button 
+                  onClick={() => navigate("/about#timeline")}
+                  className="group flex items-center gap-4 text-[10px] tracking-[0.4em] uppercase font-black text-[#3C2A21] border-b-2 border-[#B38B36] pb-2 hover:gap-6 transition-all"
+                >
                   Our Story <ArrowUpRight className="w-4 h-4" />
                 </button>
               </div>
