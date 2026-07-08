@@ -2224,7 +2224,7 @@ async def get_instagram_feed():
     token = os.environ.get("INSTAGRAM_ACCESS_TOKEN")
     
     if not token:
-        return MOCK_INSTAGRAM_FEED
+        return sorted(MOCK_INSTAGRAM_FEED, key=lambda x: x.get("timestamp", ""), reverse=True)
 
     now = datetime.now(timezone.utc)
     if INSTAGRAM_CACHE["data"] and INSTAGRAM_CACHE["expires_at"] and now < INSTAGRAM_CACHE["expires_at"]:
@@ -2240,6 +2240,8 @@ async def get_instagram_feed():
 
         if res.status_code == 200:
             posts = res.json().get("data", [])
+            # Sort chronologically, newest first
+            posts = sorted(posts, key=lambda x: x.get("timestamp", ""), reverse=True)
             feed_data = []
             for post in posts[:6]:
                 feed_data.append({
@@ -2259,11 +2261,11 @@ async def get_instagram_feed():
         else:
             if INSTAGRAM_CACHE["data"]:
                 return INSTAGRAM_CACHE["data"]
-            return MOCK_INSTAGRAM_FEED
+            return sorted(MOCK_INSTAGRAM_FEED, key=lambda x: x.get("timestamp", ""), reverse=True)
     except Exception as e:
         if INSTAGRAM_CACHE["data"]:
             return INSTAGRAM_CACHE["data"]
-        return MOCK_INSTAGRAM_FEED
+        return sorted(MOCK_INSTAGRAM_FEED, key=lambda x: x.get("timestamp", ""), reverse=True)
 
 # Include the router in the main app
 app.include_router(api_router)

@@ -13,7 +13,9 @@ const InstagramFeed = () => {
         const response = await fetch(`${apiUrl}/api/instagram-feed`);
         if (!response.ok) throw new Error("Failed to fetch Instagram feed");
         const data = await response.json();
-        setPosts(data);
+        // Sort chronologically (newest first)
+        const sortedData = [...data].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        setPosts(sortedData);
       } catch (err) {
         console.error("Error loading Instagram feed:", err);
         setError(true);
