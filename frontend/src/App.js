@@ -26,6 +26,7 @@ import AstroSolutionPage from "@/pages/AstroSolutionPage";
 import ServicePage from "@/pages/ServicePage";
 import CoursePage from "@/pages/CoursePage";
 import BlogPage from "@/pages/BlogPage";
+import BlogDetailPage from "@/pages/BlogDetailPage";
 import ContactPage from "@/pages/ContactPage";
 import CalculatorPage from "@/pages/CalculatorPage";
 import AdminLogin from "@/pages/AdminLogin";
@@ -113,6 +114,7 @@ function App() {
               <Route path="/services/:slug" element={<ServicePage />} />
               <Route path="/courses/:slug" element={<CoursePage />} />
               <Route path="/blog" element={<BlogPage />} />
+              <Route path="/blog/:id" element={<BlogDetailPage />} />
               <Route path="/contact" element={<ContactPage />} />
               <Route path="/calculator/:id" element={<CalculatorPage />} />
               <Route path="/shubh-muhurat-2026" element={<ShubhMuhuratPage />} />
