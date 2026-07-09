@@ -234,7 +234,7 @@ const CelestialOracleHero = () => {
     return () => document.removeEventListener("mousedown", handleDocumentClick);
   }, []);
 
-  // Auto-rotate tabs every 1 second (unless paused by user interaction)
+  // Auto-rotate tabs every 15 seconds (unless paused by user interaction)
   useEffect(() => {
     if (isTimerPaused) return;
 
@@ -242,7 +242,7 @@ const CelestialOracleHero = () => {
       const currentIndex = TABS.findIndex(t => t.id === activeTab);
       const nextIndex = (currentIndex + 1) % TABS.length;
       setActiveTab(TABS[nextIndex].id);
-    }, 1000); // 1 second
+    }, 15000); // 15 seconds
 
     return () => clearTimeout(timer);
   }, [activeTab, isTimerPaused]);
