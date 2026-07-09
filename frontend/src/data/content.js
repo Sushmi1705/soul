@@ -281,7 +281,7 @@ export const ASTRO_SOLUTIONS_DATA = {
     title: "Health Solutions",
     subtitle: "Find Vitality And Balance With Cosmic Healing",
     bannerImage: "https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&q=80",
-    mainImage: "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&q=80", // Yoga/Health
+    mainImage: "/health-solutions-ai.png", // Yoga/Health
     paragraphs: [
       "Welcome to Astro Power 24 By Gitika Sharma Health Solution Service, where we integrate the ancient wisdom of astrology with modern health solutions to support your journey towards vibrant health and well-being.",
       { heading: "Astrological Health Analysis", text: "Astrology offers profound insights into your physical constitution, susceptibility to health issues, and potential remedies for maintaining optimal health. Our astrologers conduct detailed health analyses, examining the planetary influences in your birth chart to identify potential health risks and vulnerabilities. With this knowledge, you can take proactive measures to safeguard your health and enhance your well-being." },

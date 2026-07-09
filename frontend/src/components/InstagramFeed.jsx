@@ -259,9 +259,9 @@ const InstagramFeed = () => {
                 <div
                   key={video.id}
                   onClick={() => setActiveVideoId(video.id)}
-                  className="group cursor-pointer bg-white border border-[#E5E1D8] rounded-2xl overflow-hidden shadow-sm flex flex-col h-[465px] transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(179,139,54,0.1)] hover:border-[#B38B36]/30"
+                  className="group cursor-pointer bg-white border border-[#E5E1D8] rounded-2xl overflow-hidden shadow-sm flex flex-col transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(179,139,54,0.1)] hover:border-[#B38B36]/30"
                 >
-                  <div className="relative aspect-square overflow-hidden bg-[#FAF9F6] flex-shrink-0">
+                  <div className="relative aspect-video overflow-hidden bg-[#FAF9F6] flex-shrink-0">
                     <img
                       src={video.thumbnail}
                       alt={video.title}
