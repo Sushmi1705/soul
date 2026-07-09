@@ -66,7 +66,7 @@ class RazorpayService:
             return {
                 "order_id": mock_order_id,
                 "amount": amount_paise,
-                "currency": currency,
+                "currency": "INR",
                 "key_id": RAZORPAY_KEY_ID,
                 "is_mock": True
             }
