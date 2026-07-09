@@ -142,7 +142,32 @@ const MobileVideoBackground = React.memo(({ videoId }) => {
   );
 });
 
-const LeftMarketingContent = React.memo(({ videoId, onButtonClick }) => {
+const MARKETING_CONTENT = {
+  "pending-karma": {
+    heading: "Unlock the Karma That Shapes Your Future.",
+    desc: "Discover what the stars have planned for you. Reveal today's cosmic guidance, planetary movements, and see what destiny has planned in seconds."
+  },
+  "karmic-connections": {
+    heading: "Who Are You Bound to Meet? Explore Your Soul Contracts.",
+    desc: "Understand your relationship blueprints, soul bonds, and cosmic timing patterns. Uncover the deeper purpose behind your closest connections."
+  },
+  "soul-purpose": {
+    heading: "Discover the Purpose Your Soul Was Born to Fulfill.",
+    desc: "Unlock the cosmic map of your life's calling. Unveil the nodes of destiny, raw spiritual gifts, and path to true fulfillment."
+  },
+  "soul-blueprint": {
+    heading: "Decode the Blueprint Written Into Your Soul.",
+    desc: "Map your subconscious patterns, psychic archetypes, and hidden strengths. See the astronomical coordinates that compose your unique frequency."
+  },
+  "soul-alignment": {
+    heading: "Align Your Soul with the Universe's Divine Plan.",
+    desc: "Tune into celestial cycles of vitality, health, and cosmic alignment. Harmonize your biological rhythm with stellar energetic flow."
+  }
+};
+
+const LeftMarketingContent = React.memo(({ videoId, onButtonClick, activeTab }) => {
+  const content = MARKETING_CONTENT[activeTab] || MARKETING_CONTENT["pending-karma"];
+  
   return (
     <div className="lg:col-span-6 text-left relative py-8 px-6 md:py-0 md:px-0 rounded-2xl overflow-hidden z-10">
       <MobileVideoBackground videoId={videoId} />
@@ -154,14 +179,34 @@ const LeftMarketingContent = React.memo(({ videoId, onButtonClick }) => {
           </span>
         </div>
 
-        <h1 className="font-serif text-[#3C2A21] text-4xl md:text-5xl lg:text-[3.2rem] xl:text-[3.8rem] leading-[1.15] tracking-tight mb-8 animate-reveal opacity-0" style={{ animationDelay: '0.4s' }}>
-          Unlock the Karma That <span className="italic font-light text-[#8E6B23] inline">Shapes Your Future.</span>
-        </h1>
+        {/* Dynamic Heading */}
+        <AnimatePresence mode="wait">
+          <motion.h1 
+            key={activeTab}
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -15 }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
+            className="font-serif text-[#3C2A21] text-4xl md:text-5xl lg:text-[3.2rem] xl:text-[3.8rem] leading-[1.15] tracking-tight mb-8"
+          >
+            {content.heading}
+          </motion.h1>
+        </AnimatePresence>
 
-        <div className="max-w-lg space-y-8 animate-reveal opacity-0" style={{ animationDelay: '0.6s' }}>
-          <p className="text-lg text-stone-800 leading-relaxed font-medium">
-            Discover what the stars have planned for you. Reveal today's cosmic guidance, planetary movements, and see what destiny has planned in seconds.
-          </p>
+        {/* Dynamic Description */}
+        <div className="max-w-lg space-y-8">
+          <AnimatePresence mode="wait">
+            <motion.p 
+              key={activeTab}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.5 }}
+              className="text-lg text-stone-800 leading-relaxed font-medium"
+            >
+              {content.desc}
+            </motion.p>
+          </AnimatePresence>
         </div>
       </div>
     </div>
@@ -174,6 +219,33 @@ const CelestialOracleHero = () => {
   
   const [step, setStep] = useState("form"); // "form" | "loading"
   const [activeTab, setActiveTab] = useState("pending-karma");
+  const [isTimerPaused, setIsTimerPaused] = useState(false);
+
+  // Resume timer when clicking outside input fields or clicking tab buttons
+  useEffect(() => {
+    const handleDocumentClick = (e) => {
+      const isInputField = e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT' || e.target.closest('input') || e.target.closest('select');
+      if (!isInputField) {
+        setIsTimerPaused(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleDocumentClick);
+    return () => document.removeEventListener("mousedown", handleDocumentClick);
+  }, []);
+
+  // Auto-rotate tabs every 1 second (unless paused by user interaction)
+  useEffect(() => {
+    if (isTimerPaused) return;
+
+    const timer = setTimeout(() => {
+      const currentIndex = TABS.findIndex(t => t.id === activeTab);
+      const nextIndex = (currentIndex + 1) % TABS.length;
+      setActiveTab(TABS[nextIndex].id);
+    }, 1000); // 1 second
+
+    return () => clearTimeout(timer);
+  }, [activeTab, isTimerPaused]);
   const [formData, setFormData] = useState({
     name: "",
     phoneCode: "+91",
@@ -712,7 +784,7 @@ const CelestialOracleHero = () => {
         <div className="relative z-20 max-w-7xl xl:max-w-[1360px] 2xl:max-w-[1480px] mx-auto px-6 lg:px-12 w-full grid lg:grid-cols-12 gap-12 items-center">
           
           {/* Left Column: Heading and Marketing Copy */}
-          <LeftMarketingContent videoId={currentVideoId} onButtonClick={handleHeroButtonClick} />
+          <LeftMarketingContent videoId={currentVideoId} onButtonClick={handleHeroButtonClick} activeTab={activeTab} />
 
           {/* Right Column: Direct Birth Chart Input Form */}
           <div className="lg:col-span-6 relative w-full mt-8 lg:mt-0 animate-reveal opacity-0" style={{ animationDelay: '0.8s' }}>
@@ -735,7 +807,11 @@ const CelestialOracleHero = () => {
                </svg>
                
                {/* Form Card */}
-               <div id="hero-form-card" className="relative z-10 w-full bg-gradient-to-b from-[#1C120C]/98 via-[#2D1E16]/96 to-[#170E09]/98 border-0 rounded-3xl p-6 md:p-8 backdrop-blur-md glittery-form-card">
+               <div 
+                  id="hero-form-card" 
+                  onFocusCapture={() => setIsTimerPaused(true)}
+                  className="relative z-10 w-full bg-gradient-to-b from-[#1C120C]/98 via-[#2D1E16]/96 to-[#170E09]/98 border-0 rounded-3xl p-6 md:p-8 backdrop-blur-md glittery-form-card"
+                >
                  
                  {/* Golden Cosmic Radial Glow Overlays */}
                  <div className="absolute inset-0 rounded-3xl bg-[radial-gradient(circle_at_50%_-20%,rgba(229,192,106,0.3),transparent_70%)] pointer-events-none z-0" />
