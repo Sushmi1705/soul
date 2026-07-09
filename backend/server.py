@@ -31,6 +31,7 @@ from timezonefinder import TimezoneFinder
 import libephemeris as swe
 from report_templates import build_personalized_section
 from services import RazorpayService, BookingService, PaymentService
+from muhurat_engine import get_cached_muhurats, get_all_ceremonies, precompute_default_city
 
 # Initialize timezone finder globally
 tf_finder = TimezoneFinder()
@@ -1927,39 +1928,6 @@ async def get_panchang(response: Response, city: str = "New Delhi", date: str = 
                      "Sunday (Ravivara)"]
     vara_name = weekday_names[weekday]
 
-    # Determine current energy status
-    # Standard check if current hour is in Rahu Kaal or Abhijit Muhurat
-    in_rahu = False
-    if rahu_start < rahu_end:
-        in_rahu = rahu_start <= local_hour_decimal <= rahu_end
-    else:
-        in_rahu = local_hour_decimal >= rahu_start or local_hour_decimal <= rahu_end
-        
-    in_abhijit = False
-    if abhijit_start < abhijit_end:
-        in_abhijit = abhijit_start <= local_hour_decimal <= abhijit_end
-    else:
-        in_abhijit = local_hour_decimal >= abhijit_start or local_hour_decimal <= abhijit_end
-
-    if in_rahu:
-        status_label = "Inauspicious (Rahu Kaal)"
-        status_desc = f"Rahu Kaal is active (starts at {format_hour_to_12h(rahu_start)}). Avoid starting new ventures."
-        status_color = "red"
-    elif in_abhijit:
-        status_label = "Auspicious (Shubh)"
-        status_desc = f"Abhijit Muhurat is active (starts at {format_hour_to_12h(abhijit_start)}). Excellent for starting important tasks."
-        status_color = "green"
-    else:
-        status_label = "Neutral (Sadhana)"
-        status_desc = "Neutral cosmic energies. Good for routine and spiritual work."
-        status_color = "yellow"
-        
-    # Percentages of 24h day for visualizer segments
-    day_pct = (day_length / 24.0) * 100.0
-    night_pct = (night_length / 24.0) * 100.0
-    rahu_pct = (day_part / 24.0) * 100.0
-    # Abhijit is 48 mins (0.8h)
-    abhijit_pct = (0.8 / 24.0) * 100.0
     # Choghadiya Calculations
     CHOGHADIYA_METADATA = {
         "Amrit": {"status": "shubh", "desc": "Nectar Time"},
@@ -2035,6 +2003,50 @@ async def get_panchang(response: Response, city: str = "New Delhi", date: str = 
             if in_slot:
                 active_choghadiya = night_slots[i]
                 break
+
+    # Determine current energy status based on Rahu Kaal or active Choghadiya
+    in_rahu = False
+    if rahu_start < rahu_end:
+        in_rahu = rahu_start <= local_hour_decimal <= rahu_end
+    else:
+        in_rahu = local_hour_decimal >= rahu_start or local_hour_decimal <= rahu_end
+        
+    in_abhijit = False
+    if abhijit_start < abhijit_end:
+        in_abhijit = abhijit_start <= local_hour_decimal <= abhijit_end
+    else:
+        in_abhijit = local_hour_decimal >= abhijit_start or local_hour_decimal <= abhijit_end
+
+    if in_rahu:
+        status_label = "Inauspicious (Rahu Kaal)"
+        status_desc = f"Rahu Kaal is active (starts at {format_hour_to_12h(rahu_start)}). Avoid starting new ventures."
+        status_color = "red"
+    elif active_choghadiya:
+        name = active_choghadiya["name"]
+        status_type = active_choghadiya["status"]
+        if status_type == "shubh":
+            status_label = f"Auspicious ({name})"
+            status_desc = f"Auspicious {name} Choghadiya is active. Excellent for starting important tasks."
+            status_color = "green"
+        elif status_type == "asubh":
+            status_label = f"Inauspicious ({name})"
+            status_desc = f"Inauspicious {name} Choghadiya is active. Avoid new ventures."
+            status_color = "red"
+        else:
+            status_label = f"Neutral ({name})"
+            status_desc = f"Neutral {name} Choghadiya is active. Good for routine and spiritual work."
+            status_color = "yellow"
+    else:
+        status_label = "Neutral (Sadhana)"
+        status_desc = "Neutral cosmic energies. Good for routine and spiritual work."
+        status_color = "yellow"
+        
+    # Percentages of 24h day for visualizer segments
+    day_pct = (day_length / 24.0) * 100.0
+    night_pct = (night_length / 24.0) * 100.0
+    rahu_pct = (day_part / 24.0) * 100.0
+    # Abhijit is 48 mins (0.8h)
+    abhijit_pct = (0.8 / 24.0) * 100.0
 
     # Moonrise and Moonset calculations (dynamic astronomical approximation based on tithi)
     moonrise_dec = (sunrise_local + tithi_idx * 0.8) % 24
@@ -2294,6 +2306,82 @@ async def get_panchang(response: Response, city: str = "New Delhi", date: str = 
         "vrats": vrats,
         "summary": summary
     }
+
+# ─── Muhurat Calendar API ─────────────────────────────────────────────
+
+@api_router.get("/muhurat/ceremonies")
+async def list_muhurat_ceremonies():
+    """List all available ceremony types."""
+    return {"ceremonies": get_all_ceremonies()}
+
+@api_router.get("/muhurat/{year}/{ceremony_type}")
+async def get_muhurat_data(
+    year: int,
+    ceremony_type: str,
+    city: str = "New Delhi"
+):
+    """
+    Get muhurat dates for a year and ceremony type.
+    Uses curated (reference-verified) data when available,
+    falls back to Swiss Ephemeris computation otherwise.
+    """
+    if year < 2024 or year > 2030:
+        raise HTTPException(status_code=400, detail="Year must be between 2024 and 2030")
+
+    # Check for curated data first
+    curated_path = os.path.join(os.path.dirname(__file__), "curated_muhurats.json")
+    if os.path.exists(curated_path):
+        try:
+            with open(curated_path, "r", encoding="utf-8") as f:
+                curated = json.load(f)
+            if ceremony_type in curated:
+                curated_entry = curated[ceremony_type]
+                # Check if this is for the right year (from title)
+                if str(year) in curated_entry.get("title", ""):
+                    return curated_entry
+        except Exception as e:
+            logger.warning(f"Failed to load curated data: {e}")
+
+    # Fallback to Swiss Ephemeris computation
+    city_key = city.lower().strip()
+    if city_key in CITIES_DB:
+        coords = CITIES_DB[city_key]
+        lat, lon = coords["lat"], coords["lon"]
+    else:
+        lat, lon = geocode_place(city)
+
+    try:
+        tz_name = tf_finder.timezone_at(lat=lat, lng=lon)
+        if tz_name:
+            dt_ref = datetime(year, 6, 15, 12, 0, 0)
+            dt_tz = dt_ref.replace(tzinfo=ZoneInfo(tz_name))
+            offset = dt_tz.utcoffset()
+            if offset:
+                tz_offset_hours = offset.total_seconds() / 3600.0
+            else:
+                tz_offset_hours = 5.5
+        else:
+            tz_offset_hours = 5.5
+    except Exception:
+        tz_offset_hours = 5.5
+
+    data = get_cached_muhurats(year, ceremony_type, lat, lon, tz_offset_hours)
+
+    if "error" in data:
+        raise HTTPException(status_code=400, detail=data["error"])
+
+    data["city"] = city
+    return data
+
+@api_router.get("/muhurat/precompute")
+async def precompute_muhurats():
+    """Trigger pre-computation of muhurat data for default city (New Delhi)."""
+    import threading
+    def compute():
+        precompute_default_city([2026, 2027])
+    thread = threading.Thread(target=compute, daemon=True)
+    thread.start()
+    return {"status": "Pre-computation started for 2026 and 2027"}
 
 # --- Cities API Enhancements ---
 CITIES_LIST = []

@@ -1338,32 +1338,11 @@ const PaymentPage = () => {
               );
             })}
 
-            {/* PREMIUM LOCK CONVERSION COVER */}
+            {/* PREMIUM FADE-OUT OVERLAY */}
             {!isPaid && (
-              <div className="absolute inset-x-0 bottom-0 top-[20%] bg-gradient-to-t from-[#FFFDF9] via-[#FFFDF9]/95 to-transparent flex flex-col justify-end p-6 md:p-8 text-center backdrop-blur-[6px] z-20">
-                <div className="bg-white/95 border border-[#B38B36]/25 rounded-3xl p-6 md:p-8 max-w-lg mx-auto shadow-[0_20px_60px_rgba(179,139,54,0.18)] relative z-10 backdrop-blur-md">
-                  <div className="absolute inset-2 border border-[#B38B36]/15 rounded-2xl pointer-events-none" />
-                  
-                  <div className="w-12 h-12 rounded-full bg-[#B38B36]/10 border border-[#B38B36]/35 flex items-center justify-center mx-auto mb-4 text-[#B38B36] shadow-sm relative">
-                    <div className="w-12 h-12 rounded-full bg-[#B38B36]/5 absolute animate-ping" />
-                    <Lock className="w-4 h-4 text-[#8E6B23] relative z-10" />
-                  </div>
-                  
-                  <h5 className="font-serif text-2xl text-[#3C2A21] mb-2 font-bold tracking-wide">Connect with Gitika Sharma</h5>
-                  <p className="text-xs text-[#6E5D53] leading-relaxed mb-6 font-light max-w-sm mx-auto">
-                    Have questions about your astrology report or need personalized guidance? Connect directly with Gitika Sharma for expert consultation and assistance.
-                  </p>
-                  
-                  <button
-                    onClick={handlePayment}
-                    className="w-full py-4.5 bg-gradient-to-r from-[#BF953F] via-[#FCF6BA] to-[#B38728] hover:brightness-[1.08] text-[#1E110A] font-sans font-bold text-xs uppercase tracking-widest rounded-xl transition-all duration-500 shadow-[0_4px_15px_rgba(179,139,54,0.35)] hover:scale-[1.02] flex items-center justify-center gap-2 cursor-pointer border border-[#FCF6BA]/30"
-                  >
-                    <Unlock className="w-3.5 h-3.5 stroke-[2.5px]" />
-                    <span>Unlock Complete Destiny Report</span>
-                  </button>
-                </div>
-              </div>
+              <div className="absolute inset-x-0 bottom-0 top-[20%] bg-gradient-to-t from-[#FFFDF9] via-[#FFFDF9]/95 to-transparent pointer-events-none z-20" />
             )}
+
           </div>
         </div>
 

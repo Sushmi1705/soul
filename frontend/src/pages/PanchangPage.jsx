@@ -257,36 +257,36 @@ const PanchangPage = () => {
     ]
   };
 
-  // Sacred Fasting Calendar
+  // Sacred Fasting Calendar (Ekadashi only)
   const fastingCalendar = [
-    { month: "January", items: ["Shattila Ekadashi (14)", "Jaya Ekadashi (29)", "Pausha Amavasya (18)", "Pausha Purnima (3)"] },
-    { month: "February", items: ["Vijaya Ekadashi (13)", "Amalaki Ekadashi (27)", "Magha Amavasya (17)", "Magha Purnima (1)"] },
-    { month: "March", items: ["Papamochani Ekadashi (15)", "Kamada Ekadashi (29)", "Phalguna Amavasya (18)", "Phalguna Purnima (3)"] },
-    { month: "April", items: ["Varuthini Ekadashi (13)", "Mohini Ekadashi (27)", "Chaitra Amavasya (17)", "Chaitra Purnima (2)"] },
-    { month: "May", items: ["Apara Ekadashi (13)", "Nirjala Ekadashi (27)", "Vaisakha Amavasya (16)", "Vaisakha Purnima (1)"] },
-    { month: "June", items: ["Yogini Ekadashi (11)", "Devshayani Ekadashi (25)", "Jyeshtha Amavasya (15)", "Jyeshtha Purnima (1)"] },
-    { month: "July", items: ["Kamika Ekadashi (10)", "Shravana Putrada (24)", "Ashadha Amavasya (14)", "Ashadha Purnima (30)"] },
-    { month: "August", items: ["Aja Ekadashi (09)", "Parsva Ekadashi (23)", "Shravana Amavasya (12)", "Shravana Purnima (28)"] },
-    { month: "September", items: ["Indira Ekadashi (07)", "Papankusha Ekadashi (22)", "Bhadrapada Amavasya (11)", "Bhadrapada Purnima (27)"] },
-    { month: "October", items: ["Rama Ekadashi (06)", "Devutthana Ekadashi (20)", "Ashvina Amavasya (10)", "Ashvina Purnima (26)"] },
-    { month: "November", items: ["Utpanna Ekadashi (05)", "Mokshada Ekadashi (20)", "Kartika Amavasya (09)", "Kartika Purnima (24)"] },
-    { month: "December", items: ["Saphala Ekadashi (05)", "Putrada Ekadashi (19)", "Margashirsha Amavasya (09)", "Margashirsha Purnima (24)"] }
+    { month: "January", items: [{ day: "14", name: "Shattila Ekadashi" }, { day: "29", name: "Jaya Ekadashi" }] },
+    { month: "February", items: [{ day: "13", name: "Vijaya Ekadashi" }, { day: "27", name: "Amalaki Ekadashi" }] },
+    { month: "March", items: [{ day: "15", name: "Papamochani Ekadashi" }, { day: "29", name: "Kamada Ekadashi" }] },
+    { month: "April", items: [{ day: "13", name: "Varuthini Ekadashi" }, { day: "27", name: "Mohini Ekadashi" }] },
+    { month: "May", items: [{ day: "13", name: "Apara Ekadashi" }, { day: "27", name: "Padmini Ekadashi" }] },
+    { month: "June", items: [{ day: "11", name: "Parama Ekadashi" }, { day: "25", name: "Nirjala Ekadashi" }] },
+    { month: "July", items: [{ day: "11", name: "Yogini Ekadashi" }, { day: "25", name: "Devshayani Ekadashi" }] },
+    { month: "August", items: [{ day: "09", name: "Kamika Ekadashi" }, { day: "23", name: "Shravana Ekadashi" }] },
+    { month: "September", items: [{ day: "07", name: "Aja Ekadashi" }, { day: "22", name: "Parivartini Ekadashi" }] },
+    { month: "October", items: [{ day: "06", name: "Indira Ekadashi" }, { day: "22", name: "Papankusha Ekadashi" }] },
+    { month: "November", items: [{ day: "06", name: "Utpanna Ekadashi" }, { day: "21", name: "Mokshada Ekadashi" }] },
+    { month: "December", items: [{ day: "06", name: "Saphala Ekadashi" }, { day: "21", name: "Putrada Ekadashi" }] }
   ];
 
-  // New Beginnings Auspicious dates
+  // New Beginnings Auspicious dates (exact matches from reference screenshot)
   const newBeginnings = [
-    { month: "January", items: ["House Warming (15)", "New Job (21)", "Office Opening (28)"] },
-    { month: "February", items: ["New Business (06)", "Education Initiation (11)", "Investments (25)"] },
-    { month: "March", items: ["Office Opening (09)", "House Warming (23)", "New Job (27)"] },
-    { month: "April", items: ["New Business (12)", "Investments (20)", "Education Initiation (24)"] },
-    { month: "May", items: ["House Warming (11)", "Office Opening (14)", "New Job (28)"] },
-    { month: "June", items: ["New Business (17)", "Investments (22)", "Education Initiation (25)"] },
-    { month: "July", items: ["Office Opening (08)", "House Warming (19)", "New Job (24)"] },
-    { month: "August", items: ["New Business (09)", "Investments (16)", "Education Initiation (20)"] },
-    { month: "September", items: ["House Warming (13)", "Office Opening (16)", "New Job (24)"] },
-    { month: "October", items: ["New Business (22)", "Investments (25)", "Education Initiation (28)"] },
-    { month: "November", items: ["Office Opening (06)", "House Warming (25)", "New Job (29)"] },
-    { month: "December", items: ["New Business (13)", "Investments (23)", "Education Initiation (30)"] }
+    { month: "January", items: [] },
+    { month: "February", items: [6, 11, 19, 20, 21, 25, 26] },
+    { month: "March", items: [4, 5, 6, 9, 13, 14] },
+    { month: "April", items: [20] },
+    { month: "May", items: [4, 8, 13] },
+    { month: "June", items: [24, 26, 28] },
+    { month: "July", items: [6, 12] },
+    { month: "August", items: [] },
+    { month: "September", items: [] },
+    { month: "October", items: [] },
+    { month: "November", items: [11, 14, 20, 21, 25, 26] },
+    { month: "December", items: [2, 3, 4, 11, 12, 18, 19, 30] }
   ];
 
   return (
@@ -378,7 +378,6 @@ const PanchangPage = () => {
                 <div className="space-y-4 flex-1">
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="text-[9px] tracking-[0.25em] uppercase text-[#725D46] font-extrabold bg-[#B38B36]/10 px-2.5 py-1 rounded border border-[#B38B36]/20">Live Cosmic Pulse</span>
-                    <span className="text-[10px] bg-white border border-[#E5E1D8] px-2.5 py-0.5 rounded-md font-mono text-stone-600 font-bold">{data.local_time}</span>
                   </div>
                   <div className="flex items-start gap-4">
                     <div className={`w-12 h-12 rounded-full flex items-center justify-center ${statusStyle.iconBg} shadow border border-black/5 flex-shrink-0`}>
@@ -755,26 +754,27 @@ const PanchangPage = () => {
               </div>
 
               {/* SECTION 7: SACRED FASTING */}
-              <div className="bg-white/60 border border-[#B38B36]/15 rounded-[28px] p-8 shadow-sm space-y-6">
+              <div className="bg-[#FFF8F2] border border-[#E9C39B]/20 rounded-[28px] p-8 shadow-sm space-y-6">
                 <div>
-                  <h4 className="font-serif text-lg uppercase tracking-wider text-[#8E6B23] font-bold border-b border-stone-200 pb-2 flex items-center gap-2">
-                    <Sparkles className="w-5 h-5 text-[#B38B36]" />
-                    Sacred Fasting & Ekadashi (2026)
+                  <h4 className="font-serif text-3xl text-[#3C2A21] font-bold">
+                    Sacred Fasting
                   </h4>
-                  <p className="text-xs text-stone-500 font-light mt-1">
-                    Monthly observances including Purnima, Amavasya, Sankashti, and Ekadashi timings.
+                  <p className="text-sm text-[#8A5A36] font-medium mt-1">
+                    Auspicious and inauspicious time periods for today
                   </p>
                 </div>
 
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
                   {fastingCalendar.slice(0, fastingMonthsLimit).map((item, index) => (
-                    <div key={index} className="bg-white border border-[#E5E1D8] p-5 rounded-2xl shadow-sm hover:border-[#B38B36]/30 transition-all duration-300">
-                      <span className="text-[10px] uppercase tracking-wider text-stone-400 font-extrabold block mb-2">{item.month}</span>
-                      <div className="space-y-1.5">
+                    <div key={index} className="bg-[#FBEEDC]/60 border border-[#E9C39B]/30 p-5 rounded-2xl shadow-sm hover:border-[#B38B36]/50 transition-all duration-300">
+                      <span className="text-xs uppercase tracking-wider text-[#8A5A36] font-bold block mb-4 border-b border-[#E9C39B]/30 pb-2">{item.month}</span>
+                      <div className="space-y-4">
                         {item.items.map((fast, fIdx) => (
-                          <div key={fIdx} className="text-xs text-[#3C2A21] font-medium flex items-start gap-1.5">
-                            <span className="text-[#B38B36] mt-0.5">✦</span>
-                            <span>{fast}</span>
+                          <div key={fIdx} className="text-sm text-[#3C2A21] font-medium flex items-center gap-3">
+                            <span className="flex-shrink-0 w-6 h-6 rounded-md bg-[#D68F2C] text-white text-[10px] font-bold flex items-center justify-center shadow-sm">
+                              {fast.day}
+                            </span>
+                            <span className="text-[#3C2A21] font-serif leading-tight">{fast.name}</span>
                           </div>
                         ))}
                       </div>
@@ -793,28 +793,30 @@ const PanchangPage = () => {
               </div>
 
               {/* SECTION 8: NEW BEGINNINGS */}
-              <div className="bg-[#FAF6EE]/50 border border-[#B38B36]/15 rounded-[28px] p-8 shadow-sm space-y-6">
+              <div className="bg-[#FFFDF9] border border-[#E9C39B]/20 rounded-[28px] p-8 shadow-sm space-y-6">
                 <div>
-                  <h4 className="font-serif text-lg uppercase tracking-wider text-[#8E6B23] font-bold border-b border-stone-200 pb-2 flex items-center gap-2">
-                    <Briefcase className="w-5 h-5 text-[#B38B36]" />
-                    New Beginnings & Work Muhurats
+                  <h4 className="font-serif text-3xl text-[#3C2A21] font-bold">
+                    New Beginnings
                   </h4>
-                  <p className="text-xs text-stone-500 font-light mt-1">
-                    Auspicious monthly slots for house warming, jobs, businesses, and education.
+                  <p className="text-sm text-[#8A5A36] font-medium mt-1">
+                    Auspicious dates for your home sanctuary
                   </p>
                 </div>
 
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
                   {newBeginnings.slice(0, beginningsMonthsLimit).map((item, index) => (
-                    <div key={index} className="bg-white border border-[#E5E1D8] p-5 rounded-2xl shadow-sm hover:border-[#B38B36]/30 transition-all duration-300">
-                      <span className="text-[10px] uppercase tracking-wider text-stone-400 font-extrabold block mb-2">{item.month}</span>
-                      <div className="space-y-1.5">
-                        {item.items.map((beg, bIdx) => (
-                          <div key={bIdx} className="text-xs text-[#3C2A21] font-medium flex items-start gap-1.5">
-                            <span className="text-[#E67E22] mt-0.5">✦</span>
-                            <span>{beg}</span>
-                          </div>
-                        ))}
+                    <div key={index} className="bg-[#FBEEDC]/60 border border-[#E9C39B]/30 p-5 rounded-2xl shadow-sm hover:border-[#B38B36]/50 transition-all duration-300">
+                      <span className="text-xs uppercase tracking-wider text-[#8A5A36] font-bold block mb-4 border-b border-[#E9C39B]/30 pb-2">{item.month}</span>
+                      <div className="flex flex-wrap gap-2">
+                        {item.items.length > 0 ? (
+                          item.items.map((day, dIdx) => (
+                            <span key={dIdx} className="w-8 h-8 rounded-md bg-[#D68F2C] text-white text-xs font-bold flex items-center justify-center shadow-sm">
+                              {day}
+                            </span>
+                          ))
+                        ) : (
+                          <span className="text-xs text-stone-400 italic">No auspicious dates</span>
+                        )}
                       </div>
                     </div>
                   ))}

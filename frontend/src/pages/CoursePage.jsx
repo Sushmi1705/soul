@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import { COURSES_PAGE_DATA, COURSES, formatINR } from "@/data/content";
 import { useCart } from "@/context/CartContext";
 import { motion } from "framer-motion";
+import { Home, BookOpen, GraduationCap } from "lucide-react";
 
 const CoursePage = () => {
   const { slug } = useParams();
@@ -63,23 +64,35 @@ const CoursePage = () => {
   };
 
   return (
-    <div className="pt-32 pb-24 relative z-10 bg-[#FDFBF7] font-sans text-[#333] overflow-hidden">
+    <div className="pt-24 pb-24 relative z-10 bg-[#FDFBF7] font-sans text-[#333] overflow-hidden">
+      {/* Banner / Hero Header Section */}
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.8 }}
+        className="relative w-full h-[180px] md:h-[220px] bg-[#3C2A21] flex items-center overflow-hidden border-b border-[#B38B36]/20 mb-12"
+      >
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full border border-white/5 opacity-10 pointer-events-none" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] rounded-full border border-white/10 opacity-5 pointer-events-none" />
+        <div className="absolute right-10 bottom-5 w-44 h-44 opacity-[0.03] text-white">
+          <BookOpen className="w-full h-full" />
+        </div>
+
+        <div className="max-w-7xl mx-auto px-6 lg:px-12 w-full z-10">
+            <div>
+              <h1 className="font-serif text-4xl md:text-5xl text-white font-bold leading-tight tracking-tight flex items-center gap-3">
+                <GraduationCap className="w-10 h-10 text-[#E5C06A] hidden md:block" />
+                {data.title}
+              </h1>
+              <p className="text-stone-300 text-xs md:text-sm mt-2 font-light max-w-xl">
+                Master the sacred arts of Vedic sciences with our structured curriculum.
+              </p>
+            </div>
+          </div>
+      </motion.div>
+
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
         
-        {/* Breadcrumb */}
-        <motion.nav 
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="text-sm text-gray-500 mb-12"
-        >
-          <Link to="/" className="hover:text-[#B38B36] transition-colors">Home</Link>
-          <span className="mx-2">/</span>
-          <span className="hover:text-[#B38B36] transition-colors cursor-pointer">courses</span>
-          <span className="mx-2">/</span>
-          <span className="text-gray-900">{data.title}</span>
-        </motion.nav>
-
         {/* Product Top Section */}
         <div className="grid md:grid-cols-2 gap-12 lg:gap-20 mb-20 items-start">
           

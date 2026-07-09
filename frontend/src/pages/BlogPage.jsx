@@ -55,19 +55,36 @@ const BlogPage = () => {
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[radial-gradient(circle,rgba(212,175,55,0.05),transparent_60%)] pointer-events-none" />
       <div className="absolute bottom-1/3 left-0 w-[400px] h-[400px] bg-[radial-gradient(circle,rgba(74,14,27,0.03),transparent_60%)] pointer-events-none" />
 
-      {/* Page Header */}
-      <div className="max-w-7xl mx-auto px-6 lg:px-12 pt-12 pb-8 text-left">
-        <div className="flex items-center gap-3 mb-4">
-          <span className="h-px w-10 bg-[#B38B36]" />
-          <span className="text-[10px] tracking-[0.4em] uppercase text-[#B38B36] font-black">Cosmic Knowledge</span>
+      {/* Hero Header Section */}
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.8 }}
+        className="relative w-full h-[180px] md:h-[220px] bg-[#3C2A21] flex items-center overflow-hidden border-b border-[#B38B36]/20 mb-12"
+      >
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full border border-white/5 opacity-10 pointer-events-none" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] rounded-full border border-white/10 opacity-5 pointer-events-none" />
+        <div className="absolute right-10 bottom-5 w-44 h-44 opacity-[0.03] text-white">
+          <BookOpen className="w-full h-full" />
         </div>
-        <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight mb-4">
-          Astro Academy Journal
-        </h1>
-        <p className="text-sm md:text-base text-[#725D46] leading-relaxed max-w-xl font-light">
-          Deep Vedic insights, celestial transits, and Vastu guidelines curated to align your career, spatial harmony, and destiny pathways.
-        </p>
-      </div>
+
+        <div className="max-w-7xl mx-auto px-6 lg:px-12 w-full z-10">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <span className="h-px w-6 bg-[#E5C06A]" />
+                <span className="text-[10px] tracking-[0.4em] uppercase text-[#E5C06A] font-black">Cosmic Knowledge</span>
+              </div>
+              <h1 className="font-serif text-4xl md:text-5xl text-white font-bold leading-tight tracking-tight flex items-center gap-3">
+                Astro Academy Journal
+              </h1>
+              <p className="text-stone-300 text-xs md:text-sm mt-2 font-light max-w-xl">
+                Deep Vedic insights, celestial transits, and Vastu guidelines curated to align your career, spatial harmony, and destiny pathways.
+              </p>
+            </div>
+          </div>
+        </div>
+      </motion.div>
 
       {/* Category Filter Pills */}
       <div className="max-w-7xl mx-auto px-6 lg:px-12 mb-12">
